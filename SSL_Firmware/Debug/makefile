@@ -35,24 +35,24 @@ endif
 
 # Add inputs and outputs from these tool invocations to the build variables 
 EXECUTABLES += \
-Marcellino.elf \
+SSL_Firmware.elf \
 
 SIZE_OUTPUT += \
 default.size.stdout \
 
 OBJDUMP_LIST += \
-Marcellino.list \
+SSL_Firmware.list \
 
 OBJCOPY_BIN += \
-Marcellino.bin \
+SSL_Firmware.bin \
 
 
 # All Target
-all: Marcellino.elf secondary-outputs
+all: SSL_Firmware.elf secondary-outputs
 
 # Tool invocations
-Marcellino.elf: $(OBJS) $(USER_OBJS) C:\Users\Gabriel\STM32CubeIDE\workspace_1.4.0\Marcellino\STM32F407VGTX_FLASH.ld
-	arm-none-eabi-gcc -o "Marcellino.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\Gabriel\STM32CubeIDE\workspace_1.4.0\Marcellino\STM32F407VGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Marcellino.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+SSL_Firmware.elf: $(OBJS) $(USER_OBJS) C:\Users\Gabriel\STM32CubeIDE\workspace_1.4.0\SSL_Firmware_HAL\SSL_Firmware\STM32F407VGTX_FLASH.ld
+	arm-none-eabi-gcc -o "SSL_Firmware.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\Gabriel\STM32CubeIDE\workspace_1.4.0\SSL_Firmware_HAL\SSL_Firmware\STM32F407VGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="SSL_Firmware.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
@@ -61,13 +61,13 @@ default.size.stdout: $(EXECUTABLES)
 	@echo 'Finished building: $@'
 	@echo ' '
 
-Marcellino.list: $(EXECUTABLES)
-	arm-none-eabi-objdump -h -S $(EXECUTABLES) > "Marcellino.list"
+SSL_Firmware.list: $(EXECUTABLES)
+	arm-none-eabi-objdump -h -S $(EXECUTABLES) > "SSL_Firmware.list"
 	@echo 'Finished building: $@'
 	@echo ' '
 
-Marcellino.bin: $(EXECUTABLES)
-	arm-none-eabi-objcopy  -O binary $(EXECUTABLES) "Marcellino.bin"
+SSL_Firmware.bin: $(EXECUTABLES)
+	arm-none-eabi-objcopy  -O binary $(EXECUTABLES) "SSL_Firmware.bin"
 	@echo 'Finished building: $@'
 	@echo ' '
 
