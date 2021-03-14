@@ -11,13 +11,13 @@ MY_NRF24.c:153:6:NRF24_flush_tx	8	static
 MY_NRF24.c:158:6:NRF24_flush_rx	8	static
 MY_NRF24.c:163:9:NRF24_get_status	16	static
 MY_NRF24.c:171:6:NRF24_begin	24	static
-MY_NRF24.c:244:6:NRF24_startListening	16	static
+MY_NRF24.c:244:6:NRF24_startListening	8	static
 MY_NRF24.c:261:6:NRF24_stopListening	8	static
 MY_NRF24.c:268:6:NRF24_write	32	static
 MY_NRF24.c:304:6:NRF24_available	8	static
 MY_NRF24.c:309:6:NRF24_read	24	static
 MY_NRF24.c:318:6:NRF24_openWritingPipe	24	static
-MY_NRF24.c:327:6:NRF24_openReadingPipe	32	static
+MY_NRF24.c:327:6:NRF24_openReadingPipe	24	static
 MY_NRF24.c:351:6:NRF24_setRetries	16	static
 MY_NRF24.c:357:6:NRF24_setChannel	24	static
 MY_NRF24.c:363:6:NRF24_setPayloadSize	24	static
@@ -50,5 +50,5 @@ MY_NRF24.c:711:6:NRF24_ACTIVATE_cmd	16	static
 MY_NRF24.c:722:9:NRF24_GetAckPayloadSize	4	static
 MY_NRF24.c:727:6:printRadioSettings	152	static
 MY_NRF24.c:854:6:printStatusReg	136	static
-MY_NRF24.c:870:6:printConfigReg	120	static
+MY_NRF24.c:870:6:printConfigReg	112	static
 MY_NRF24.c:888:6:printFIFOstatus	128	static
