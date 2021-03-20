@@ -1,4 +1,6 @@
-"Core/Src/RoboIME/motor.o"
+"Core/Src/Components/Motor.o"
+"Core/Src/Components/Start.o"
+"Core/Src/Components/motor_c.o"
 "Core/Src/main.o"
 "Core/Src/stm32f4xx_hal_msp.o"
 "Core/Src/stm32f4xx_it.o"

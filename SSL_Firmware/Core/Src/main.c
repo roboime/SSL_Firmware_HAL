@@ -24,7 +24,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "MY_NRF24.h"
-#include "RoboIME\motor.h"
+#include "Components/Start.hpp"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -51,20 +51,9 @@ TIM_HandleTypeDef htim8;
 TIM_HandleTypeDef htim9;
 
 /* USER CODE BEGIN PV */
-struct usbStruct_t{
-	int32_t val1;
-	int32_t val2;
-}usbStruct;
 
-struct recvUSBStruct_t{
-	uint32_t motorSpd_s;
-	int32_t motorSpd[4];
-	int32_t dribbleSpd;
-	uint32_t led;
-	uint32_t sevSeg;
-	uint32_t kickPow_s;
-	uint32_t kickPow[2];
-}*recvUSBStruct;
+
+
 
 /* USER CODE END PV */
 
@@ -129,6 +118,8 @@ int main(void)
   HAL_TIM_PWM_Start_IT(&htim8,TIM_CHANNEL_2);
   HAL_TIM_PWM_Start_IT(&htim8,TIM_CHANNEL_3);
   HAL_TIM_PWM_Start_IT(&htim8,TIM_CHANNEL_4);
+  HAL_TIM_Base_Start_IT(&htim9);
+  HAL_TIM_PWM_Start_IT(&htim9,TIM_CHANNEL_1);
 
   /*TIM1->CCR1 = 65535;
   TIM1->CCR2 = 65535;
@@ -147,26 +138,17 @@ int main(void)
   while(CDC_Transmit_FS(usbBuf, 19) == USBD_BUSY);
   NRF24_begin(CE_GPIO_Port, CSN_Pin, CE_Pin, hspi2);*/
   //printRadioSettings();
-  usbStruct.val1 = 100;
-  usbStruct.val2 = 101;
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+  Start();
   while (1)
   {
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-  	while(CDC_Transmit_FS(&usbStruct, 8) == USBD_BUSY);
-  	setMotorSpd(recvUSBStruct->motorSpd[0], 0);
-  	setMotorSpd(recvUSBStruct->motorSpd[1], 1);
-  	HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, recvUSBStruct->led & 1);
-  	HAL_GPIO_WritePin(LD4_GPIO_Port, LD4_Pin, recvUSBStruct->led & 2);
-  	HAL_GPIO_WritePin(LD5_GPIO_Port, LD5_Pin, recvUSBStruct->led & 4);
-  	HAL_GPIO_WritePin(LD6_GPIO_Port, LD6_Pin, recvUSBStruct->led & 8);
-
-  	HAL_Delay(1000);
   }
   /* USER CODE END 3 */
 }
@@ -468,7 +450,7 @@ static void MX_TIM9_Init(void)
     Error_Handler();
   }
   sConfigOC.OCMode = TIM_OCMODE_PWM1;
-  sConfigOC.Pulse = 0;
+  sConfigOC.Pulse = 65535;
   sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
   sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
   if (HAL_TIM_PWM_ConfigChannel(&htim9, &sConfigOC, TIM_CHANNEL_1) != HAL_OK)

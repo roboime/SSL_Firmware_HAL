@@ -7,11 +7,11 @@
 C_SRCS += \
 ../Lib/MY_NRF24.c 
 
-OBJS += \
-./Lib/MY_NRF24.o 
-
 C_DEPS += \
 ./Lib/MY_NRF24.d 
+
+OBJS += \
+./Lib/MY_NRF24.o 
 
 
 # Each subdirectory must supply rules for building sources it contributes

@@ -5,7 +5,7 @@
  *      Author: Moraes
  */
 
-#include "motor.h"
+#include "motor_c.h"
 
 //spd>0 A em VCC e B em GND
 
