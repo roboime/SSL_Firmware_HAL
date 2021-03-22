@@ -9,7 +9,12 @@
 #include "main.h"
 #include "usbd_cdc_if.h"
 
+#include "Encoder.hpp"
 #include "Motor.hpp"
+
+
+extern TIM_HandleTypeDef htim6;
+
 
 struct recvUSBStruct_t{
 	uint32_t motorSpd_s;
@@ -33,6 +38,18 @@ struct usbStruct_t{
 	int32_t val2;
 }usbStruct;
 
+Encoder encoder(0);
+
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+	int i=0;
+	if(htim == &htim6){
+		//Encoder encoder(0);
+		encoder.ReadEncoder();
+	}
+}
+
+
 void Start(){
 	Motor motor[4] = {Motor(0), Motor(1), Motor(2), Motor(3)};
 	while(1){
@@ -42,7 +59,7 @@ void Start(){
 		for(int i=0;i<4;i++){
 			motor[i].SetSpeed(recvUSBStruct->motorSpd[i]);
 		}
-		sendUSBStruct.button = HAL_GPIO_ReadPin(B1_GPIO_Port, B1_Pin);
+		sendUSBStruct.button = HAL_GPIO_ReadPin(Btn_GPIO_Port, Btn_Pin);
 		HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PinState(recvUSBStruct->led & 1));
 		HAL_GPIO_WritePin(LD4_GPIO_Port, LD4_Pin, GPIO_PinState(recvUSBStruct->led & 2));
 		HAL_GPIO_WritePin(LD5_GPIO_Port, LD5_Pin, GPIO_PinState(recvUSBStruct->led & 4));
