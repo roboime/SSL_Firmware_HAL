@@ -55,7 +55,7 @@ volatile uint32_t Encoder::ReadEncoder(){
 	}
 	else
 	{
-		communicationUSB.TransmitEncoderReadingRPM(timCntVal - (65535 - timCntPast));
+		communicationUSB.TransmitEncoderReadingRPM(timCntVal - (4294967294 - timCntPast));
 		//return timCntVal - (65535 - timCntPast);
 	}
 	return 0;

@@ -13,6 +13,7 @@
 
 extern sendUSBStruct_t sendUSBStruct;
 extern struct recvUSBStruct_t *recvUSBStruct;
+char package[24];
 
 CommunicationUSB::CommunicationUSB()
 {
@@ -22,7 +23,11 @@ CommunicationUSB::CommunicationUSB()
 void CommunicationUSB::TransmitEncoderReadingRPM(uint32_t reading){
 	float readingRPM = (float)3600*(reading)/(float)32; //Explicar no comentário
 	sendUSBStruct.motorEnc[0] = (int32_t)(readingRPM);
-	CDC_Transmit_FS((uint8_t*)&sendUSBStruct, 24);
+	//CDC_Transmit_FS((uint8_t*)&sendUSBStruct, 24);
+
+
+	sprintf(package, "%20.2f\n\r", readingRPM);
+	CDC_Transmit_FS((uint8_t*)package, 24);
 }
 
 
