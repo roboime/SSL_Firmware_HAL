@@ -19,19 +19,23 @@ Encoder::Encoder (uint8_t encoderId){
 	{
 		case 0:
 		{
-			ENC = htim3;
+			ENC_Val = &(TIM3->CNT);
+			break;
 		}
 		case 1:
 		{
-			ENC = htim2;
+			ENC_Val = &(TIM2->CNT);
+			break;
 		}
 		case 2:
 		{
-			ENC = htim5;
+			ENC_Val = &(TIM5->CNT);
+			break;
 		}
 		case 3:
 		{
-			ENC = htim4;
+			ENC_Val = &(TIM4->CNT);
+			break;
 		}
 		default:
 			break;
@@ -43,7 +47,7 @@ Encoder::Encoder (uint8_t encoderId){
 
 volatile uint32_t Encoder::ReadEncoder(){
 	timCntPast = timCntVal;
-	timCntVal = ENC.Instance->CNT;
+	timCntVal = *ENC_Val;
 	if (timCntVal >= timCntPast)
 	{
 		communicationUSB.TransmitEncoderReadingRPM(timCntVal - timCntPast);
@@ -56,12 +60,4 @@ volatile uint32_t Encoder::ReadEncoder(){
 	}
 	return 0;
 }
-
-/*void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
-{
-	if(htim == &htim6){
-		Encoder encoder(0);
-		encoder.ReadEncoder();
-	}
-}*/
 

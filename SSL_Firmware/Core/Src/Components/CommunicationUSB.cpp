@@ -6,9 +6,13 @@
  */
 
 #include "main.h"
+#include "Start.hpp"
 #include "usb_device.h"
 #include "usbd_cdc_if.h"
 #include "CommunicationUSB.hpp"
+
+extern sendUSBStruct_t sendUSBStruct;
+extern struct recvUSBStruct_t *recvUSBStruct;
 
 CommunicationUSB::CommunicationUSB()
 {
@@ -17,10 +21,8 @@ CommunicationUSB::CommunicationUSB()
 
 void CommunicationUSB::TransmitEncoderReadingRPM(uint32_t reading){
 	float readingRPM = (float)3600*(reading)/(float)32; //Explicar no comentário
-	uint8_t package[14] = "Hello";
-	//sprintf((char*)package, "%f\n\r", readingRPM);
-	while(CDC_Transmit_FS(package, 14)==USBD_BUSY);
-	readingRPM = (float)3600*(reading)/(float)32;
+	sendUSBStruct.motorEnc[0] = (int32_t)(readingRPM);
+	CDC_Transmit_FS((uint8_t*)&sendUSBStruct, 24);
 }
 
 

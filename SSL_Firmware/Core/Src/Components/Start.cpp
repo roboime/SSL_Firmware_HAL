@@ -6,7 +6,6 @@
  */
 
 #include "Start.hpp"
-#include "main.h"
 #include "usbd_cdc_if.h"
 
 #include "Encoder.hpp"
@@ -26,12 +25,17 @@ struct recvUSBStruct_t{
 	uint32_t kickPow[2];
 }*recvUSBStruct;
 
-struct sendUSBStruct_t{
+/*struct sendUSBStruct_t{
 	uint32_t motorEnc_s = 4;
 	int32_t motorEnc[4] = {0, 0, 0, 0};
 	uint32_t button;
-}sendUSBStruct;
+}sendUSBStruct;*/
 
+sendUSBStruct_t sendUSBStruct = {
+	4,
+	{0, 0, 0, 0},
+	0
+};
 
 struct usbStruct_t{
 	int32_t val1;
@@ -42,9 +46,7 @@ Encoder encoder(0);
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
-	int i=0;
 	if(htim == &htim6){
-		//Encoder encoder(0);
 		encoder.ReadEncoder();
 	}
 }
@@ -65,6 +67,6 @@ void Start(){
 		HAL_GPIO_WritePin(LD5_GPIO_Port, LD5_Pin, GPIO_PinState(recvUSBStruct->led & 4));
 		HAL_GPIO_WritePin(LD6_GPIO_Port, LD6_Pin, GPIO_PinState(recvUSBStruct->led & 8));
 		HAL_Delay(1);
-		while(CDC_Transmit_FS((uint8_t*)&sendUSBStruct, 24) == USBD_BUSY);
+		//while(CDC_Transmit_FS((uint8_t*)&sendUSBStruct, 24) == USBD_BUSY);
 	}
 }

@@ -16,7 +16,7 @@ public:
 	Encoder(uint8_t encoderId);
 	volatile uint32_t ReadEncoder();
 private:
-	TIM_HandleTypeDef ENC;
+	__IO uint32_t* ENC_Val;
 	volatile uint32_t timCntVal;
 	volatile uint32_t timCntPast;
 	CommunicationUSB communicationUSB;
