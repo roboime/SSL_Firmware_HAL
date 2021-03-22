@@ -23,7 +23,6 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "Components/Encoder.hpp";
 #include "MY_NRF24.h"
 #include "Components/Start.hpp"
 /* USER CODE END Includes */
@@ -86,19 +85,6 @@ static void MX_TIM6_Init(void);
   * @brief  The application entry point.
   * @retval int
   */
-
-
-Encoder encoder(0);
-
-void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
-{
-	int i=0;
-	if(htim == &htim6){
-		//Encoder encoder(0);
-		encoder.ReadEncoder();
-	}
-}
-
 
 
 int main(void)

@@ -1,3 +1,0 @@
-Motor.cpp:10:1:Motor::Motor(uint8_t)	16	static
-Motor.cpp:62:6:void Motor::SetSpeed(int32_t)	16	static
-Motor.cpp:83:6:void Motor::SetDribble(int32_t)	16	static

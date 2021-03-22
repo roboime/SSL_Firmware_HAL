@@ -1,2 +1,0 @@
-Encoder.cpp:17:1:Encoder::Encoder(uint8_t)	24	static
-Encoder.cpp:44:19:volatile uint32_t Encoder::ReadEncoder()	16	static
