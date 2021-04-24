@@ -14,11 +14,14 @@
 class Encoder{
 public:
 	Encoder(uint8_t encoderId);
-	volatile uint32_t ReadEncoder();
+	volatile uint16_t ReadEncoder();
 private:
-	__IO uint32_t* ENC_Val;
-	volatile uint32_t timCntVal;
-	volatile uint32_t timCntPast;
+	TIM_HandleTypeDef* encTimer;
+	volatile int32_t cntDif;
+	volatile uint32_t direction;
+	volatile uint32_t* encVal;
+	volatile uint16_t timCntVal;
+	volatile uint16_t timCntPast;
 	CommunicationUSB communicationUSB;
 };
 

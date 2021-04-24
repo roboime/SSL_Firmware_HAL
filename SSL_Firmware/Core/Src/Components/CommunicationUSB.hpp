@@ -13,7 +13,7 @@
 class CommunicationUSB{
 public:
 	CommunicationUSB();
-	void TransmitEncoderReadingRPM(uint32_t reading);
+	void TransmitEncoderReadingRPM(int32_t reading);
 };
 
 

@@ -20,8 +20,8 @@ CommunicationUSB::CommunicationUSB()
 
 }
 
-void CommunicationUSB::TransmitEncoderReadingRPM(uint32_t reading){
-	float readingRPM = (float)3600*(reading)/(float)32; //Explicar no comentário
+void CommunicationUSB::TransmitEncoderReadingRPM(int32_t reading){
+	float readingRPM = (float)(reading)/(float)1; //Explicar no comentário
 	sendUSBStruct.motorEnc[0] = (int32_t)(readingRPM);
 	//CDC_Transmit_FS((uint8_t*)&sendUSBStruct, 24);
 
