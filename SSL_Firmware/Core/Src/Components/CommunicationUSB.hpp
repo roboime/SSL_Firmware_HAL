@@ -12,8 +12,10 @@
 
 class CommunicationUSB{
 public:
-	CommunicationUSB();
+	CommunicationUSB(void (**usbRecvCallback)(uint8_t*, uint32_t*));
 	void TransmitEncoderReadingRPM(int32_t reading);
+	static void ReceiveCallback(uint8_t* Buf, uint32_t* Len);
+
 };
 
 

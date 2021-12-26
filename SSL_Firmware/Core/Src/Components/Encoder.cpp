@@ -6,7 +6,7 @@
  */
 
 # include "Encoder.hpp"
-# include "CommunicationUSB.hpp"
+//# include "CommunicationUSB.hpp"
 
 extern TIM_HandleTypeDef htim2;
 extern TIM_HandleTypeDef htim3;
@@ -44,7 +44,7 @@ Encoder::Encoder (uint8_t encoderId){
 		default:
 			break;
 	}
-	communicationUSB = CommunicationUSB();
+	//communicationUSB = CommunicationUSB();
 	timCntVal = 0;
 	timCntPast = 0;
 }
@@ -81,7 +81,7 @@ volatile uint16_t Encoder::ReadEncoder(){
 		}
 	}while(cntDif>1000 || cntDif<-1000);
 
-	communicationUSB.TransmitEncoderReadingRPM(cntDif);
+	//communicationUSB.TransmitEncoderReadingRPM(cntDif);
 	return cntDif;
 }
 

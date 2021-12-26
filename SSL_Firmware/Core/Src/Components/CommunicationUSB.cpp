@@ -15,9 +15,16 @@ extern sendUSBStruct_t sendUSBStruct;
 extern struct recvUSBStruct_t *recvUSBStruct;
 char package[24];
 
-CommunicationUSB::CommunicationUSB()
+/**
+ * @param _usbRecvCallback pointer to global variable which is a function pointer to be called inside usbd_cdc_if.h
+ */
+CommunicationUSB::CommunicationUSB(void (**_usbRecvCallback)(uint8_t*, uint32_t*))
 {
+	*_usbRecvCallback = &CommunicationUSB::ReceiveCallback;
+}
 
+void CommunicationUSB::ReceiveCallback(uint8_t* Buf, uint32_t* Len){
+	HAL_GPIO_TogglePin(LD4_GPIO_Port, LD4_Pin);
 }
 
 void CommunicationUSB::TransmitEncoderReadingRPM(int32_t reading){

@@ -9,7 +9,7 @@
 #define SRC_COMPONENTS_ENCODER_HPP_
 
 #include "main.h"
-#include "CommunicationUSB.hpp"
+//#include "CommunicationUSB.hpp"
 
 class Encoder{
 public:
@@ -22,7 +22,7 @@ private:
 	volatile uint32_t* encVal;
 	volatile uint16_t timCntVal;
 	volatile uint16_t timCntPast;
-	CommunicationUSB communicationUSB;
+	//CommunicationUSB communicationUSB;
 };
 
 
