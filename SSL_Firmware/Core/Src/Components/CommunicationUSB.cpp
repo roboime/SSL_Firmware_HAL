@@ -14,9 +14,9 @@
 #include "pb_decode.h"
 #include "pb_encode.h"
 
-extern sendUSBStruct_t sendUSBStruct;
-extern struct recvUSBStruct_t *recvUSBStruct;
-char package[24];
+//extern sendUSBStruct_t sendUSBStruct;
+//extern struct recvUSBStruct_t *recvUSBStruct;
+//char package[24];
 grSim_Robot_Command receivedPacket = grSim_Robot_Command_init_default;
 
 
@@ -36,12 +36,12 @@ void CommunicationUSB::ReceiveCallback(uint8_t* Buf, uint32_t* Len){
 
 void CommunicationUSB::TransmitEncoderReadingRPM(int32_t reading){
 	float readingRPM = (float)(reading)/(float)1; //Explicar no comentário
-	sendUSBStruct.motorEnc[0] = (int32_t)(readingRPM);
+	//sendUSBStruct.motorEnc[0] = (int32_t)(readingRPM);
 	//CDC_Transmit_FS((uint8_t*)&sendUSBStruct, 24);
 
 
-	sprintf(package, "%20.2f\n\r", readingRPM);
-	CDC_Transmit_FS((uint8_t*)package, 24);
+	//sprintf(package, "%20.2f\n\r", readingRPM);
+	//CDC_Transmit_FS((uint8_t*)package, 24);
 }
 
 

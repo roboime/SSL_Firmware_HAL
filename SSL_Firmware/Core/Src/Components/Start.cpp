@@ -33,11 +33,11 @@ extern void (*usbRecvCallback)(uint8_t*, uint32_t*);
 	uint32_t button;
 }sendUSBStruct;*/
 
-sendUSBStruct_t sendUSBStruct = {
+/*sendUSBStruct_t sendUSBStruct = {
 	4,
 	{0, 0, 0, 0},
 	0
-};
+};*/
 
 /*struct usbStruct_t{
 	int32_t val1;
@@ -64,7 +64,7 @@ void Start(){
 		for(int i=0;i<4;i++){
 			motor[i].SetSpeed(recvUSBStruct->motorSpd[i]);
 		}*/
-		sendUSBStruct.button = HAL_GPIO_ReadPin(Btn_GPIO_Port, Btn_Pin);
+		//sendUSBStruct.button = HAL_GPIO_ReadPin(Btn_GPIO_Port, Btn_Pin);
 		//HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PinState(recvUSBStruct->led & 1));
 		//HAL_GPIO_WritePin(LD4_GPIO_Port, LD4_Pin, GPIO_PinState(recvUSBStruct->led & 2));
 		//HAL_GPIO_WritePin(LD5_GPIO_Port, LD5_Pin, GPIO_PinState(recvUSBStruct->led & 4));

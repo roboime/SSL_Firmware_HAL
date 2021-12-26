@@ -32,7 +32,7 @@
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
-extern struct recvUSBStruct_t *recvUSBStruct;
+//extern struct recvUSBStruct_t *recvUSBStruct;
 void (*usbRecvCallback)(uint8_t*, uint32_t*) = NULL;
 /* USER CODE END PV */
 
