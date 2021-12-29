@@ -50,7 +50,8 @@ CommunicationUSB usb(&usbRecvCallback);
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
 	if(htim == &htim6){
-		encoder.ReadEncoder();
+		usb.TransmitEncoderReadingRPM(encoder.ReadEncoder());
+		usb.TransmitFeedbackPacket();
 	}
 }
 
@@ -69,7 +70,7 @@ void Start(){
 		//HAL_GPIO_WritePin(LD4_GPIO_Port, LD4_Pin, GPIO_PinState(recvUSBStruct->led & 2));
 		//HAL_GPIO_WritePin(LD5_GPIO_Port, LD5_Pin, GPIO_PinState(recvUSBStruct->led & 4));
 		//HAL_GPIO_WritePin(LD6_GPIO_Port, LD6_Pin, GPIO_PinState(recvUSBStruct->led & 8));
-		HAL_Delay(1);
+		HAL_Delay(100);
 		//while(CDC_Transmit_FS((uint8_t*)&sendUSBStruct, 24) == USBD_BUSY);
 	}
 }
