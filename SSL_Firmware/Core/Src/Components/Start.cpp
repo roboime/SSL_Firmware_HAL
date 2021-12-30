@@ -11,11 +11,13 @@
 #include "Encoder.hpp"
 #include "Motor.hpp"
 #include "CommunicationUSB.hpp"
-
+#include "BTS7960B.hpp"
 
 extern TIM_HandleTypeDef htim6;
 extern void (*usbRecvCallback)(uint8_t*, uint32_t*);
-
+grSim_Robot_Command receivedPacket = grSim_Robot_Command_init_default;
+Feedback sendPacket = Feedback_init_default;
+uint8_t sendBuffer[64];
 
 /*struct recvUSBStruct_t{
 	uint32_t motorSpd_s;
@@ -46,6 +48,7 @@ extern void (*usbRecvCallback)(uint8_t*, uint32_t*);
 
 Encoder encoder(0);
 CommunicationUSB usb(&usbRecvCallback);
+BTS7960B motorbts(&(TIM10->CCR1), &(TIM11->CCR1), GPIOD, GPIO_PIN_0, GPIOD, GPIO_PIN_1);
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
@@ -55,6 +58,9 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 	}
 }
 
+void packetReceivedCallback(void){
+	motorbts.setSpeed((int32_t)receivedPacket.velangular);
+}
 
 void Start(){
 	Motor motor[4] = {Motor(0), Motor(1), Motor(2), Motor(3)};

@@ -18,9 +18,9 @@
 //extern sendUSBStruct_t sendUSBStruct;
 //extern struct recvUSBStruct_t *recvUSBStruct;
 //char package[24];
-grSim_Robot_Command receivedPacket = grSim_Robot_Command_init_default;
-Feedback sendPacket = Feedback_init_default;
-uint8_t sendBuffer[64];
+extern grSim_Robot_Command receivedPacket;
+extern Feedback sendPacket;
+extern uint8_t sendBuffer[64];
 
 /**
  * @param _usbRecvCallback pointer to global variable which is a function pointer to be called inside usbd_cdc_if.h
@@ -34,6 +34,7 @@ void CommunicationUSB::ReceiveCallback(uint8_t* Buf, uint32_t* Len){
 	HAL_GPIO_TogglePin(LD4_GPIO_Port, LD4_Pin);
 	pb_istream_t stream = pb_istream_from_buffer(Buf, *Len);
 	pb_decode(&stream, grSim_Robot_Command_fields, &receivedPacket);
+	packetReceivedCallback();
 }
 
 void CommunicationUSB::TransmitFeedbackPacket(void){

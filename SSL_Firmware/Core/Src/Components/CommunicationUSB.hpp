@@ -9,6 +9,7 @@
 #define SRC_COMPONENTS_COMMUNICATIONUSB_HPP_
 
 #include "main.h"
+#include "Start.hpp"
 
 class CommunicationUSB{
 public:
