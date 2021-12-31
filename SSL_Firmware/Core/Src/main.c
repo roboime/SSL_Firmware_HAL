@@ -157,14 +157,6 @@ int main(void)
   TIM8->CCR3 = 65535;
   TIM8->CCR4 = 65535;*/
   HAL_Delay(1000);
-  /*
-  for(int i=0; i<64; i++){
-	usbBuf[i] = 0;
-  }
-  strcpy(usbBuf, "!!!Hello World!!!\n\r");
-  while(CDC_Transmit_FS(usbBuf, 19) == USBD_BUSY);
-  NRF24_begin(CE_GPIO_Port, CSN_Pin, CE_Pin, hspi2);*/
-  //printRadioSettings();
 
   /* USER CODE END 2 */
 
