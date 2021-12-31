@@ -52,8 +52,6 @@ TIM_HandleTypeDef htim5;
 TIM_HandleTypeDef htim6;
 TIM_HandleTypeDef htim8;
 TIM_HandleTypeDef htim9;
-TIM_HandleTypeDef htim10;
-TIM_HandleTypeDef htim11;
 
 UART_HandleTypeDef huart3;
 DMA_HandleTypeDef hdma_usart3_rx;
@@ -78,8 +76,6 @@ static void MX_TIM3_Init(void);
 static void MX_TIM4_Init(void);
 static void MX_TIM5_Init(void);
 static void MX_TIM6_Init(void);
-static void MX_TIM10_Init(void);
-static void MX_TIM11_Init(void);
 static void MX_USART3_UART_Init(void);
 static void MX_DMA_Init(void);
 static void MX_SPI1_Init(void);
@@ -129,8 +125,6 @@ int main(void)
   MX_TIM4_Init();
   MX_TIM5_Init();
   MX_TIM6_Init();
-  MX_TIM10_Init();
-  MX_TIM11_Init();
   MX_USART3_UART_Init();
   MX_DMA_Init();
   MX_SPI1_Init();
@@ -152,10 +146,6 @@ int main(void)
   HAL_TIM_PWM_Start_IT(&htim8,TIM_CHANNEL_4);
   HAL_TIM_Base_Start_IT(&htim9);
   HAL_TIM_PWM_Start_IT(&htim9,TIM_CHANNEL_1);
-  HAL_TIM_Base_Start_IT(&htim10);
-  HAL_TIM_PWM_Start_IT(&htim10,TIM_CHANNEL_1);
-  HAL_TIM_Base_Start_IT(&htim11);
-  HAL_TIM_PWM_Start_IT(&htim11,TIM_CHANNEL_1);
 
 
   /*TIM1->CCR1 = 65535;
@@ -736,98 +726,6 @@ static void MX_TIM9_Init(void)
 
   /* USER CODE END TIM9_Init 2 */
   HAL_TIM_MspPostInit(&htim9);
-
-}
-
-/**
-  * @brief TIM10 Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_TIM10_Init(void)
-{
-
-  /* USER CODE BEGIN TIM10_Init 0 */
-
-  /* USER CODE END TIM10_Init 0 */
-
-  TIM_OC_InitTypeDef sConfigOC = {0};
-
-  /* USER CODE BEGIN TIM10_Init 1 */
-
-  /* USER CODE END TIM10_Init 1 */
-  htim10.Instance = TIM10;
-  htim10.Init.Prescaler = 15;
-  htim10.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim10.Init.Period = 4095;
-  htim10.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-  htim10.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
-  if (HAL_TIM_Base_Init(&htim10) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  if (HAL_TIM_PWM_Init(&htim10) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  sConfigOC.OCMode = TIM_OCMODE_PWM1;
-  sConfigOC.Pulse = 0;
-  sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
-  sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
-  if (HAL_TIM_PWM_ConfigChannel(&htim10, &sConfigOC, TIM_CHANNEL_1) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /* USER CODE BEGIN TIM10_Init 2 */
-
-  /* USER CODE END TIM10_Init 2 */
-  HAL_TIM_MspPostInit(&htim10);
-
-}
-
-/**
-  * @brief TIM11 Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_TIM11_Init(void)
-{
-
-  /* USER CODE BEGIN TIM11_Init 0 */
-
-  /* USER CODE END TIM11_Init 0 */
-
-  TIM_OC_InitTypeDef sConfigOC = {0};
-
-  /* USER CODE BEGIN TIM11_Init 1 */
-
-  /* USER CODE END TIM11_Init 1 */
-  htim11.Instance = TIM11;
-  htim11.Init.Prescaler = 15;
-  htim11.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim11.Init.Period = 4095;
-  htim11.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-  htim11.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
-  if (HAL_TIM_Base_Init(&htim11) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  if (HAL_TIM_PWM_Init(&htim11) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  sConfigOC.OCMode = TIM_OCMODE_PWM1;
-  sConfigOC.Pulse = 0;
-  sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
-  sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
-  if (HAL_TIM_PWM_ConfigChannel(&htim11, &sConfigOC, TIM_CHANNEL_1) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /* USER CODE BEGIN TIM11_Init 2 */
-
-  /* USER CODE END TIM11_Init 2 */
-  HAL_TIM_MspPostInit(&htim11);
 
 }
 
