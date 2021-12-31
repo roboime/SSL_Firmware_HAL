@@ -84,6 +84,12 @@ void Error_Handler(void);
 #define OTG_FS_PowerSwitchOn_GPIO_Port GPIOC
 #define M2_MAL_Pin GPIO_PIN_2
 #define M2_MAL_GPIO_Port GPIOC
+#define M2_ENCA_Pin GPIO_PIN_0
+#define M2_ENCA_GPIO_Port GPIOA
+#define M2_ENCB_Pin GPIO_PIN_1
+#define M2_ENCB_GPIO_Port GPIOA
+#define nRF_IRQ_Pin GPIO_PIN_5
+#define nRF_IRQ_GPIO_Port GPIOC
 #define M2_MBL_Pin GPIO_PIN_1
 #define M2_MBL_GPIO_Port GPIOB
 #define BOOT1_Pin GPIO_PIN_2
@@ -130,6 +136,10 @@ void Error_Handler(void);
 #define SWCLK_GPIO_Port GPIOA
 #define M1_ENCA_Pin GPIO_PIN_15
 #define M1_ENCA_GPIO_Port GPIOA
+#define nRF_CE_Pin GPIO_PIN_12
+#define nRF_CE_GPIO_Port GPIOC
+#define nRF_CSn_Pin GPIO_PIN_0
+#define nRF_CSn_GPIO_Port GPIOD
 #define Audio_RST_Pin GPIO_PIN_4
 #define Audio_RST_GPIO_Port GPIOD
 #define OTG_FS_OverCurrent_Pin GPIO_PIN_5

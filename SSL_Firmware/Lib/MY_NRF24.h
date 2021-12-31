@@ -23,6 +23,11 @@ References:				This library was written based on the Arduino NRF24 Open-Source l
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 //1. Pinout Ports and Pin
 //#define nrf_CSN_PORT		GPIOD
 //#define nrf_CSN_PIN			GPIO_PIN_0
@@ -98,7 +103,7 @@ void NRF24_flush_rx(void);
 uint8_t NRF24_get_status(void);
 
 //12. Begin function
-void NRF24_begin(GPIO_TypeDef *nrf24PORT, uint16_t nrfCSN_Pin, uint16_t nrfCE_Pin, SPI_HandleTypeDef nrfSPI);
+void NRF24_begin(GPIO_TypeDef *nrf24CSNPORT, uint16_t nrfCSN_Pin, GPIO_TypeDef *nrf24CEPORT, uint16_t nrfCE_Pin, SPI_HandleTypeDef nrfSPI);
 //13. Listen on open pipes for reading (Must call NRF24_openReadingPipe() first)
 void NRF24_startListening(void);
 //14. Stop listening (essential before any write operation)
@@ -181,7 +186,11 @@ void printRadioSettings(void);
 void printStatusReg(void);
 //3. Print Config 
 void printConfigReg(void);
-//4. FIFO Status
+//4. Init Variables
+void nrf24_DebugUART_Init(UART_HandleTypeDef nrf24Uart);
+//5. FIFO Status
 void printFIFOstatus(void);
 
-
+#ifdef __cplusplus
+}
+#endif
