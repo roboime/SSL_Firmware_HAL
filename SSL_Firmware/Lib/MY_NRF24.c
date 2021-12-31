@@ -218,7 +218,7 @@ void NRF24_begin(GPIO_TypeDef *nrf24CSNPORT, uint16_t nrfCSN_Pin, GPIO_TypeDef *
 	NRF24_ACTIVATE_cmd();
 	NRF24_write_register(0x1c, 0);
 	NRF24_write_register(0x1d, 0);
-	printRadioSettings();
+	//printRadioSettings();
 	//Initialise retries 15 and delay 1250 usec
 	NRF24_setRetries(15, 15);
 	//Initialise PA level to max (0dB)

@@ -156,7 +156,7 @@ int main(void)
   TIM8->CCR2 = 65535;
   TIM8->CCR3 = 65535;
   TIM8->CCR4 = 65535;*/
-  HAL_Delay(1000);
+  //HAL_Delay(1000);
 
   /* USER CODE END 2 */
 
@@ -238,7 +238,7 @@ static void MX_SPI1_Init(void)
   hspi1.Init.CLKPolarity = SPI_POLARITY_LOW;
   hspi1.Init.CLKPhase = SPI_PHASE_1EDGE;
   hspi1.Init.NSS = SPI_NSS_SOFT;
-  hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_2;
+  hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_64;
   hspi1.Init.FirstBit = SPI_FIRSTBIT_MSB;
   hspi1.Init.TIMode = SPI_TIMODE_DISABLE;
   hspi1.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
