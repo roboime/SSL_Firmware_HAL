@@ -90,6 +90,7 @@ void Error_Handler(void);
 #define M2_ENCB_GPIO_Port GPIOA
 #define nRF_IRQ_Pin GPIO_PIN_5
 #define nRF_IRQ_GPIO_Port GPIOC
+#define nRF_IRQ_EXTI_IRQn EXTI9_5_IRQn
 #define M2_MBL_Pin GPIO_PIN_1
 #define M2_MBL_GPIO_Port GPIOB
 #define BOOT1_Pin GPIO_PIN_2

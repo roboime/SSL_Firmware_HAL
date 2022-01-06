@@ -159,7 +159,7 @@ int main(void)
   TIM8->CCR2 = 65535;
   TIM8->CCR3 = 65535;
   TIM8->CCR4 = 65535;*/
-  //HAL_Delay(1000);
+  HAL_Delay(10);
 
   /* USER CODE END 2 */
 
@@ -807,7 +807,10 @@ static void MX_GPIO_Init(void)
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOD, LD4_Pin|LD3_Pin|LD5_Pin|LD6_Pin
-                          |nRF_CSn_Pin|GPIO_PIN_1|Audio_RST_Pin|M0_MAL_Pin, GPIO_PIN_RESET);
+                          |GPIO_PIN_1|Audio_RST_Pin|M0_MAL_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(nRF_CSn_GPIO_Port, nRF_CSn_Pin, GPIO_PIN_SET);
 
   /*Configure GPIO pin : Btn_Pin */
   GPIO_InitStruct.Pin = Btn_Pin;
@@ -822,18 +825,18 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : M0_MBL_Pin OTG_FS_PowerSwitchOn_Pin M2_MAL_Pin nRF_CE_Pin */
-  GPIO_InitStruct.Pin = M0_MBL_Pin|OTG_FS_PowerSwitchOn_Pin|M2_MAL_Pin|nRF_CE_Pin;
+  /*Configure GPIO pins : M0_MBL_Pin OTG_FS_PowerSwitchOn_Pin M2_MAL_Pin */
+  GPIO_InitStruct.Pin = M0_MBL_Pin|OTG_FS_PowerSwitchOn_Pin|M2_MAL_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : nRF_IRQ_Pin PC10 PC11 */
-  GPIO_InitStruct.Pin = nRF_IRQ_Pin|GPIO_PIN_10|GPIO_PIN_11;
-  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  /*Configure GPIO pin : nRF_IRQ_Pin */
+  GPIO_InitStruct.Pin = nRF_IRQ_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+  HAL_GPIO_Init(nRF_IRQ_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pins : M2_MBL_Pin M3_MBL_Pin M3_MAL_Pin */
   GPIO_InitStruct.Pin = M2_MBL_Pin|M3_MBL_Pin|M3_MAL_Pin;
@@ -849,13 +852,33 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_Init(BOOT1_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pins : LD4_Pin LD3_Pin LD5_Pin LD6_Pin
-                           nRF_CSn_Pin PD1 Audio_RST_Pin M0_MAL_Pin */
+                           PD1 Audio_RST_Pin M0_MAL_Pin */
   GPIO_InitStruct.Pin = LD4_Pin|LD3_Pin|LD5_Pin|LD6_Pin
-                          |nRF_CSn_Pin|GPIO_PIN_1|Audio_RST_Pin|M0_MAL_Pin;
+                          |GPIO_PIN_1|Audio_RST_Pin|M0_MAL_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : PC10 PC11 */
+  GPIO_InitStruct.Pin = GPIO_PIN_10|GPIO_PIN_11;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : nRF_CE_Pin */
+  GPIO_InitStruct.Pin = nRF_CE_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+  HAL_GPIO_Init(nRF_CE_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : nRF_CSn_Pin */
+  GPIO_InitStruct.Pin = nRF_CSn_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+  HAL_GPIO_Init(nRF_CSn_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pin : OTG_FS_OverCurrent_Pin */
   GPIO_InitStruct.Pin = OTG_FS_OverCurrent_Pin;
@@ -868,6 +891,10 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Mode = GPIO_MODE_EVT_RISING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(MEMS_INT2_GPIO_Port, &GPIO_InitStruct);
+
+  /* EXTI interrupt init*/
+  HAL_NVIC_SetPriority(EXTI9_5_IRQn, 1, 0);
+  HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
 
 }
 

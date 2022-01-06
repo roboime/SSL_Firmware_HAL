@@ -43,12 +43,22 @@ void packetReceivedCallback(void){
 
 }
 
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
+	radio.extiCallback(GPIO_Pin);
+}
+
 void Start(){
+	uint8_t received[64];
+	radio.setup();
+	radio.setRobotId(6);
+	radio.setDirection(1);
 	//Motor motor[4] = {Motor(0), Motor(1), Motor(2), Motor(3)};
 	/*radio.begin(nRF_CSn_GPIO_Port, nRF_CSn_Pin, nRF_CE_GPIO_Port, nRF_CE_Pin, hspi1);
 	radio.DebugUART_Init(huart3);
 	radio.printRadioSettings();*/
 	while(1){
-		HAL_Delay(100);
+		//radio.sendPayload((uint8_t*)"Hello World", 12);
+		radio.readRxPayload(received);
+		HAL_Delay(20);
 	}
 }
