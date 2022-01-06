@@ -58,6 +58,7 @@ void Start(){
 	radio.printRadioSettings();*/
 	while(1){
 		//radio.sendPayload((uint8_t*)"Hello World", 12);
+		HAL_UART_Transmit_IT(&huart3, (uint8_t*)"Hello World\n\r", 14);
 		radio.readRxPayload(received);
 		HAL_Delay(20);
 	}
