@@ -12,7 +12,6 @@
 #include "Motor.hpp"
 #include "CommunicationUSB.hpp"
 #include "BTS7960B.hpp"
-//#include "RF24.hpp"
 #include "RoboIME_RF24.hpp"
 
 extern TIM_HandleTypeDef htim6;
@@ -27,7 +26,6 @@ uint8_t sendBuffer[64];
 Encoder encoder(0);
 CommunicationUSB usb(&usbRecvCallback);
 //BTS7960B motorbts(&(TIM10->CCR1), &(TIM11->CCR1), GPIOD, GPIO_PIN_0, GPIOD, GPIO_PIN_1);
-//RF24 radio;
 RoboIME_RF24 radio(nRF_CSn_GPIO_Port, nRF_CSn_Pin, nRF_CE_GPIO_Port, nRF_CE_Pin, nRF_IRQ_GPIO_Port, nRF_IRQ_Pin, &hspi1);
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
@@ -51,15 +49,12 @@ void Start(){
 	uint8_t received[64];
 	radio.setup();
 	radio.setRobotId(6);
-	radio.setDirection(1);
+	radio.setDirection(PWRUP_RX);
 	//Motor motor[4] = {Motor(0), Motor(1), Motor(2), Motor(3)};
-	/*radio.begin(nRF_CSn_GPIO_Port, nRF_CSn_Pin, nRF_CE_GPIO_Port, nRF_CE_Pin, hspi1);
-	radio.DebugUART_Init(huart3);
-	radio.printRadioSettings();*/
 	while(1){
 		//radio.sendPayload((uint8_t*)"Hello World", 12);
-		HAL_UART_Transmit_IT(&huart3, (uint8_t*)"Hello World\n\r", 14);
-		radio.readRxPayload(received);
-		HAL_Delay(20);
+		HAL_UART_Transmit_DMA(&huart3, (uint8_t*)"Hello World\n\r", 14);
+		radio.getReceivedPayload(received);
+		HAL_Delay(5);
 	}
 }

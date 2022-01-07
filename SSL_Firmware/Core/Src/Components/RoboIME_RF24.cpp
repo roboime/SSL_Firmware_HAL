@@ -55,31 +55,23 @@ int RoboIME_RF24::setRobotId(uint8_t id){
 	return 0;
 }
 
-int RoboIME_RF24::setDirection(uint8_t direction){
-	if(direction <=1){
-		REG_CONFIG |= 0b00000010;
-		REG_CONFIG |= direction;
-		writeRegister(0x00, &REG_CONFIG, 1);
-		if(direction){
-			ce(GPIO_PIN_SET);
-		}
-		return 0;
-	}else{
-		return 1;
+int RoboIME_RF24::setDirection(RF24_Direction direction){
+	REG_CONFIG &= 0b11111100;
+	REG_CONFIG |= direction;
+	writeRegister(0x00, &REG_CONFIG, 1);
+	if(direction == PWRUP_RX){
+		ce(GPIO_PIN_SET);
 	}
+	return 0;
 }
 
-int RoboIME_RF24::readRxPayload(uint8_t* payload){
-	uint8_t availableBytes;
-	readRegister(0x11, &availableBytes, 1);	//RX_PW_P0
-	if(availableBytes){
-		csn(GPIO_PIN_RESET);
-		spiCommand(0b01100001);	//R_RX_PAYLOAD
-		HAL_SPI_Receive_IT(hspi, payload, availableBytes);
-		while (hspi->State == HAL_SPI_STATE_BUSY_RX);
-		csn(GPIO_PIN_SET);
-	}
-	return availableBytes;
+int RoboIME_RF24::readRxPayload(uint8_t* payload, uint8_t numBytes){
+	csn(GPIO_PIN_RESET);
+	spiCommand(0b01100001);	//R_RX_PAYLOAD
+	HAL_SPI_Receive_IT(hspi, payload, numBytes);
+	while (hspi->State == HAL_SPI_STATE_BUSY_RX);
+	csn(GPIO_PIN_SET);
+	return numBytes;
 }
 
 int RoboIME_RF24::writeTxPayload(uint8_t* payload, uint8_t numBytes){
@@ -105,16 +97,24 @@ int RoboIME_RF24::sendPayload(uint8_t* payload, uint8_t numBytes){
 	spiCommand(0b11100001);	//FLUSH_TX
 	csn(GPIO_PIN_SET);
 	delayMicroseconds(1);
-	csn(GPIO_PIN_RESET);
-	REG_CONFIG |= 0b00000010;
-	writeRegister(0x00, &REG_CONFIG, 1);
-	csn(GPIO_PIN_SET);
-	delayMicroseconds(1);
 	writeTxPayload(payload, numBytes);
 	ce(GPIO_PIN_SET);
 	delayMicroseconds(10);
 	ce(GPIO_PIN_RESET);
 	return numBytes;
+}
+
+uint8_t RoboIME_RF24::getReceivedPayload(uint8_t* payload){
+	uint8_t availableBytes = readRxPayloadWidth();
+	delayMicroseconds(1);
+	if(availableBytes > 32){
+		csn(GPIO_PIN_RESET);
+		spiCommand(0b11100010);	//FLUSH_RX
+		csn(GPIO_PIN_SET);
+	}else if(availableBytes && !(status & 0b00001110)){
+		readRxPayload(payload, availableBytes);
+	}
+	return availableBytes;
 }
 
 //Private methods
@@ -129,6 +129,16 @@ inline void RoboIME_RF24::csn(GPIO_PinState state){
 
 inline void RoboIME_RF24::ce(GPIO_PinState state){
 	HAL_GPIO_WritePin(CE_PORT, CE_PIN, state);
+}
+
+uint8_t RoboIME_RF24::readRxPayloadWidth(void){
+	uint8_t availableBytes;
+	csn(GPIO_PIN_RESET);
+	spiCommand(0b01100000);	//R_RX_PL_WID
+	HAL_SPI_Receive_IT(hspi, &availableBytes, 1);
+	while (hspi->State == HAL_SPI_STATE_BUSY_RX);
+	csn(GPIO_PIN_SET);
+	return availableBytes;
 }
 
 int RoboIME_RF24::spiCommand(uint8_t command){

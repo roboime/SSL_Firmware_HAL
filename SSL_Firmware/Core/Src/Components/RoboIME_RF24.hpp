@@ -10,20 +10,27 @@
 
 #include "main.h"
 
+typedef enum : uint8_t{
+	PWRDN = 1,
+	PWRUP_TX,
+	PWRUP_RX
+}RF24_Direction;
+
 class RoboIME_RF24 {
 public:
 	RoboIME_RF24(GPIO_TypeDef* CSN_GPIO_PORT, uint16_t CSN_GPIO_PIN, GPIO_TypeDef* CE_GPIO_PORT, uint16_t CE_GPIO_PIN, GPIO_TypeDef* IRQ_GPIO_PORT, uint16_t IRQ_GPIO_PIN, SPI_HandleTypeDef* SPI_HANDLE);
 	void extiCallback(uint16_t GPIO_Pin);
 	int setup();
 	int setRobotId(uint8_t id);
-	int setDirection(uint8_t direction);
-	int readRxPayload(uint8_t* buffer);
+	int setDirection(RF24_Direction direction);
+	int readRxPayload(uint8_t* payload, uint8_t numBytes);
 	int writeTxPayload(uint8_t* payload, uint8_t numBytes);
 	int writeAckPayload(uint8_t* payload, uint8_t numBytes);
 	int sendPayload(uint8_t* payload, uint8_t numBytes);
+	uint8_t getReceivedPayload(uint8_t* payload);
 
 	//Setup parameters = default
-	uint8_t REG_CONFIG = 0b00001000;		//Default config
+	uint8_t REG_CONFIG = 0b00001000;		//Default config (power down)
 	uint8_t REG_EN_AA = 0b00000001;			//Only pipe 0 auto-acknowledge
 	uint8_t REG_EN_RXADDR = 0b00000001;		//Only pipe 0 enabled
 	uint8_t REG_SETUP_AW = 0b00000010;		//4-byte address
@@ -57,6 +64,7 @@ private:
 	void delayMicroseconds(uint32_t delay);
 	void csn(GPIO_PinState state);
 	void ce(GPIO_PinState state);
+	uint8_t readRxPayloadWidth(void);
 	int spiCommand(uint8_t command);
 	int writeRegister(uint8_t regAddr, uint8_t* data, uint8_t length);
 	int readRegister(uint8_t regAddr, uint8_t* data, uint8_t length);
