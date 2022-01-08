@@ -28,6 +28,7 @@ public:
 	int writeAckPayload(uint8_t* payload, uint8_t numBytes);
 	int sendPayload(uint8_t* payload, uint8_t numBytes);
 	uint8_t getReceivedPayload(uint8_t* payload);
+	int UploadAckPayload(uint8_t* payload, uint8_t numBytes);
 
 	//Setup parameters = default
 	uint8_t REG_CONFIG = 0b00001000;		//Default config (power down)
@@ -45,6 +46,9 @@ public:
 	uint8_t REG_RX_PW_P0 = 32;				//32 byte pipe 0 width
 	uint8_t REG_DYNPD = 0b00000001;			//Dynamic payload size enabled
 	uint8_t REG_FEATURE = 0b00000111;		//Features
+
+	//Attributes
+	bool ready = false;
 
 private:
 	//Ports and pins

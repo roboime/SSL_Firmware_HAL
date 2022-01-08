@@ -117,6 +117,15 @@ uint8_t RoboIME_RF24::getReceivedPayload(uint8_t* payload){
 	return availableBytes;
 }
 
+int RoboIME_RF24::UploadAckPayload(uint8_t* payload, uint8_t numBytes){
+	csn(GPIO_PIN_RESET);
+	spiCommand(0b11100001);	//FLUSH_TX
+	csn(GPIO_PIN_SET);
+	delayMicroseconds(1);
+	writeAckPayload(payload, numBytes);
+	return numBytes;
+}
+
 //Private methods
 void RoboIME_RF24::delayMicroseconds(uint32_t delay){
 	uint32_t start = DWT->CYCCNT;
@@ -132,7 +141,7 @@ inline void RoboIME_RF24::ce(GPIO_PinState state){
 }
 
 uint8_t RoboIME_RF24::readRxPayloadWidth(void){
-	uint8_t availableBytes;
+	uint8_t availableBytes = 0;
 	csn(GPIO_PIN_RESET);
 	spiCommand(0b01100000);	//R_RX_PL_WID
 	HAL_SPI_Receive_IT(hspi, &availableBytes, 1);
