@@ -16,10 +16,10 @@ class SerialDebug
 public:
 	SerialDebug(UART_HandleTypeDef* huartptr);
 	void setLevel(uint32_t level);
-	void debug(char* data);
-	void info(char* data);
-	void warn(char* data);
-	void error(char* data);
+	void debug(const char* data);
+	void info(const char* data);
+	void warn(const char* data);
+	void error(const char* data);
 
 	enum debugLevel{
 		DEBUG_LEVEL_DEBUG,

@@ -18,45 +18,45 @@ void SerialDebug::setLevel(uint32_t level)
 	debugLevel = level;
 }
 
-void SerialDebug::debug(char* data){
+void SerialDebug::debug(const char* data){
 	if (debugLevel <= DEBUG_LEVEL_DEBUG){
 		int numChars;
+		while (huartptr->gState != HAL_UART_STATE_READY);
 		numChars = sprintf((char*)uartBuf, "[%13lu] DBG: %.42s\r\n", HAL_GetTick(), data);
 		if(numChars > 0){
-			while (huartptr->gState != HAL_UART_STATE_READY);
 			HAL_UART_Transmit_DMA(huartptr, uartBuf, (uint16_t)numChars);
 		}
 	}
 }
 
-void SerialDebug::info(char* data){
+void SerialDebug::info(const char* data){
 	if (debugLevel <= DEBUG_LEVEL_INFO){
 		int numChars;
+		while (huartptr->gState != HAL_UART_STATE_READY);
 		numChars = sprintf((char*)uartBuf, "[%13lu] INF: %.40s\r\n", HAL_GetTick(), data);
 		if(numChars > 0){
-			while (huartptr->gState != HAL_UART_STATE_READY);
 			HAL_UART_Transmit_DMA(huartptr, uartBuf, (uint16_t)numChars);
 		}
 	}
 }
 
-void SerialDebug::warn(char* data){
+void SerialDebug::warn(const char* data){
 	if (debugLevel <= DEBUG_LEVEL_WARN){
 		int numChars;
+		while (huartptr->gState != HAL_UART_STATE_READY);
 		numChars = sprintf((char*)uartBuf, "[%13lu] WRN: %.42s\r\n", HAL_GetTick(), data);
 		if(numChars > 0){
-			while (huartptr->gState != HAL_UART_STATE_READY);
 			HAL_UART_Transmit_DMA(huartptr, uartBuf, (uint16_t)numChars);
 		}
 	}
 }
 
-void SerialDebug::error(char* data){
+void SerialDebug::error(const char* data){
 	if (debugLevel <= DEBUG_LEVEL_ERROR){
 		int numChars;
+		while (huartptr->gState != HAL_UART_STATE_READY);
 		numChars = sprintf((char*)uartBuf, "[%13lu] ERR: %.42s\r\n", HAL_GetTick(), data);
 		if(numChars > 0){
-			while (huartptr->gState != HAL_UART_STATE_READY);
 			HAL_UART_Transmit_DMA(huartptr, uartBuf, (uint16_t)numChars);
 		}
 	}

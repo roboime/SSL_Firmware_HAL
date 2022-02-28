@@ -19,13 +19,10 @@ typedef enum : uint8_t{
 class RoboIME_RF24 {
 public:
 	RoboIME_RF24(GPIO_TypeDef* CSN_GPIO_PORT, uint16_t CSN_GPIO_PIN, GPIO_TypeDef* CE_GPIO_PORT, uint16_t CE_GPIO_PIN, GPIO_TypeDef* IRQ_GPIO_PORT, uint16_t IRQ_GPIO_PIN, SPI_HandleTypeDef* SPI_HANDLE);
-	void extiCallback(uint16_t GPIO_Pin);
+	void extiCallback();
 	int setup();
 	int setRobotId(uint8_t id);
 	int setDirection(RF24_Direction direction);
-	int readRxPayload(uint8_t* payload, uint8_t numBytes);
-	int writeTxPayload(uint8_t* payload, uint8_t numBytes);
-	int writeAckPayload(uint8_t* payload, uint8_t numBytes);
 	int sendPayload(uint8_t* payload, uint8_t numBytes);
 	uint8_t getReceivedPayload(uint8_t* payload);
 	int UploadAckPayload(uint8_t* payload, uint8_t numBytes);
@@ -72,6 +69,9 @@ private:
 	int spiCommand(uint8_t command);
 	int writeRegister(uint8_t regAddr, uint8_t* data, uint8_t length);
 	int readRegister(uint8_t regAddr, uint8_t* data, uint8_t length);
+	int writeAckPayload(uint8_t* payload, uint8_t numBytes);
+	int readRxPayload(uint8_t* payload, uint8_t numBytes);
+	int writeTxPayload(uint8_t* payload, uint8_t numBytes);
 };
 
 #endif /* SRC_COMPONENTS_ROBOIME_RF24_HPP_ */

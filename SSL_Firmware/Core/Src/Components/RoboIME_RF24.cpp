@@ -25,7 +25,7 @@ RoboIME_RF24::RoboIME_RF24(
 }
 
 //Public methods
-void RoboIME_RF24::extiCallback(uint16_t GPIO_Pin){
+void RoboIME_RF24::extiCallback(){
 	uint8_t mask = 0b01111110;
 	writeRegister(0x07, &mask, 1);
 }
@@ -65,33 +65,6 @@ int RoboIME_RF24::setDirection(RF24_Direction direction){
 	return 0;
 }
 
-int RoboIME_RF24::readRxPayload(uint8_t* payload, uint8_t numBytes){
-	csn(GPIO_PIN_RESET);
-	spiCommand(0b01100001);	//R_RX_PAYLOAD
-	HAL_SPI_Receive_IT(hspi, payload, numBytes);
-	while (hspi->State == HAL_SPI_STATE_BUSY_RX);
-	csn(GPIO_PIN_SET);
-	return numBytes;
-}
-
-int RoboIME_RF24::writeTxPayload(uint8_t* payload, uint8_t numBytes){
-	csn(GPIO_PIN_RESET);
-	spiCommand(0b10100000);	//W_TX_PAYLOAD
-	HAL_SPI_Transmit_IT(hspi, payload, numBytes);
-	while (hspi->State == HAL_SPI_STATE_BUSY_TX);
-	csn(GPIO_PIN_SET);
-	return numBytes;
-}
-
-int RoboIME_RF24::writeAckPayload(uint8_t* payload, uint8_t numBytes){
-	csn(GPIO_PIN_RESET);
-	spiCommand(0b10101000);	//W_ACK_PAYLOAD pipe 0
-	HAL_SPI_Transmit_IT(hspi, payload, numBytes);
-	while (hspi->State == HAL_SPI_STATE_BUSY_TX);
-	csn(GPIO_PIN_SET);
-	return numBytes;
-}
-
 int RoboIME_RF24::sendPayload(uint8_t* payload, uint8_t numBytes){
 	csn(GPIO_PIN_RESET);
 	spiCommand(0b11100001);	//FLUSH_TX
@@ -100,7 +73,7 @@ int RoboIME_RF24::sendPayload(uint8_t* payload, uint8_t numBytes){
 	writeTxPayload(payload, numBytes);
 	ce(GPIO_PIN_SET);
 	delayMicroseconds(10);
-	ce(GPIO_PIN_RESET);
+	//ce(GPIO_PIN_RESET); //nRF da SSL só ativa o LNA quando CE=1 (não respeita o datasheet do chip)
 	return numBytes;
 }
 
@@ -129,7 +102,7 @@ int RoboIME_RF24::UploadAckPayload(uint8_t* payload, uint8_t numBytes){
 //Private methods
 void RoboIME_RF24::delayMicroseconds(uint32_t delay){
 	uint32_t start = DWT->CYCCNT;
-	while(DWT->CYCCNT - start < delay*HAL_RCC_GetHCLKFreq()/1000000);
+	while(DWT->CYCCNT - start < delay*(HAL_RCC_GetHCLKFreq()/1000000));
 }
 
 inline void RoboIME_RF24::csn(GPIO_PinState state){
@@ -186,4 +159,31 @@ int RoboIME_RF24::readRegister(uint8_t regAddr, uint8_t* data, uint8_t length){
 	while (hspi->State == HAL_SPI_STATE_BUSY_RX);
 	csn(GPIO_PIN_SET);
 	return 0;
+}
+
+int RoboIME_RF24::writeAckPayload(uint8_t* payload, uint8_t numBytes){
+	csn(GPIO_PIN_RESET);
+	spiCommand(0b10101000);	//W_ACK_PAYLOAD pipe 0
+	HAL_SPI_Transmit_IT(hspi, payload, numBytes);
+	while (hspi->State == HAL_SPI_STATE_BUSY_TX);
+	csn(GPIO_PIN_SET);
+	return numBytes;
+}
+
+int RoboIME_RF24::readRxPayload(uint8_t* payload, uint8_t numBytes){
+	csn(GPIO_PIN_RESET);
+	spiCommand(0b01100001);	//R_RX_PAYLOAD
+	HAL_SPI_Receive_IT(hspi, payload, numBytes);
+	while (hspi->State == HAL_SPI_STATE_BUSY_RX);
+	csn(GPIO_PIN_SET);
+	return numBytes;
+}
+
+int RoboIME_RF24::writeTxPayload(uint8_t* payload, uint8_t numBytes){
+	csn(GPIO_PIN_RESET);
+	spiCommand(0b10100000);	//W_TX_PAYLOAD
+	HAL_SPI_Transmit_IT(hspi, payload, numBytes);
+	while (hspi->State == HAL_SPI_STATE_BUSY_TX);
+	csn(GPIO_PIN_SET);
+	return numBytes;
 }
