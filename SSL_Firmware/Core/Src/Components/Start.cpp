@@ -14,6 +14,7 @@
 #include "CommunicationUSB.hpp"
 #include "BTS7960B.hpp"
 #include "RoboIME_RF24.hpp"
+#include "SerialDebug.hpp"
 
 //Protobuf includes
 #include "grSim_Commands.pb.h"
@@ -36,6 +37,7 @@ Encoder encoder(0);
 CommunicationUSB usb(&usbRecvCallback);
 //BTS7960B motorbts(&(TIM10->CCR1), &(TIM11->CCR1), GPIOD, GPIO_PIN_0, GPIOD, GPIO_PIN_1);
 RoboIME_RF24 radio(nRF_CSn_GPIO_Port, nRF_CSn_Pin, nRF_CE_GPIO_Port, nRF_CE_Pin, nRF_IRQ_GPIO_Port, nRF_IRQ_Pin, &hspi1);
+SerialDebug debug(&huart3);
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
@@ -60,6 +62,8 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 }
 
 void Start(){
+	debug.setLevel(SerialDebug::DEBUG_LEVEL_DEBUG);
+	debug.info("SSL firmware start");
 	uint8_t received[64];
 	radio.setup();
 	radio.setRobotId(6);
