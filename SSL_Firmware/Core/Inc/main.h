@@ -105,6 +105,8 @@ void Error_Handler(void);
 #define M3_MBL_GPIO_Port GPIOB
 #define M3_MAL_Pin GPIO_PIN_12
 #define M3_MAL_GPIO_Port GPIOB
+#define TX_Detect_Pin GPIO_PIN_10
+#define TX_Detect_GPIO_Port GPIOD
 #define LD4_Pin GPIO_PIN_12
 #define LD4_GPIO_Port GPIOD
 #define LD3_Pin GPIO_PIN_13
