@@ -23,7 +23,7 @@ extern "C" {
 };*/
 
 void Start();
-void packetReceivedCallback(void);
+void USBpacketReceivedCallback(void);
 
 #ifdef __cplusplus
 }
