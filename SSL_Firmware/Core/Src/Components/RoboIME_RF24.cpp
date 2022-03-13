@@ -39,8 +39,8 @@ int RoboIME_RF24::setup(){
 	writeRegister(0x05, &REG_RF_CH, 1);
 	writeRegister(0x06, &REG_RF_SETUP, 1);
 	writeRegister(0x07, &REG_STATUS, 1);
-	writeRegister(0x0A, REG_RX_ADDR_P0, 4);
-	writeRegister(0x10, REG_TX_ADDR, 4);
+	/*writeRegister(0x0A, REG_RX_ADDR_P0, 4);
+	writeRegister(0x10, REG_TX_ADDR, 4);*/
 	writeRegister(0x11, &REG_RX_PW_P0, 1);
 	writeRegister(0x1C, &REG_DYNPD, 1);
 	writeRegister(0x1D, &REG_FEATURE, 1);
@@ -96,6 +96,7 @@ int RoboIME_RF24::UploadAckPayload(uint8_t* payload, uint8_t numBytes){
 	csn(GPIO_PIN_SET);
 	delayMicroseconds(1);
 	writeAckPayload(payload, numBytes);
+	delayMicroseconds(1);
 	return numBytes;
 }
 

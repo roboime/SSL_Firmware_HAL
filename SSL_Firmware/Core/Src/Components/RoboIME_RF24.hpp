@@ -26,6 +26,7 @@ public:
 	int sendPayload(uint8_t* payload, uint8_t numBytes);
 	uint8_t getReceivedPayload(uint8_t* payload);
 	int UploadAckPayload(uint8_t* payload, uint8_t numBytes);
+	void ce(GPIO_PinState state);
 
 	//Setup parameters = default
 	uint8_t REG_CONFIG = 0b00001000;		//Default config (power down)
@@ -64,7 +65,6 @@ private:
 	//Methods
 	void delayMicroseconds(uint32_t delay);
 	void csn(GPIO_PinState state);
-	void ce(GPIO_PinState state);
 	uint8_t readRxPayloadWidth(void);
 	int spiCommand(uint8_t command);
 	int writeRegister(uint8_t regAddr, uint8_t* data, uint8_t length);

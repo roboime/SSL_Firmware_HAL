@@ -159,7 +159,7 @@ int main(void)
   TIM8->CCR2 = 65535;
   TIM8->CCR3 = 65535;
   TIM8->CCR4 = 65535;*/
-  HAL_Delay(10);
+  HAL_Delay(100);
 
   /* USER CODE END 2 */
 
@@ -883,7 +883,7 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pin = nRF_CSn_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
   HAL_GPIO_Init(nRF_CSn_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pin : OTG_FS_OverCurrent_Pin */

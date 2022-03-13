@@ -55,6 +55,10 @@ bool transmitter;
 nRF_Send_Packet_t nRF_Send_Packet[16];
 nRF_Receive_Packet_t nRF_Receive_Packet[16];
 
+//Temporary (only for debug)
+uint8_t receivedBuf[64];
+char serialBuf[64];
+
 //Objects
 Encoder encoder(0);
 CommunicationUSB usb(&usbRecvCallback);
@@ -70,6 +74,11 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 		usb.TransmitFeedbackPacket();*/
 		if(!transmitter && radio.ready){
 			radio.UploadAckPayload((uint8_t*)"Com de volta OK", 16);
+			if(uint8_t numBytes = radio.getReceivedPayload(receivedBuf)){
+				sprintf(serialBuf, "Received %d bytes", numBytes);
+				debug.debug(serialBuf);
+				debug.debug((char*)receivedBuf);
+			}
 		}
 		//motorbts.setSpeed((int32_t)receivedPacket.velangular);
 	}
@@ -101,6 +110,10 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 void Start(){
 	debug.setLevel(SerialDebug::DEBUG_LEVEL_DEBUG);
 	debug.info("SSL firmware start");
+	radio.ce(GPIO_PIN_SET);
+	HAL_Delay(500);
+	uint8_t received[64];
+	radio.setup();
 	if(HAL_GPIO_ReadPin(TX_Detect_GPIO_Port, TX_Detect_Pin) == GPIO_PIN_RESET){
 		//TX (placa de COM)
 		transmitter = true;
@@ -112,9 +125,9 @@ void Start(){
 		debug.info("PD10 set as receiver (robot)");
 		radio.setDirection(PWRUP_RX);
 	}
-	uint8_t received[64];
-	radio.setup();
-	radio.setRobotId(6);
+	if(!transmitter){
+		radio.setRobotId(6);
+	}
 	debug.info("ID = 6");
 	radio.ready = true;
 	while(1){
@@ -129,7 +142,7 @@ void Start(){
 			}
 			debug.debug("radio sent");
 		}else{
-
+			HAL_Delay(1000);
 		}
 	}
 }
