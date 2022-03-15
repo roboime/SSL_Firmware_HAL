@@ -25,7 +25,7 @@
 //Constant definitions
 #define NUM_ROBOTS 16
 
-//Type efinitions
+//Type definitions
 struct nRF_Send_Packet_t{
 	float kickspeedx;
 	float kickspeedz;
@@ -34,8 +34,8 @@ struct nRF_Send_Packet_t{
 	float velangular;
 	bool spinner;
 };
-struct nRF_Receive_Packet_t{
-	uint32_t status;
+struct nRF_Feedback_Packet_t{
+	uint32_t status = 0;
 	float battery;
 	float encoder1;
 	float encoder2;
@@ -53,7 +53,7 @@ grSim_Robot_Command receivedPacket = grSim_Robot_Command_init_default;
 Feedback sendPacket = Feedback_init_default;
 bool transmitter;
 nRF_Send_Packet_t nRF_Send_Packet[16];
-nRF_Receive_Packet_t nRF_Receive_Packet[16];
+nRF_Feedback_Packet_t nRF_Feedback_Packet;
 
 //Temporary (only for debug)
 uint8_t receivedBuf[64];
@@ -73,7 +73,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 		/*usb.TransmitEncoderReadingRPM(encoder.ReadEncoder());
 		usb.TransmitFeedbackPacket();*/
 		if(!transmitter && radio.ready){
-			radio.UploadAckPayload((uint8_t*)"Com de volta OK", 16);
+			radio.UploadAckPayload((uint8_t*)&nRF_Feedback_Packet, sizeof(nRF_Feedback_Packet));
 			if(uint8_t numBytes = radio.getReceivedPayload(receivedBuf)){
 				sprintf(serialBuf, "Received %d bytes", numBytes);
 				debug.debug(serialBuf);
@@ -135,6 +135,7 @@ void Start(){
 			//radio.sendPayload((uint8_t*)"Hello World", 12);
 			for(uint8_t i=0; i<NUM_ROBOTS; i++){
 				radio.setRobotId(i);
+				nRF_Send_Packet[i].velangular +=1;
 				radio.sendPayload((uint8_t*)&nRF_Send_Packet[i], sizeof(nRF_Send_Packet[i]));	//Conversão do tipo do ponteiro
 				radio.getReceivedPayload(received);
 				debug.debug((char*)received);
@@ -142,6 +143,7 @@ void Start(){
 			}
 			debug.debug("radio sent");
 		}else{
+			nRF_Feedback_Packet.status +=1;
 			HAL_Delay(1000);
 		}
 	}
