@@ -70,17 +70,15 @@ SerialDebug debug(&huart3);
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
 	if(htim == &htim6){
-		/*usb.TransmitEncoderReadingRPM(encoder.ReadEncoder());
-		usb.TransmitFeedbackPacket();*/
 		if(!transmitter && radio.ready){
+			//nRF_Feedback_Packet.status +=1;
 			radio.UploadAckPayload((uint8_t*)&nRF_Feedback_Packet, sizeof(nRF_Feedback_Packet));
 			if(uint8_t numBytes = radio.getReceivedPayload(receivedBuf)){
 				sprintf(serialBuf, "Received %d bytes", numBytes);
 				debug.debug(serialBuf);
-				debug.debug((char*)receivedBuf);
+				//debug.debug((char*)receivedBuf);*/	//Não adianta, pq se tiver zero no pacote não envia
 			}
 		}
-		//motorbts.setSpeed((int32_t)receivedPacket.velangular);
 	}
 }
 
@@ -103,7 +101,7 @@ void USBpacketReceivedCallback(void){
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 	if(GPIO_Pin == nRF_IRQ_Pin && HAL_GPIO_ReadPin(nRF_IRQ_GPIO_Port, nRF_IRQ_Pin) == GPIO_PIN_RESET){
 		radio.extiCallback();
-		debug.debug("nRF IRQ");
+		//debug.debug("nRF IRQ");
 	}
 }
 
@@ -132,13 +130,21 @@ void Start(){
 	radio.ready = true;
 	while(1){
 		if(transmitter){
-			//radio.sendPayload((uint8_t*)"Hello World", 12);
 			for(uint8_t i=0; i<NUM_ROBOTS; i++){
 				radio.setRobotId(i);
 				nRF_Send_Packet[i].velangular +=1;
 				radio.sendPayload((uint8_t*)&nRF_Send_Packet[i], sizeof(nRF_Send_Packet[i]));	//Conversão do tipo do ponteiro
-				radio.getReceivedPayload(received);
-				debug.debug((char*)received);
+				if(radio.getReceivedPayload((uint8_t*)&nRF_Feedback_Packet)){
+					//debug.debug((char*)received);
+					sendPacket.battery = nRF_Feedback_Packet.battery;
+					sendPacket.encoder1 = nRF_Feedback_Packet.encoder1;
+					sendPacket.encoder2 = nRF_Feedback_Packet.encoder2;
+					sendPacket.encoder3 = nRF_Feedback_Packet.encoder3;
+					sendPacket.encoder4 = nRF_Feedback_Packet.encoder4;
+					sendPacket.status = nRF_Feedback_Packet.status;
+					sendPacket.id = 6;
+					usb.TransmitFeedbackPacket();
+				}
 				HAL_Delay(1);
 			}
 			debug.debug("radio sent");
