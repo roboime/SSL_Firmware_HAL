@@ -10,6 +10,7 @@
 
 #include "Encoder.hpp"
 #include "Motor.hpp"
+#include "Robo.hpp"
 #include "CommunicationUSB.hpp"
 
 
@@ -56,6 +57,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 
 
 void Start(){
+	Robo robo(1);
 	Motor motor[4] = {Motor(0), Motor(1), Motor(2), Motor(3)};
 	while(1){
 		usbStruct.val1 = 100;
