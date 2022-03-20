@@ -91,6 +91,8 @@ void Error_Handler(void);
 #define nRF_IRQ_Pin GPIO_PIN_5
 #define nRF_IRQ_GPIO_Port GPIOC
 #define nRF_IRQ_EXTI_IRQn EXTI9_5_IRQn
+#define CHIP_KICK_Pin GPIO_PIN_0
+#define CHIP_KICK_GPIO_Port GPIOB
 #define M2_MBL_Pin GPIO_PIN_1
 #define M2_MBL_GPIO_Port GPIOB
 #define BOOT1_Pin GPIO_PIN_2
@@ -105,6 +107,8 @@ void Error_Handler(void);
 #define M3_MBL_GPIO_Port GPIOB
 #define M3_MAL_Pin GPIO_PIN_12
 #define M3_MAL_GPIO_Port GPIOB
+#define CHARGE_EN_Pin GPIO_PIN_8
+#define CHARGE_EN_GPIO_Port GPIOD
 #define TX_Detect_Pin GPIO_PIN_10
 #define TX_Detect_GPIO_Port GPIOD
 #define LD4_Pin GPIO_PIN_12

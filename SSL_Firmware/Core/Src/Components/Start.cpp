@@ -33,6 +33,7 @@ struct nRF_Send_Packet_t{
 	float velnormal;
 	float velangular;
 	bool spinner;
+	uint8_t packetId = 0;
 };
 struct nRF_Feedback_Packet_t{
 	uint32_t status = 0;
@@ -41,6 +42,7 @@ struct nRF_Feedback_Packet_t{
 	float encoder2;
 	float encoder3;
 	float encoder4;
+	uint8_t packetId = 0;
 };
 
 //Global variables
@@ -56,7 +58,6 @@ nRF_Send_Packet_t nRF_Send_Packet[16];
 nRF_Feedback_Packet_t nRF_Feedback_Packet;
 
 //Temporary (only for debug)
-uint8_t receivedBuf[64];
 char serialBuf[64];
 
 //Objects
@@ -71,12 +72,11 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
 	if(htim == &htim6){
 		if(!transmitter && radio.ready){
-			//nRF_Feedback_Packet.status +=1;
+			nRF_Feedback_Packet.packetId++;
 			radio.UploadAckPayload((uint8_t*)&nRF_Feedback_Packet, sizeof(nRF_Feedback_Packet));
-			if(uint8_t numBytes = radio.getReceivedPayload(receivedBuf)){
-				sprintf(serialBuf, "Received %d bytes", numBytes);
+			if(uint8_t numBytes = radio.getReceivedPayload((uint8_t*)nRF_Send_Packet)){
+				sprintf(serialBuf, "Veltangent: %lf", nRF_Send_Packet[0].veltangent);
 				debug.debug(serialBuf);
-				//debug.debug((char*)receivedBuf);*/	//Não adianta, pq se tiver zero no pacote não envia
 			}
 		}
 	}
@@ -101,7 +101,6 @@ void USBpacketReceivedCallback(void){
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 	if(GPIO_Pin == nRF_IRQ_Pin && HAL_GPIO_ReadPin(nRF_IRQ_GPIO_Port, nRF_IRQ_Pin) == GPIO_PIN_RESET){
 		radio.extiCallback();
-		//debug.debug("nRF IRQ");
 	}
 }
 
@@ -110,7 +109,6 @@ void Start(){
 	debug.info("SSL firmware start");
 	radio.ce(GPIO_PIN_SET);
 	HAL_Delay(500);
-	uint8_t received[64];
 	radio.setup();
 	if(HAL_GPIO_ReadPin(TX_Detect_GPIO_Port, TX_Detect_Pin) == GPIO_PIN_RESET){
 		//TX (placa de COM)
@@ -132,7 +130,7 @@ void Start(){
 		if(transmitter){
 			for(uint8_t i=0; i<NUM_ROBOTS; i++){
 				radio.setRobotId(i);
-				nRF_Send_Packet[i].velangular +=1;
+				nRF_Send_Packet[i].packetId++;
 				radio.sendPayload((uint8_t*)&nRF_Send_Packet[i], sizeof(nRF_Send_Packet[i]));	//Conversão do tipo do ponteiro
 				if(radio.getReceivedPayload((uint8_t*)&nRF_Feedback_Packet)){
 					//debug.debug((char*)received);

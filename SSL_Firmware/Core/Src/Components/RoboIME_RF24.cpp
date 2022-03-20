@@ -84,7 +84,7 @@ uint8_t RoboIME_RF24::getReceivedPayload(uint8_t* payload){
 		csn(GPIO_PIN_RESET);
 		spiCommand(0b11100010);	//FLUSH_RX
 		csn(GPIO_PIN_SET);
-	}else if(availableBytes && !(status & 0b00001110)){
+	}else if(availableBytes){
 		readRxPayload(payload, availableBytes);
 	}
 	return availableBytes;
@@ -118,8 +118,10 @@ uint8_t RoboIME_RF24::readRxPayloadWidth(void){
 	uint8_t availableBytes = 0;
 	csn(GPIO_PIN_RESET);
 	spiCommand(0b01100000);	//R_RX_PL_WID
-	HAL_SPI_Receive_IT(hspi, &availableBytes, 1);
-	while (hspi->State == HAL_SPI_STATE_BUSY_RX);
+	if(!(status & 0b00001110)){
+		HAL_SPI_Receive_IT(hspi, &availableBytes, 1);
+		while (hspi->State == HAL_SPI_STATE_BUSY_RX);
+	}
 	csn(GPIO_PIN_SET);
 	return availableBytes;
 }
