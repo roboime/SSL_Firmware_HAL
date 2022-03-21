@@ -83,10 +83,6 @@ void Motor::SetSpeed(int32_t spd){
 
 }
 
-void Motor::SetDribble(int32_t spd){
-	//*DAH_Pwm = Pwm_Max - spd; //O drible só tem um pino
-	TIM9->CCR1 = Pwm_Max - spd;
-}
 
 void Motor::GetSpeed(){
 	int16_t distance=M_Enc->ReadEncoder();

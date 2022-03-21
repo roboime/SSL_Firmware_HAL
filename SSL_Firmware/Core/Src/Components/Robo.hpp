@@ -11,6 +11,7 @@
 #include "main.h"
 #include "Motor.hpp"
 #include "Kick.hpp"
+#include "Dribble.hpp"
 
 class Robo {
 public:
@@ -26,6 +27,7 @@ public:
 	float real_wheel_speed[4];	//armazenar as velocidades medidas (m/s) das RODAS
 	Motor* R_Motors[4];
 	Kick* R_Kick;
+	Dribble* R_Dribble;
 
     void get_wheel_speed(); //armazena as velocidades lineares das RODAS em *real_wheel_speed
 

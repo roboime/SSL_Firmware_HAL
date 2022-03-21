@@ -12,7 +12,7 @@ Robo::Robo(uint8_t roboId) {
 		R_Motors[i]= new Motor(i);
 	}
 	R_Kick = new Kick();
-
+	R_Dribble = new Dribble();
 }
 
 

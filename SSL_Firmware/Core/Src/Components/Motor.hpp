@@ -24,7 +24,6 @@ class Motor{
 public:
 	Motor(uint8_t motorId);
 	void SetSpeed(int32_t spd);
-	void SetDribble(int32_t spd);
 	void GetSpeed();
 	void ControlSpeed(float desiredSpd);
 
@@ -37,7 +36,6 @@ private:
 	uint16_t MBL_Pin;
 	__IO uint32_t* MAH_Pwm;
 	__IO uint32_t* MBH_Pwm;
-	__IO uint32_t* DAH_Pwm;
 	uint32_t Pwm_Max;
 	Encoder* M_Enc;
 	int32_t dutycycle;
