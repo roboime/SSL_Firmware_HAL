@@ -10,16 +10,22 @@
 
 #include "main.h"
 #include "Motor.hpp"
+#include "Kick.hpp"
 
 class Robo {
 public:
 	Robo(uint8_t roboId);
+	Kick *high_kick;
+	Kick *low_kick;
+	void high_kick_cmd(float power);
+	void low_kick_cmd(float power);
 
     /********************************    CONTROLE   ********************************/
 	int pos[4];
 	float speed[4];	//velocidades desejadas para cada motor
 	float real_wheel_speed[4];	//armazenar as velocidades medidas (m/s) das RODAS
 	Motor* R_Motors[4];
+	Kick* R_Kick;
 
     void get_wheel_speed(); //armazena as velocidades lineares das RODAS em *real_wheel_speed
 
