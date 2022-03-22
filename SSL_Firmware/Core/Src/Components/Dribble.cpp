@@ -12,7 +12,7 @@ Dribble::Dribble() {
 	MD_Pwm = &(TIM9->CCR1);
 }
 
-void Motor::SetSpeed(int32_t spd){
-	*DAH_Pwm = Pwm_Max - spd; //O drible só tem um pino
+void Dribble::SetSpeed(int32_t spd){
+	*MD_Pwm = Pwm_Max - spd; //O drible só tem um pino
 	//TIM9->CCR1 = Pwm_Max - spd;
 }

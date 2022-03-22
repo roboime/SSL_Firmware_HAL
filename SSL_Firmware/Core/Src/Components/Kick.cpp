@@ -19,7 +19,7 @@ Kick::Kick() {
 	KICK_C_GPIO_Port = LD6_GPIO_Port; //CHARGE
 	KICK_C_Pin = LD6_Pin;
 
-	is_charge = GPIO_PIN_RESET;
+	isCharge = GPIO_PIN_RESET;
 }
 
 void Kick::SetPower(uint32_t power){

@@ -59,10 +59,11 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 void Start(){
 	Robo robo(1);
 	Motor motor[4] = {Motor(0), Motor(1), Motor(2), Motor(3)};
+	Dribble dribble = Dribble();
 	while(1){
 		usbStruct.val1 = 100;
 		usbStruct.val2 = 101;
-		motor[0].SetDribble(recvUSBStruct->dribbleSpd);
+		dribble.SetSpeed(recvUSBStruct->dribbleSpd);
 		for(int i=0;i<4;i++){
 			motor[i].SetSpeed(recvUSBStruct->motorSpd[i]);
 		}
