@@ -8,71 +8,150 @@
 #include "Start.hpp"
 #include "usbd_cdc_if.h"
 
+//Component includes
 #include "Encoder.hpp"
 #include "Motor.hpp"
 #include "Robo.hpp"
 #include "CommunicationUSB.hpp"
+#include "BTS7960B.hpp"
+#include "RoboIME_RF24.hpp"
+#include "SerialDebug.hpp"
 
+//Protobuf includes
+#include "grSim_Commands.pb.h"
+#include "Feedback.pb.h"
+#include "pb_decode.h"
+#include "pb_encode.h"
 
-extern TIM_HandleTypeDef htim6;
-extern void (*usbRecvCallback)(uint8_t*, uint32_t*);
+//Constant definitions
+#define NUM_ROBOTS 16
 
-
-struct recvUSBStruct_t{
-	uint32_t motorSpd_s;
-	int32_t motorSpd[4] = {0, 0, 0, 0};
-	int32_t dribbleSpd = 0;
-	uint32_t led;
-	uint32_t sevSeg;
-	uint32_t kickPow_s;
-	uint32_t kickPow[2];
-}*recvUSBStruct;
-
-/*struct sendUSBStruct_t{
-	uint32_t motorEnc_s = 4;
-	int32_t motorEnc[4] = {0, 0, 0, 0};
-	uint32_t button;
-}sendUSBStruct;*/
-
-sendUSBStruct_t sendUSBStruct = {
-	4,
-	{0, 0, 0, 0},
-	0
+//Type definitions
+struct nRF_Send_Packet_t{
+	float kickspeedx;
+	float kickspeedz;
+	float veltangent;
+	float velnormal;
+	float velangular;
+	bool spinner;
+	uint8_t packetId = 0;
+};
+struct nRF_Feedback_Packet_t{
+	uint32_t status = 0;
+	float battery;
+	float encoder1;
+	float encoder2;
+	float encoder3;
+	float encoder4;
+	uint8_t packetId = 0;
 };
 
-struct usbStruct_t{
-	int32_t val1;
-	int32_t val2;
-}usbStruct;
+//Global variables
+extern TIM_HandleTypeDef htim6;
+extern UART_HandleTypeDef huart3;
+extern SPI_HandleTypeDef hspi1;
+extern SPI_HandleTypeDef hspi2;
+extern void (*usbRecvCallback)(uint8_t*, uint32_t*);
+grSim_Robot_Command receivedPacket = grSim_Robot_Command_init_default;
+Feedback sendPacket = Feedback_init_default;
+bool transmitter;
+nRF_Send_Packet_t nRF_Send_Packet[16];
+nRF_Feedback_Packet_t nRF_Feedback_Packet;
 
+//Temporary (only for debug)
+char serialBuf[64];
+
+//Objects
 Encoder encoder(0);
 CommunicationUSB usb(&usbRecvCallback);
+//BTS7960B motorbts(&(TIM10->CCR1), &(TIM11->CCR1), GPIOD, GPIO_PIN_0, GPIOD, GPIO_PIN_1);
+//Motor motor[4] = {Motor(0), Motor(1), Motor(2), Motor(3)};
+RoboIME_RF24 radio(nRF_CSn_GPIO_Port, nRF_CSn_Pin, nRF_CE_GPIO_Port, nRF_CE_Pin, nRF_IRQ_GPIO_Port, nRF_IRQ_Pin, &hspi1);
+SerialDebug debug(&huart3);
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
 	if(htim == &htim6){
-		encoder.ReadEncoder();
+		if(!transmitter && radio.ready){
+			nRF_Feedback_Packet.packetId++;
+			radio.UploadAckPayload((uint8_t*)&nRF_Feedback_Packet, sizeof(nRF_Feedback_Packet));
+			if(uint8_t numBytes = radio.getReceivedPayload((uint8_t*)nRF_Send_Packet)){
+				sprintf(serialBuf, "Veltangent: %lf", nRF_Send_Packet[0].veltangent);
+				debug.debug(serialBuf);
+			}
+		}
 	}
 }
 
+void USBpacketReceivedCallback(void){
+	if(receivedPacket.id > 16){
+		debug.error("USB protobuf ID > 16");
+	}else{
+		char debugmessage[64];
+		sprintf(debugmessage, "USB protobuf ID = %lu", receivedPacket.id);
+		debug.debug(debugmessage);
+		nRF_Send_Packet[receivedPacket.id].kickspeedx = receivedPacket.kickspeedx;
+		nRF_Send_Packet[receivedPacket.id].kickspeedz = receivedPacket.kickspeedz;
+		nRF_Send_Packet[receivedPacket.id].veltangent = receivedPacket.veltangent;
+		nRF_Send_Packet[receivedPacket.id].velnormal = receivedPacket.velnormal;
+		nRF_Send_Packet[receivedPacket.id].velangular = receivedPacket.velangular;
+		nRF_Send_Packet[receivedPacket.id].spinner = receivedPacket.spinner;
+	}
+}
+
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
+	if(GPIO_Pin == nRF_IRQ_Pin && HAL_GPIO_ReadPin(nRF_IRQ_GPIO_Port, nRF_IRQ_Pin) == GPIO_PIN_RESET){
+		radio.extiCallback();
+	}
+}
 
 void Start(){
 	Robo robo(1);
 	Motor motor[4] = {Motor(0), Motor(1), Motor(2), Motor(3)};
-	Dribble dribble = Dribble();
+	debug.setLevel(SerialDebug::DEBUG_LEVEL_DEBUG);
+	debug.info("SSL firmware start");
+	radio.ce(GPIO_PIN_SET);
+	HAL_Delay(500);
+	radio.setup();
+	if(HAL_GPIO_ReadPin(TX_Detect_GPIO_Port, TX_Detect_Pin) == GPIO_PIN_RESET){
+		//TX (placa de COM)
+		transmitter = true;
+		debug.info("PD10 set as transmitter (computer)");
+		radio.setDirection(PWRUP_TX);
+	}else{
+		//RX (Robô)
+		transmitter = false;
+		debug.info("PD10 set as receiver (robot)");
+		radio.setDirection(PWRUP_RX);
+	}
+	if(!transmitter){
+		radio.setRobotId(6);
+	}
+	debug.info("ID = 6");
+	radio.ready = true;
 	while(1){
-		usbStruct.val1 = 100;
-		usbStruct.val2 = 101;
-		dribble.SetSpeed(recvUSBStruct->dribbleSpd);
-		for(int i=0;i<4;i++){
-			motor[i].SetSpeed(recvUSBStruct->motorSpd[i]);
+		if(transmitter){
+			for(uint8_t i=0; i<NUM_ROBOTS; i++){
+				radio.setRobotId(i);
+				nRF_Send_Packet[i].packetId++;
+				radio.sendPayload((uint8_t*)&nRF_Send_Packet[i], sizeof(nRF_Send_Packet[i]));	//Conversão do tipo do ponteiro
+				if(radio.getReceivedPayload((uint8_t*)&nRF_Feedback_Packet)){
+					//debug.debug((char*)received);
+					sendPacket.battery = nRF_Feedback_Packet.battery;
+					sendPacket.encoder1 = nRF_Feedback_Packet.encoder1;
+					sendPacket.encoder2 = nRF_Feedback_Packet.encoder2;
+					sendPacket.encoder3 = nRF_Feedback_Packet.encoder3;
+					sendPacket.encoder4 = nRF_Feedback_Packet.encoder4;
+					sendPacket.status = nRF_Feedback_Packet.status;
+					sendPacket.id = 6;
+					usb.TransmitFeedbackPacket();
+				}
+				HAL_Delay(1);
+			}
+			debug.debug("radio sent");
+		}else{
+			nRF_Feedback_Packet.status +=1;
+			HAL_Delay(1000);
 		}
-		sendUSBStruct.button = HAL_GPIO_ReadPin(Btn_GPIO_Port, Btn_Pin);
-		//HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PinState(recvUSBStruct->led & 1));
-		//HAL_GPIO_WritePin(LD4_GPIO_Port, LD4_Pin, GPIO_PinState(recvUSBStruct->led & 2));
-		//HAL_GPIO_WritePin(LD5_GPIO_Port, LD5_Pin, GPIO_PinState(recvUSBStruct->led & 4));
-		//HAL_GPIO_WritePin(LD6_GPIO_Port, LD6_Pin, GPIO_PinState(recvUSBStruct->led & 8));
-		HAL_Delay(1);
-		//while(CDC_Transmit_FS((uint8_t*)&sendUSBStruct, 24) == USBD_BUSY);
 	}
 }

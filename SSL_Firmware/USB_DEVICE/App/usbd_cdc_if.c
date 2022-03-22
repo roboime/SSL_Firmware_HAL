@@ -32,7 +32,7 @@
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
-extern struct recvUSBStruct_t *recvUSBStruct;
+//extern struct recvUSBStruct_t *recvUSBStruct;
 void (*usbRecvCallback)(uint8_t*, uint32_t*) = NULL;
 /* USER CODE END PV */
 
@@ -265,7 +265,7 @@ static int8_t CDC_Receive_FS(uint8_t* Buf, uint32_t *Len)
   /* USER CODE BEGIN 6 */
   USBD_CDC_SetRxBuffer(&hUsbDeviceFS, &Buf[0]);
   USBD_CDC_ReceivePacket(&hUsbDeviceFS);
-  recvUSBStruct = (struct recvUSBStruct_t*)(Buf);
+  /*recvUSBStruct = (struct recvUSBStruct_t*)(Buf);*/
   if(usbRecvCallback){
 	  (*usbRecvCallback)(Buf, Len);
   }
