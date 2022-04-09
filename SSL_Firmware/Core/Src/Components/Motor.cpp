@@ -7,9 +7,9 @@
 
 #include "Motor.hpp"
 
-float Motor::cp=10000.0f;           //Valores do código antigo
-float Motor::ci=10.0f;
-float Motor::cd=1000.0f;
+float Motor::cp=(10000.0f/10000)*65536;           //Valores do código antigo
+float Motor::ci=(1000.0f/10000)*65536;
+float Motor::cd=(1000.0f/10000)*65536;
 extern nRF_Feedback_Packet_t nRF_Feedback_Packet;
 
 Motor::Motor (uint8_t motorId){
@@ -85,7 +85,7 @@ void Motor::SetSpeed(int32_t spd){
 
 
 void Motor::GetSpeed(){
-	int32_t distance=M_Enc->ReadEncoder();
+	int32_t distance=-M_Enc->ReadEncoder();
 
 	float speed=(float)distance*CONVERSION; //converte da unidade da roda para m/s (vel do centro da roda)
 	                                     //talvez seja melhor converter de m/s pra unidade da roda
@@ -103,8 +103,8 @@ void Motor::ControlSpeed(float desired_speed){
 	}
 	last_error[0]=error;
 	ierror = ierror + last_error[0];
-	//if(ierror > 1000) ierror = 1000;
-	//if(ierror < -1000) ierror = -1000;
+	if(ierror > 65535) ierror = 65535;
+	if(ierror < -65535) ierror = -65535;
 
 	derror=error-last_error[1];
 
