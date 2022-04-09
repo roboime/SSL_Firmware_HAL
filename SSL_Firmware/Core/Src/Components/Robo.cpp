@@ -12,11 +12,15 @@
 #define cos_theta 0.707
 #define R 0.075 //Raio do robo = 9cm
 
+extern TIM_HandleTypeDef htim7;
+extern TIM_HandleTypeDef htim10;
+extern TIM_HandleTypeDef htim14;
+
 Robo::Robo(uint8_t roboId) {
 	for(int i=0; i<4; ++i){
 		R_Motors[i]= new Motor(i);
 	}
-	R_Kick = new Kick();
+	R_Kick = new Kick(LD5_GPIO_Port, LD4_GPIO_Port, LD6_GPIO_Port, LD5_Pin, LD4_Pin, LD6_Pin, &htim7, &htim10, &htim14);
 	R_Dribble = new Dribble();
 }
 

@@ -3,22 +3,27 @@
  *
  *  Created on: 20 de mar de 2022
  *      Author: Vinicius Moraes
+ *
+ *
+ *     Modified by Léo
+ *
  */
 
 #include "Kick.hpp"
 
 
-Kick::Kick() {
-
-	KICK_L_GPIO_Port = LD4_GPIO_Port;	//Chute BAIXO
-	KICK_L_Pin = LD4_Pin;
-
-	KICK_H_GPIO_Port = LD5_GPIO_Port; //Chute ALTO
-	KICK_H_Pin = LD5_Pin;
-
-	KICK_C_GPIO_Port = LD6_GPIO_Port; //CHARGE
-	KICK_C_Pin = LD6_Pin;
-
+Kick::Kick(GPIO_TypeDef* _KICK_H_GPIO_Port, GPIO_TypeDef* _KICK_L_GPIO_Port, GPIO_TypeDef* _KICK_C_GPIO_Port, uint16_t _KICK_H_Pin,uint16_t _KICK_L_Pin,uint16_t _KICK_C_Pin, TIM_HandleTypeDef* _KICK_HL_TIM, TIM_HandleTypeDef* _KICK_RC_TIM, TIM_HandleTypeDef* _KICK_C_TIM)
+{
+	KICK_H_GPIO_Port = _KICK_H_GPIO_Port;
+	KICK_L_GPIO_Port = _KICK_L_GPIO_Port;
+	KICK_C_GPIO_Port = _KICK_C_GPIO_Port;
+	KICK_HL_TIM = _KICK_HL_TIM;
+	KICK_RC_TIM = _KICK_RC_TIM;
+	KICK_C_TIM = _KICK_C_TIM;
+	KICK_H_Pin = _KICK_H_Pin;
+	KICK_L_Pin = _KICK_L_Pin;
+	KICK_C_Pin = _KICK_C_Pin;
+	kickPower = 0;
 	kickCharged = GPIO_PIN_RESET;
 }
 
@@ -28,23 +33,42 @@ void Kick::SetPower(uint32_t power){
 
 void Kick::KickHigh(uint32_t power){
 	SetPower(power);
-	HAL_GPIO_WritePin(KICK_H_GPIO_Port, KICK_H_Pin, GPIO_PinState(SET));
-	//delay_ticks((uint32_t) (power*611)); //611 = Gustavo's magic number          //Refatorar tempo mínimo
-	HAL_GPIO_WritePin(KICK_H_GPIO_Port, KICK_H_Pin, GPIO_PinState(RESET));
-	kickCharged = GPIO_PIN_RESET;
+
+	__HAL_TIM_SET_COUNTER(KICK_HL_TIM,0);
+
+	__HAL_TIM_SET_COUNTER(KICK_RC_TIM,0);
+
+	if(kickCharged)
+	{
+		HAL_GPIO_WritePin(KICK_H_GPIO_Port, KICK_H_Pin, GPIO_PinState(SET));
+
+		kickCharged = GPIO_PIN_RESET;
+	}
 }
 
 void Kick::KickLow(uint32_t power){
 	SetPower(power);
+
+	__HAL_TIM_SET_COUNTER(KICK_HL_TIM,0);
+
+	__HAL_TIM_SET_COUNTER(KICK_RC_TIM,0);
+
+	if(kickCharged)
+	{
 	HAL_GPIO_WritePin(KICK_L_GPIO_Port, KICK_L_Pin, GPIO_PinState(SET));
-	//delay_ticks((uint32_t) (power*611)); //611 = Gustavo's magic number          //Refatorar tempo mínimo
-	HAL_GPIO_WritePin(KICK_L_GPIO_Port, KICK_L_Pin, GPIO_PinState(RESET));
+
 	kickCharged = GPIO_PIN_RESET;
+	}
 }
 
-void Kick::Charge(){
+void Kick::Charge(uint32_t power){
+	SetPower(power);
+
+	__HAL_TIM_SET_COUNTER(KICK_C_TIM,0);
+
+	__HAL_TIM_SET_COUNTER(KICK_RC_TIM,0);
+
 	HAL_GPIO_WritePin(KICK_C_GPIO_Port, KICK_C_Pin, GPIO_PinState(SET));
-	//delay_ticks((uint32_t) (power*611)); //611 = Gustavo's magic number          //Refatorar tempo de carga 6.11s?
-	HAL_GPIO_WritePin(KICK_C_GPIO_Port, KICK_C_Pin, GPIO_PinState(RESET));
+
 	kickCharged = GPIO_PIN_SET;
 }
