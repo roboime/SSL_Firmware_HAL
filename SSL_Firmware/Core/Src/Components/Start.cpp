@@ -90,6 +90,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 }
 
 void Start(){
+	Robo robo(1);
 	debug.setLevel(SerialDebug::DEBUG_LEVEL_DEBUG);
 	debug.info("SSL firmware start");
 	radio.ce(GPIO_PIN_SET);

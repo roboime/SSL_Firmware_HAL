@@ -16,7 +16,7 @@ public:
 	void SetSpeed(int32_t spd);
 
 private:
-	__IO uint32_t* DAH_Pwm;
+	__IO uint32_t* MD_Pwm;
 	uint32_t Pwm_Max;
 };
 
