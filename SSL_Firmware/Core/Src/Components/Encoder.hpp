@@ -9,12 +9,11 @@
 #define SRC_COMPONENTS_ENCODER_HPP_
 
 #include "main.h"
-//#include "CommunicationUSB.hpp"
 
 class Encoder{
 public:
 	Encoder(uint8_t encoderId);
-	volatile uint16_t ReadEncoder();
+	int32_t ReadEncoder();
 private:
 	TIM_HandleTypeDef* encTimer;
 	volatile int32_t cntDif;
@@ -22,7 +21,6 @@ private:
 	volatile uint32_t* encVal;
 	volatile uint16_t timCntVal;
 	volatile uint16_t timCntPast;
-	//CommunicationUSB communicationUSB;
 };
 
 

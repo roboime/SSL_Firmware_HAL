@@ -16,12 +16,6 @@
 extern "C" {
 #endif
 
-/*struct sendUSBStruct_t{
-	uint32_t motorEnc_s;
-	int32_t motorEnc[4];
-	uint32_t button;
-};*/
-
 void Start();
 void USBpacketReceivedCallback(void);
 

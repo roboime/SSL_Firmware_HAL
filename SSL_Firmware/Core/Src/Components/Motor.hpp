@@ -10,6 +10,8 @@
 
 #include "main.h"
 #include "Encoder.hpp"
+#include "Start.hpp"
+#include "CommunicationNRF.hpp"
 
 //ROBO NOVO:
 #define R_roda 0.019
@@ -27,9 +29,10 @@ public:
 	void GetSpeed();
 	void ControlSpeed(float desiredSpd);
 
-	float real_wheel_speed;
+	float real_wheel_speed = 0;
 
 private:
+	uint8_t motorId_attrib;
 	GPIO_TypeDef* MAL_GPIO_Port;
 	GPIO_TypeDef* MBL_GPIO_Port;
 	uint16_t MAL_Pin;

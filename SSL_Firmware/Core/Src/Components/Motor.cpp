@@ -10,9 +10,10 @@
 float Motor::cp=10000.0f;           //Valores do código antigo
 float Motor::ci=10.0f;
 float Motor::cd=1000.0f;
+extern nRF_Feedback_Packet_t nRF_Feedback_Packet;
 
 Motor::Motor (uint8_t motorId){
-	Pwm_Max = TIM8->ARR;
+	motorId_attrib = motorId;
 	M_Enc =  new Encoder(motorId);
 	switch(motorId){
 		case 0:
@@ -63,24 +64,23 @@ Motor::Motor (uint8_t motorId){
 
 
 void Motor::SetSpeed(int32_t spd){
+	Pwm_Max = TIM8->ARR;
 	if(spd>0){
-		*MAH_Pwm = Pwm_Max - spd; //MAH
+		HAL_GPIO_WritePin(MBL_GPIO_Port, MBL_Pin, GPIO_PinState(SET));
 		*MBH_Pwm = Pwm_Max; //MBH
 		HAL_GPIO_WritePin(MAL_GPIO_Port, MAL_Pin, GPIO_PinState(RESET));
-		HAL_GPIO_WritePin(MBL_GPIO_Port, MBL_Pin, GPIO_PinState(SET));
+		*MAH_Pwm = Pwm_Max - spd; //MAH
 	}else if(spd<0){
-		*MAH_Pwm = Pwm_Max; //MAH
+		HAL_GPIO_WritePin(MBL_GPIO_Port, MBL_Pin, GPIO_PinState(RESET));
 		*MBH_Pwm = Pwm_Max + spd; //MBH
 		HAL_GPIO_WritePin(MAL_GPIO_Port, MAL_Pin, GPIO_PinState(SET));
-		HAL_GPIO_WritePin(MBL_GPIO_Port, MBL_Pin, GPIO_PinState(RESET));
-	}else{
 		*MAH_Pwm = Pwm_Max; //MAH
+	}else{
+		HAL_GPIO_WritePin(MBL_GPIO_Port, MBL_Pin, GPIO_PinState(SET));
 		*MBH_Pwm = Pwm_Max; //MBH
 		HAL_GPIO_WritePin(MAL_GPIO_Port, MAL_Pin, GPIO_PinState(SET));
-		HAL_GPIO_WritePin(MBL_GPIO_Port, MBL_Pin, GPIO_PinState(SET));
+		*MAH_Pwm = Pwm_Max; //MAH
 	}
-
-
 }
 
 
@@ -93,10 +93,11 @@ void Motor::GetSpeed(){
 };
 
 void Motor::ControlSpeed(float desired_speed){
+	//real_wheel_speed=0;
 	GetSpeed();
-	error = desired_speed-real_wheel_speed;
+	/*error = desired_speed-real_wheel_speed;
 	ierror = 0;
-	for(int j = 18; j > 0; j--){
+	for(int j = 18; j >= 0; j--){
 		last_error[j+1]=last_error[j];
 		ierror = ierror + last_error[j+1];
 	}
@@ -107,12 +108,23 @@ void Motor::ControlSpeed(float desired_speed){
 
 	derror=error-last_error[1];
 
-	float out=cp*error + ci * ierror + cd * derror;
-
-
-	dutycycle=out;
-	if(dutycycle>1000) dutycycle=1000;           //Conferir valores pq no código antigo a variável dutycycle era uint16_t
-	if(dutycycle<-1000) dutycycle=-1000;
-
+	float out=cp*error + ci * ierror + cd * derror;*/
+	switch (motorId_attrib){
+	case 0:
+		nRF_Feedback_Packet.encoder1 = real_wheel_speed;
+		break;
+	case 1:
+		nRF_Feedback_Packet.encoder2 = real_wheel_speed;
+		break;
+	case 2:
+		nRF_Feedback_Packet.encoder3 = real_wheel_speed;
+		break;
+	case 3:
+		nRF_Feedback_Packet.encoder4 = real_wheel_speed;
+		break;
+	}
+	dutycycle=desired_speed;
+	if(dutycycle>65535) dutycycle=65535;           //Conferir valores pq no código antigo a variável dutycycle era uint16_t
+	if(dutycycle<-65535) dutycycle=-65535;
 	SetSpeed(dutycycle);
 };

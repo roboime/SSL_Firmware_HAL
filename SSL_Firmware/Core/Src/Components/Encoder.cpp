@@ -6,7 +6,6 @@
  */
 
 # include "Encoder.hpp"
-//# include "CommunicationUSB.hpp"
 
 extern TIM_HandleTypeDef htim2;
 extern TIM_HandleTypeDef htim3;
@@ -44,44 +43,31 @@ Encoder::Encoder (uint8_t encoderId){
 		default:
 			break;
 	}
-	//communicationUSB = CommunicationUSB();
 	timCntVal = 0;
 	timCntPast = 0;
 }
 
-volatile uint16_t Encoder::ReadEncoder(){
-
+int32_t Encoder::ReadEncoder(){
 	direction = __HAL_TIM_IS_TIM_COUNTING_DOWN(encTimer); //Detectar direção de rotação do encoder. 0 contador aumenta, 1 diminui
 
 	timCntPast = timCntVal;
 	timCntVal = *encVal;
-	do
-	{
-		if(direction)
-		{
-			if (timCntVal <= timCntPast)
-			{
-				cntDif = timCntVal - timCntPast;
-			}
-			else
-			{
-				cntDif = timCntVal - timCntPast - 65535;
-			}
+	if(direction){
+		if (timCntVal <= timCntPast) {
+			cntDif = timCntVal - timCntPast;
 		}
-		else
-		{
-			if (timCntVal >= timCntPast)
-			{
-				cntDif = timCntVal - timCntPast;
-			}
-			else
-			{
-				cntDif = timCntVal - timCntPast + 65535;
-			}
+		else {
+			cntDif = timCntVal - timCntPast - 65535;
 		}
-	}while(cntDif>1000 || cntDif<-1000);
-
-	//communicationUSB.TransmitEncoderReadingRPM(cntDif);
+	}
+	else {
+		if (timCntVal >= timCntPast) {
+			cntDif = timCntVal - timCntPast;
+		}
+		else {
+			cntDif = timCntVal - timCntPast + 65535;
+		}
+	}
 	return cntDif;
 }
 

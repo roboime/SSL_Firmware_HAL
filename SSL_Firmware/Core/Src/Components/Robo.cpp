@@ -6,6 +6,11 @@
  */
 
 #include "Robo.hpp"
+#define sin_phi 0.50
+#define cos_phi 0.866
+#define sin_theta 0.707
+#define cos_theta 0.707
+#define R 0.075 //Raio do robo = 9cm
 
 Robo::Robo(uint8_t roboId) {
 	for(int i=0; i<4; ++i){
@@ -15,4 +20,14 @@ Robo::Robo(uint8_t roboId) {
 	R_Dribble = new Dribble();
 }
 
+void Robo::set_robo_speed(float v_r, float v_t, float w){
+	R_Motors[0]->ControlSpeed(v_t*cos_phi - v_r*sin_phi + w*R);
+	R_Motors[1]->ControlSpeed(v_t*cos_theta + v_r*sin_theta + w*R);
+	R_Motors[2]->ControlSpeed(-v_t*cos_phi - v_r*sin_phi + w*R);
+	R_Motors[3]->ControlSpeed(-v_t*cos_theta + v_r*sin_theta + w*R);
 
+	/*R_Motors[0]->SetSpeed(v_t);
+	R_Motors[1]->SetSpeed(v_t);
+	R_Motors[2]->SetSpeed(v_t);
+	R_Motors[3]->SetSpeed(v_t);*/
+}

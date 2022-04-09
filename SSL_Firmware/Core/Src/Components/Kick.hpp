@@ -17,7 +17,7 @@ public:
 	void SetPower(uint32_t power);
 	void KickHigh(uint32_t power);
 	void KickLow(uint32_t power);
-	GPIO_PinState isCharge;
+	GPIO_PinState kickCharged;
 
 private:
 	GPIO_TypeDef* KICK_H_GPIO_Port;

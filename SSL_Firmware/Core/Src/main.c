@@ -871,11 +871,11 @@ static void MX_GPIO_Init(void)
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(nRF_CSn_GPIO_Port, nRF_CSn_Pin, GPIO_PIN_SET);
 
-  /*Configure GPIO pins : Btn_Pin TX_Detect_Pin */
-  GPIO_InitStruct.Pin = Btn_Pin|TX_Detect_Pin;
+  /*Configure GPIO pin : Btn_Pin */
+  GPIO_InitStruct.Pin = Btn_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
+  HAL_GPIO_Init(Btn_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pins : CS_I2C_SPI_Pin M1_MBL_Pin M1_MAL_Pin */
   GPIO_InitStruct.Pin = CS_I2C_SPI_Pin|M1_MBL_Pin|M1_MAL_Pin;
@@ -903,6 +903,12 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : TX_Detect_Pin */
+  GPIO_InitStruct.Pin = TX_Detect_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  HAL_GPIO_Init(TX_Detect_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pins : CHARGE_EN_Pin KICK_Pin LD4_Pin LD3_Pin
                            LD5_Pin LD6_Pin USD_CS_Pin Audio_RST_Pin

@@ -16,6 +16,7 @@
 #include "BTS7960B.hpp"
 #include "RoboIME_RF24.hpp"
 #include "SerialDebug.hpp"
+#include "CommunicationNRF.hpp"
 
 //Protobuf includes
 #include "grSim_Commands.pb.h"
@@ -25,26 +26,6 @@
 
 //Constant definitions
 #define NUM_ROBOTS 16
-
-//Type definitions
-struct nRF_Send_Packet_t{
-	float kickspeedx;
-	float kickspeedz;
-	float veltangent;
-	float velnormal;
-	float velangular;
-	bool spinner;
-	uint8_t packetId = 0;
-};
-struct nRF_Feedback_Packet_t{
-	uint32_t status = 0;
-	float battery;
-	float encoder1;
-	float encoder2;
-	float encoder3;
-	float encoder4;
-	uint8_t packetId = 0;
-};
 
 //Global variables
 extern TIM_HandleTypeDef htim6;
@@ -62,7 +43,7 @@ nRF_Feedback_Packet_t nRF_Feedback_Packet;
 char serialBuf[64];
 
 //Objects
-Encoder encoder(0);
+Robo robo(1);
 CommunicationUSB usb(&usbRecvCallback);
 //BTS7960B motorbts(&(TIM10->CCR1), &(TIM11->CCR1), GPIOD, GPIO_PIN_0, GPIOD, GPIO_PIN_1);
 //Motor motor[4] = {Motor(0), Motor(1), Motor(2), Motor(3)};
@@ -73,11 +54,14 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
 	if(htim == &htim6){
 		if(!transmitter && radio.ready){
+			HAL_GPIO_TogglePin(LD3_GPIO_Port, LD3_Pin);
 			nRF_Feedback_Packet.packetId++;
 			radio.UploadAckPayload((uint8_t*)&nRF_Feedback_Packet, sizeof(nRF_Feedback_Packet));
 			if(uint8_t numBytes = radio.getReceivedPayload((uint8_t*)nRF_Send_Packet)){
-				sprintf(serialBuf, "Veltangent: %lf", nRF_Send_Packet[0].veltangent);
+				sprintf(serialBuf, "Vt %lf", nRF_Send_Packet[0].veltangent);
+				robo.set_robo_speed(nRF_Send_Packet[0].velnormal, nRF_Send_Packet[0].veltangent, nRF_Send_Packet[0].velangular);
 				debug.debug(serialBuf);
+				HAL_GPIO_TogglePin(LD4_GPIO_Port, LD4_Pin);
 			}
 		}
 	}
@@ -88,7 +72,7 @@ void USBpacketReceivedCallback(void){
 		debug.error("USB protobuf ID > 16");
 	}else{
 		char debugmessage[64];
-		sprintf(debugmessage, "USB protobuf ID = %lu", receivedPacket.id);
+		sprintf(debugmessage, "ID %lu", receivedPacket.id);
 		debug.debug(debugmessage);
 		nRF_Send_Packet[receivedPacket.id].kickspeedx = receivedPacket.kickspeedx;
 		nRF_Send_Packet[receivedPacket.id].kickspeedz = receivedPacket.kickspeedz;
@@ -106,8 +90,6 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 }
 
 void Start(){
-	Robo robo(1);
-	Motor motor[4] = {Motor(0), Motor(1), Motor(2), Motor(3)};
 	debug.setLevel(SerialDebug::DEBUG_LEVEL_DEBUG);
 	debug.info("SSL firmware start");
 	radio.ce(GPIO_PIN_SET);
@@ -148,7 +130,7 @@ void Start(){
 				}
 				HAL_Delay(1);
 			}
-			debug.debug("radio sent");
+			debug.debug("sent");
 		}else{
 			nRF_Feedback_Packet.status +=1;
 			HAL_Delay(1000);
