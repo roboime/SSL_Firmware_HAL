@@ -1,0 +1,5 @@
+../Core/Src/Components/Kick.cpp:15:1:Kick::Kick(GPIO_TypeDef*, GPIO_TypeDef*, GPIO_TypeDef*, uint16_t, uint16_t, uint16_t, TIM_HandleTypeDef*, TIM_HandleTypeDef*, TIM_HandleTypeDef*)	24	static
+../Core/Src/Components/Kick.cpp:30:6:void Kick::SetPower(uint32_t)	16	static
+../Core/Src/Components/Kick.cpp:34:6:void Kick::KickHigh(uint32_t)	16	static
+../Core/Src/Components/Kick.cpp:49:6:void Kick::KickLow(uint32_t)	16	static
+../Core/Src/Components/Kick.cpp:64:6:void Kick::Charge(uint32_t)	16	static

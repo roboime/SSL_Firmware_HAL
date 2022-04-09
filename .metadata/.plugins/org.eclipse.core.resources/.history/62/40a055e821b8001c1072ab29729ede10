@@ -1,0 +1,79 @@
+/*
+ * Kick.cpp
+ *
+ *  Created on: 20 de mar de 2022
+ *      Author: Vinicius Moraes
+ *
+ *
+ *     Modified by Léo
+ *     (Onde tiver Leo -- )
+ */
+
+#include "Kick.hpp"
+
+
+Kick::Kick(GPIO_TypeDef* _KICK_H_GPIO_Port, GPIO_TypeDef* _KICK_L_GPIO_Port, GPIO_TypeDef* _KICK_C_GPIO_Port, uint16_t _KICK_H_Pin,uint16_t _KICK_L_Pin,uint16_t _KICK_C_Pin, TIM_HandleTypeDef *_main_tim, TIM_HandleTypeDef *_secd_tim)
+{
+	KICK_H_GPIO_Port = _KICK_H_GPIO_Port;
+	KICK_L_GPIO_Port = _KICK_L_GPIO_Port;
+	KICK_C_GPIO_Port;
+	main_tim;
+	secd_tim2;
+	KICK_H_Pin;
+	KICK_L_Pin;
+	KICK_C_Pin;
+	kickPower;
+	kickCharged = GPIO_PIN_RESET;
+}
+
+void Kick::SetPower(uint32_t power){
+	kickPower = power;
+}
+
+void Kick::KickHigh(){
+	SetPower(power);
+
+	__HAL_TIM_SET_COUNTER(main_tim,0);
+
+	__HAL_TIM_SET_COUNTER(secd_tim,0);
+
+	HAL_GPIO_WritePin(KICK_H_GPIO_Port, KICK_H_Pin, GPIO_PinState(SET));
+
+	//delay_ticks((uint32_t) (power*611)); //611 = Gustavo's magic number          //Refatorar tempo mínimo
+
+	//HAL_GPIO_WritePin(KICK_H_GPIO_Port, KICK_H_Pin, GPIO_PinState(RESET)); // Leo--
+
+	kickCharged = GPIO_PIN_RESET;
+}
+
+void Kick::KickLow(uint32_t power, TIM_HandleTypeDef *_tim1, TIM_HandleTypeDef *_tim2){
+	SetPower(power);
+
+	__HAL_TIM_SET_COUNTER(_tim2,0);
+
+	__HAL_TIM_SET_COUNTER(_tim1,0);
+
+	HAL_GPIO_WritePin(KICK_L_GPIO_Port, KICK_L_Pin, GPIO_PinState(SET));
+
+	//delay_ticks((uint32_t) (power*611)); //611 = Gustavo's magic number          //Refatorar tempo mínimo
+
+	//HAL_GPIO_WritePin(KICK_L_GPIO_Port, KICK_L_Pin, GPIO_PinState(RESET)); // Leo--
+
+	kickCharged = GPIO_PIN_RESET;
+}
+
+void Kick::Charge(uint32_t power, TIM_HandleTypeDef *_tim1, TIM_HandleTypeDef *_tim2){
+	SetPower(power);
+
+	__HAL_TIM_SET_COUNTER(_tim2,0);
+
+	__HAL_TIM_SET_COUNTER(_tim1,0);
+
+	HAL_GPIO_WritePin(KICK_C_GPIO_Port, KICK_C_Pin, GPIO_PinState(SET));
+
+	//delay_ticks((uint32_t) (power*611)); //611 = Gustavo's magic number          //Refatorar tempo de carga 6.11s?
+
+	HAL_GPIO_WritePin(KICK_C_GPIO_Port, KICK_C_Pin, GPIO_PinState(RESET));
+
+	kickCharged = GPIO_PIN_SET;
+}

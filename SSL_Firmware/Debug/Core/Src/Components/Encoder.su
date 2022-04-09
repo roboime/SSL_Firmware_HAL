@@ -1,0 +1,2 @@
+../Core/Src/Components/Encoder.cpp:16:1:Encoder::Encoder(uint8_t)	16	static
+../Core/Src/Components/Encoder.cpp:50:9:int32_t Encoder::ReadEncoder()	16	static

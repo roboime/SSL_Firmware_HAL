@@ -1,0 +1,4 @@
+../Core/Src/Components/Motor.cpp:15:1:Motor::Motor(uint8_t)	24	static
+../Core/Src/Components/Motor.cpp:66:6:void Motor::SetSpeed(int32_t)	16	static
+../Core/Src/Components/Motor.cpp:87:6:void Motor::GetSpeed()	24	static
+../Core/Src/Components/Motor.cpp:95:6:void Motor::ControlSpeed(float)	16	static

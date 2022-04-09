@@ -1,0 +1,2 @@
+../Core/Src/Components/Robo.cpp:19:1:Robo::Robo(uint8_t)	56	static
+../Core/Src/Components/Robo.cpp:27:6:void Robo::set_robo_speed(float, float, float)	40	static

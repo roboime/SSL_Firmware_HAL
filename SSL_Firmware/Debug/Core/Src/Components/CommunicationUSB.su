@@ -1,0 +1,4 @@
+../Core/Src/Components/CommunicationUSB.cpp:24:1:CommunicationUSB::CommunicationUSB(void (**)(uint8_t*, uint32_t*))	16	static
+../Core/Src/Components/CommunicationUSB.cpp:29:6:static void CommunicationUSB::ReceiveCallback(uint8_t*, uint32_t*)	32	static
+../Core/Src/Components/CommunicationUSB.cpp:36:6:void CommunicationUSB::TransmitFeedbackPacket()	40	static
+../Core/Src/Components/CommunicationUSB.cpp:42:6:void CommunicationUSB::TransmitEncoderReadingRPM(int32_t)	24	static

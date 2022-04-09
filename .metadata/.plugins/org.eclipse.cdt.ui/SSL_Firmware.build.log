@@ -1,0 +1,18 @@
+15:19:13 **** Incremental Build of configuration Debug for project SSL_Firmware ****
+make -j8 all 
+arm-none-eabi-g++ "../Core/Src/Components/Dribble.cpp" -mcpu=cortex-m4 -std=gnu++14 -g3 -DUSE_HAL_DRIVER -DDEBUG -DSTM32F407xx -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -I../USB_DEVICE/App -I../USB_DEVICE/Target -I../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -I../Lib -O0 -ffunction-sections -fdata-sections -fno-exceptions -fno-rtti -fno-use-cxa-atexit -Wall -fstack-usage -MMD -MP -MF"Core/Src/Components/Dribble.d" -MT"Core/Src/Components/Dribble.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/Components/Dribble.o"
+../Core/Src/Components/Dribble.cpp: In constructor 'Dribble::Dribble()':
+../Core/Src/Components/Dribble.cpp:12:2: error: 'DAH_Pwm' was not declared in this scope; did you mean 'DAH_Pin'?
+   12 |  DAH_Pwm = &(TIM9->CCR1);
+      |  ^~~~~~~
+      |  DAH_Pin
+../Core/Src/Components/Dribble.cpp: In member function 'void Dribble::SetSpeed(int32_t)':
+../Core/Src/Components/Dribble.cpp:16:3: error: 'DAH_Pwm' was not declared in this scope; did you mean 'DAH_Pin'?
+   16 |  *DAH_Pwm = Pwm_Max - spd; //O drible só tem um pino
+      |   ^~~~~~~
+      |   DAH_Pin
+make: *** [Core/Src/Components/subdir.mk:53: Core/Src/Components/Dribble.o] Error 1
+"make -j8 all" terminated with exit code 2. Build might be incomplete.
+
+15:19:13 Build Failed. 3 errors, 0 warnings. (took 430ms)
+
