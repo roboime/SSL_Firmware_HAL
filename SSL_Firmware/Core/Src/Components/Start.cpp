@@ -57,12 +57,12 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 			HAL_GPIO_TogglePin(LD3_GPIO_Port, LD3_Pin);
 			nRF_Feedback_Packet.packetId++;
 			radio.UploadAckPayload((uint8_t*)&nRF_Feedback_Packet, sizeof(nRF_Feedback_Packet));
-			if(uint8_t numBytes = radio.getReceivedPayload((uint8_t*)nRF_Send_Packet)){
-				sprintf(serialBuf, "Vt %lf", nRF_Send_Packet[0].veltangent);
-				robo.set_robo_speed(nRF_Send_Packet[0].velnormal, nRF_Send_Packet[0].veltangent, nRF_Send_Packet[0].velangular);
-				debug.debug(serialBuf);
+			if(radio.getReceivedPayload((uint8_t*)nRF_Send_Packet)){
+				/*sprintf(serialBuf, "Vt %lf", nRF_Send_Packet[0].veltangent);
+				debug.debug(serialBuf);*/
 				HAL_GPIO_TogglePin(LD4_GPIO_Port, LD4_Pin);
 			}
+			robo.set_robo_speed(nRF_Send_Packet[0].velnormal, nRF_Send_Packet[0].veltangent, nRF_Send_Packet[0].velangular);
 		}
 	}
 }
@@ -119,6 +119,7 @@ void Start(){
 				nRF_Send_Packet[i].packetId++;
 				radio.sendPayload((uint8_t*)&nRF_Send_Packet[i], sizeof(nRF_Send_Packet[i]));	//Conversão do tipo do ponteiro
 				if(radio.getReceivedPayload((uint8_t*)&nRF_Feedback_Packet)){
+					HAL_GPIO_TogglePin(LD4_GPIO_Port, LD4_Pin);
 					//debug.debug((char*)received);
 					sendPacket.battery = nRF_Feedback_Packet.battery;
 					sendPacket.encoder1 = nRF_Feedback_Packet.encoder1;

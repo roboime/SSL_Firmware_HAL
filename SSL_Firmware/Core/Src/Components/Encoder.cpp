@@ -48,8 +48,7 @@ Encoder::Encoder (uint8_t encoderId){
 }
 
 int32_t Encoder::ReadEncoder(){
-	direction = __HAL_TIM_IS_TIM_COUNTING_DOWN(encTimer); //Detectar direção de rotação do encoder. 0 contador aumenta, 1 diminui
-
+	/*direction = __HAL_TIM_IS_TIM_COUNTING_DOWN(encTimer); //Detectar direção de rotação do encoder. 0 contador aumenta, 1 diminui
 	timCntPast = timCntVal;
 	timCntVal = *encVal;
 	if(direction){
@@ -67,7 +66,10 @@ int32_t Encoder::ReadEncoder(){
 		else {
 			cntDif = timCntVal - timCntPast + 65535;
 		}
-	}
+	}*/
+	timCntVal = *encVal;
+	*encVal = 20000;
+	cntDif = timCntVal - 20000;
 	return cntDif;
 }
 

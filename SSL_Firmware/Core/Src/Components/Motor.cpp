@@ -85,17 +85,17 @@ void Motor::SetSpeed(int32_t spd){
 
 
 void Motor::GetSpeed(){
-	int16_t distance=M_Enc->ReadEncoder();
+	int32_t distance=M_Enc->ReadEncoder();
 
 	float speed=(float)distance*CONVERSION; //converte da unidade da roda para m/s (vel do centro da roda)
 	                                     //talvez seja melhor converter de m/s pra unidade da roda
-	real_wheel_speed=speed;
+	real_wheel_speed=(float)speed;
 };
 
 void Motor::ControlSpeed(float desired_speed){
 	//real_wheel_speed=0;
 	GetSpeed();
-	/*error = desired_speed-real_wheel_speed;
+	error = desired_speed-real_wheel_speed;
 	ierror = 0;
 	for(int j = 18; j >= 0; j--){
 		last_error[j+1]=last_error[j];
@@ -108,7 +108,7 @@ void Motor::ControlSpeed(float desired_speed){
 
 	derror=error-last_error[1];
 
-	float out=cp*error + ci * ierror + cd * derror;*/
+	float out=cp*error + ci * ierror + cd * derror;
 	switch (motorId_attrib){
 	case 0:
 		nRF_Feedback_Packet.encoder1 = real_wheel_speed;
@@ -123,7 +123,7 @@ void Motor::ControlSpeed(float desired_speed){
 		nRF_Feedback_Packet.encoder4 = real_wheel_speed;
 		break;
 	}
-	dutycycle=desired_speed;
+	dutycycle=out;
 	if(dutycycle>65535) dutycycle=65535;           //Conferir valores pq no código antigo a variável dutycycle era uint16_t
 	if(dutycycle<-65535) dutycycle=-65535;
 	SetSpeed(dutycycle);

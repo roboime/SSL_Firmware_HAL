@@ -19,8 +19,8 @@ private:
 	volatile int32_t cntDif;
 	volatile uint32_t direction;
 	volatile uint32_t* encVal;
-	volatile uint16_t timCntVal;
-	volatile uint16_t timCntPast;
+	volatile uint32_t timCntVal;
+	volatile uint32_t timCntPast;
 };
 
 

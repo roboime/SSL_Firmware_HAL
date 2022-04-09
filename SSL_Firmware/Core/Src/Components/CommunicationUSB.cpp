@@ -27,7 +27,6 @@ CommunicationUSB::CommunicationUSB(void (**_usbRecvCallback)(uint8_t*, uint32_t*
 }
 
 void CommunicationUSB::ReceiveCallback(uint8_t* Buf, uint32_t* Len){
-	HAL_GPIO_TogglePin(LD4_GPIO_Port, LD4_Pin);
 	pb_istream_t stream = pb_istream_from_buffer(Buf, *Len);
 	pb_decode(&stream, grSim_Robot_Command_fields, &receivedPacket);
 	USBpacketReceivedCallback();
