@@ -8,7 +8,7 @@
 #include "Motor.hpp"
 
 float Motor::cp=(10000.0f/10000)*65536;           //Valores do código antigo
-float Motor::ci=(1000.0f/10000)*65536;
+float Motor::ci=(10.0f/10000)*65536;
 float Motor::cd=(1000.0f/10000)*65536;
 extern nRF_Feedback_Packet_t nRF_Feedback_Packet;
 

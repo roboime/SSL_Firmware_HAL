@@ -67,26 +67,24 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 			}
 			robo.set_robo_speed(nRF_Send_Packet[0].velnormal, nRF_Send_Packet[0].veltangent, nRF_Send_Packet[0].velangular);
 		}
-		else if(htim == robo.R_Kick->KICK_C_TIM)
-		{
-			HAL_GPIO_WritePin(robo.R_Kick->KICK_C_GPIO_Port, robo.R_Kick->KICK_C_Pin, GPIO_PIN_RESET);
-			robo.R_Kick->kickCharged = GPIO_PIN_SET;
-		}
-
-		else if(htim == robo.R_Kick->KICK_HL_TIM)
-		{
-			HAL_GPIO_WritePin(robo.R_Kick->KICK_H_GPIO_Port, robo.R_Kick->KICK_H_Pin, GPIO_PIN_RESET);
-			HAL_GPIO_WritePin(robo.R_Kick->KICK_L_GPIO_Port, robo.R_Kick->KICK_L_Pin,GPIO_PIN_RESET);
-			if(!robo.R_Kick->kickCharged)
-			{
-				robo.R_Kick->Charge(0);
-			}
-		}
-
-		else if(htim == robo.R_Kick->KICK_RC_TIM)
+	}
+	else if(htim == robo.R_Kick->KICK_C_TIM)
+	{
+		HAL_GPIO_WritePin(robo.R_Kick->KICK_C_GPIO_Port, robo.R_Kick->KICK_C_Pin, GPIO_PIN_RESET);
+		robo.R_Kick->kickCharged = GPIO_PIN_SET;
+	}
+	else if(htim == robo.R_Kick->KICK_HL_TIM)
+	{
+		HAL_GPIO_WritePin(robo.R_Kick->KICK_H_GPIO_Port, robo.R_Kick->KICK_H_Pin, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(robo.R_Kick->KICK_L_GPIO_Port, robo.R_Kick->KICK_L_Pin,GPIO_PIN_RESET);
+		if(!robo.R_Kick->kickCharged)
 		{
 			robo.R_Kick->Charge(0);
 		}
+	}
+	else if(htim == robo.R_Kick->KICK_RC_TIM)
+	{
+		robo.R_Kick->Charge(0);
 	}
 }
 
