@@ -112,10 +112,27 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 
 void Start(){
 	Robo robo(1);
+	uint8_t id = 6;
 	debug.setLevel(SerialDebug::DEBUG_LEVEL_DEBUG);
 	debug.info("SSL firmware start");
 	radio.ce(GPIO_PIN_SET);
-	HAL_Delay(500);
+	for(uint32_t i=0; i<2000; i++){
+		HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, (GPIO_PinState)(id & 1));
+		HAL_GPIO_WritePin(LD4_GPIO_Port, LD4_Pin, (GPIO_PinState)((id>>1) & 1));
+		HAL_GPIO_WritePin(LD5_GPIO_Port, LD5_Pin, (GPIO_PinState)((id>>2) & 1));
+		HAL_GPIO_WritePin(LD6_GPIO_Port, LD6_Pin, (GPIO_PinState)((id>>3) & 1));
+		if(!HAL_GPIO_ReadPin(Btn_GPIO_Port, Btn_Pin)){
+			id = (id+1) % 16;
+			i=0;
+			HAL_Delay(2);
+			while(!HAL_GPIO_ReadPin(Btn_GPIO_Port, Btn_Pin));
+		}
+		HAL_Delay(1);
+	}
+	HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(LD4_GPIO_Port, LD4_Pin, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(LD5_GPIO_Port, LD5_Pin, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(LD6_GPIO_Port, LD6_Pin, GPIO_PIN_RESET);
 	radio.setup();
 	if(HAL_GPIO_ReadPin(TX_Detect_GPIO_Port, TX_Detect_Pin) == GPIO_PIN_RESET){
 		//TX (placa de COM)
@@ -129,7 +146,7 @@ void Start(){
 		radio.setDirection(PWRUP_RX);
 	}
 	if(!transmitter){
-		radio.setRobotId(6);
+		radio.setRobotId(id);
 	}
 	debug.info("ID = 6");
 	radio.ready = true;
