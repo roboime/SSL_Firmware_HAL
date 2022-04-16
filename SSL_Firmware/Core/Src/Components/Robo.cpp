@@ -25,13 +25,8 @@ Robo::Robo(uint8_t roboId) {
 }
 
 void Robo::set_robo_speed(float v_r, float v_t, float w){
-	R_Motors[0]->ControlSpeed(v_t*cos_phi - v_r*sin_phi + w*R);
-	R_Motors[1]->ControlSpeed(v_t*cos_theta + v_r*sin_theta + w*R);
-	R_Motors[2]->ControlSpeed(-v_t*cos_phi - v_r*sin_phi + w*R);
-	R_Motors[3]->ControlSpeed(-v_t*cos_theta + v_r*sin_theta + w*R);
-
-	/*R_Motors[0]->SetSpeed(v_t);
-	R_Motors[1]->SetSpeed(v_t);
-	R_Motors[2]->SetSpeed(v_t);
-	R_Motors[3]->SetSpeed(v_t);*/
+	R_Motors[0]->ControlSpeed(-v_t*cos_phi - v_r*sin_phi - w*R);
+	R_Motors[1]->ControlSpeed(-v_t*cos_theta + v_r*sin_theta - w*R);
+	R_Motors[2]->ControlSpeed(v_t*cos_phi - v_r*sin_phi - w*R);
+	R_Motors[3]->ControlSpeed(v_t*cos_theta + v_r*sin_theta - w*R);
 }
