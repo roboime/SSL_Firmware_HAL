@@ -156,7 +156,16 @@ void Start(){
 			debug.debug("sent");
 		}else{
 			nRF_Feedback_Packet.status +=1;
-			HAL_Delay(1000);
+			//debug.debug((char*)received);
+			sendPacket.battery = nRF_Feedback_Packet.battery;
+			sendPacket.encoder1 = nRF_Feedback_Packet.encoder1;
+			sendPacket.encoder2 = nRF_Feedback_Packet.encoder2;
+			sendPacket.encoder3 = nRF_Feedback_Packet.encoder3;
+			sendPacket.encoder4 = nRF_Feedback_Packet.encoder4;
+			sendPacket.status = nRF_Feedback_Packet.status;
+			sendPacket.id = 0;
+			usb.TransmitFeedbackPacket();
+			HAL_Delay(10);
 		}
 	}
 }
