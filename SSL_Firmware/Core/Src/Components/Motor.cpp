@@ -8,7 +8,7 @@
 #include "Motor.hpp"
 
 float Motor::cp=(10000.0f/10000)*65536;           //Valores do código antigo
-float Motor::ci=(10.0f/10000)*65536;
+float Motor::ci=(1000.0f/10000)*65536;
 float Motor::cd=(1000.0f/10000)*65536;
 extern nRF_Feedback_Packet_t nRF_Feedback_Packet;
 
@@ -99,16 +99,16 @@ void Motor::ControlSpeed(float desired_speed){
 	ierror = 0;
 	for(int j = 18; j >= 0; j--){
 		last_error[j+1]=last_error[j];
-		ierror = ierror + last_error[j+1];
+		ierror += last_error[j+1];
 	}
 	last_error[0]=error;
-	ierror = ierror + last_error[0];
+	ierror += last_error[0];
 	if(ierror > 65535) ierror = 65535;
 	if(ierror < -65535) ierror = -65535;
 
 	derror=error-last_error[1];
 
-	float out=cp*error + ci * ierror + cd * derror;
+	float out=cp*error + ci * ierror + cd * derror + (desired_speed/5.5)*65535; //Soma de duty cycle (linear)
 	switch (motorId_attrib){
 	case 0:
 		nRF_Feedback_Packet.encoder1 = real_wheel_speed;
@@ -124,7 +124,7 @@ void Motor::ControlSpeed(float desired_speed){
 		break;
 	}
 	dutycycle=out;
-	if(dutycycle>65535) dutycycle=65535;           //Conferir valores pq no código antigo a variável dutycycle era uint16_t
+	if(dutycycle>65535) dutycycle=65535;
 	if(dutycycle<-65535) dutycycle=-65535;
 	SetSpeed(dutycycle);
 };
