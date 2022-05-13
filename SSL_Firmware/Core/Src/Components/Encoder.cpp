@@ -45,6 +45,7 @@ Encoder::Encoder (uint8_t encoderId){
 	}
 	timCntVal = 0;
 	timCntPast = 0;
+	*encVal = 20000;
 }
 
 int32_t Encoder::ReadEncoder(){

@@ -9,6 +9,7 @@
 #define SRC_COMPONENTS_ROBOIME_RF24_HPP_
 
 #include "main.h"
+#include "Defines.hpp"
 
 typedef enum : uint8_t{
 	PWRDN = 1,
@@ -34,7 +35,11 @@ public:
 	uint8_t REG_EN_RXADDR = 0b00000001;		//Only pipe 0 enabled
 	uint8_t REG_SETUP_AW = 0b00000010;		//4-byte address
 	uint8_t REG_SETUP_RETR = 0b00010001;	//500us, 1 retransmit
-	uint8_t REG_RF_CH = 80;					//2400 + 8 = 2408MHz		//Canal 8 em geral e para testes da ELO, canal 12
+#ifdef INTEL
+	uint8_t REG_RF_CH = 8;					//2400 + 8 = 2408MHz		//Canal 8 em geral e para testes da ELO, canal 80
+#else
+	uint8_t REG_RF_CH = 80;					//2400 + 8 = 2408MHz		//Canal 8 em geral e para testes da ELO, canal 80
+#endif
 	uint8_t REG_RF_SETUP = 0b00001110;		//2mbps, 0dBm
 	uint8_t REG_STATUS = 0b01111110;		//Clears all interrupts
 	uint8_t REG_RX_ADDR_P0[4] =

@@ -12,6 +12,7 @@
 #include "Encoder.hpp"
 #include "Start.hpp"
 #include "CommunicationNRF.hpp"
+#include "Defines.hpp"
 
 //ROBO NOVO:
 #define R_roda 0.019
@@ -42,11 +43,11 @@ private:
 	uint32_t Pwm_Max;
 	Encoder* M_Enc;
 	int32_t dutycycle;
-	float lasterror;
-	float error;
-	float derror;
-	float last_error[2000];
-	float ierror;
+	float lasterror = 0;
+	float error = 0;
+	float derror = 0;
+	float last_error[2000] = {0};
+	float ierror = 0;
 	static float cp;
 	static float cd;
 	static float ci;

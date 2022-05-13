@@ -17,6 +17,7 @@
 #include "RoboIME_RF24.hpp"
 #include "SerialDebug.hpp"
 #include "CommunicationNRF.hpp"
+#include "Defines.hpp"
 
 //Protobuf includes
 #include "grSim_Commands.pb.h"
@@ -41,6 +42,8 @@ Feedback sendPacket = Feedback_init_default;
 bool transmitter;
 nRF_Send_Packet_t nRF_Send_Packet[16];
 nRF_Feedback_Packet_t nRF_Feedback_Packet;
+uint8_t commCounter = 0;
+uint32_t usbCounter = 0;
 
 //Temporary (only for debug)
 char serialBuf[64];
@@ -64,8 +67,19 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 				/*sprintf(serialBuf, "Vt %lf", nRF_Send_Packet[0].veltangent);
 				debug.debug(serialBuf);*/
 				HAL_GPIO_TogglePin(LD4_GPIO_Port, LD4_Pin);
+				HAL_GPIO_WritePin(LD6_GPIO_Port, LD6_Pin, GPIO_PIN_SET);
+				commCounter = 0;
+			}else{
+				commCounter++;
 			}
-			robo.set_robo_speed(nRF_Send_Packet[0].velnormal, nRF_Send_Packet[0].veltangent, nRF_Send_Packet[0].velangular);
+			if(commCounter < 100){	//Verifica se recebeu pacote no último 1s
+				robo.set_robo_speed(nRF_Send_Packet[0].velnormal, nRF_Send_Packet[0].veltangent, nRF_Send_Packet[0].velangular);
+			}else{
+				//Perdeu a comunicação
+				robo.set_robo_speed(0, 0, 0);
+				HAL_GPIO_WritePin(LD6_GPIO_Port, LD6_Pin, GPIO_PIN_RESET);
+				commCounter = 100;
+			}
 		}
 	}
 	else if(htim == robo.R_Kick->KICK_C_TIM)
@@ -92,9 +106,10 @@ void USBpacketReceivedCallback(void){
 	if(receivedPacket.id > 16){
 		debug.error("USB protobuf ID > 16");
 	}else{
-		char debugmessage[64];
+		/*char debugmessage[64];
 		sprintf(debugmessage, "ID %lu", receivedPacket.id);
-		debug.debug(debugmessage);
+		debug.debug(debugmessage);*/
+		usbCounter = 0;
 		nRF_Send_Packet[receivedPacket.id].kickspeedx = receivedPacket.kickspeedx;
 		nRF_Send_Packet[receivedPacket.id].kickspeedz = receivedPacket.kickspeedz;
 		nRF_Send_Packet[receivedPacket.id].veltangent = receivedPacket.veltangent;
@@ -116,6 +131,12 @@ void Start(){
 	debug.setLevel(SerialDebug::DEBUG_LEVEL_DEBUG);
 	debug.info("SSL firmware start");
 	radio.ce(GPIO_PIN_SET);
+	nRF_Send_Packet[0].velangular = 0;
+	nRF_Send_Packet[0].veltangent = 0;
+	nRF_Send_Packet[0].velnormal = 0;
+	nRF_Send_Packet[0].kickspeedx = 0;
+	nRF_Send_Packet[0].kickspeedz = 0;
+	nRF_Send_Packet[0].spinner = false;
 	for(uint32_t i=0; i<2000; i++){
 		HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, (GPIO_PinState)(id & 1));
 		HAL_GPIO_WritePin(LD4_GPIO_Port, LD4_Pin, (GPIO_PinState)((id>>1) & 1));
@@ -155,6 +176,24 @@ void Start(){
 			for(uint8_t i=0; i<NUM_ROBOTS; i++){
 				radio.setRobotId(i);
 				nRF_Send_Packet[i].packetId++;
+				usbCounter++;
+#ifdef INTEL
+				if(usbCounter > 500){	//Verifica se recebeu pacote do USb nos últimos Xs
+					//Perdeu o USB
+					for (uint8_t i=0; i<16; i++){
+						nRF_Send_Packet[i].velangular = 0;
+						nRF_Send_Packet[i].veltangent = 0;
+						nRF_Send_Packet[i].velnormal = 0;
+						nRF_Send_Packet[i].kickspeedx = 0;
+						nRF_Send_Packet[i].kickspeedz = 0;
+						nRF_Send_Packet[i].spinner = false;
+					}
+					HAL_GPIO_WritePin(LD5_GPIO_Port, LD5_Pin, GPIO_PIN_SET);
+					usbCounter = 500;
+				}else{
+					HAL_GPIO_WritePin(LD5_GPIO_Port, LD5_Pin, GPIO_PIN_RESET);
+				}
+#endif
 				radio.sendPayload((uint8_t*)&nRF_Send_Packet[i], sizeof(nRF_Send_Packet[i]));	//Conversão do tipo do ponteiro
 				if(radio.getReceivedPayload((uint8_t*)&nRF_Feedback_Packet)){
 					HAL_GPIO_TogglePin(LD4_GPIO_Port, LD4_Pin);

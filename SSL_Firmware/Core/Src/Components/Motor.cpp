@@ -123,7 +123,11 @@ void Motor::ControlSpeed(float desired_speed){
 		nRF_Feedback_Packet.encoder4 = real_wheel_speed;
 		break;
 	}
+#ifdef SEMCONTROLE
+	dutycycle=(desired_speed/5.5)*65535;	//73,3333 de angular coloca duty 100%
+#else
 	dutycycle=out;
+#endif
 	if(dutycycle>65535) dutycycle=65535;
 	if(dutycycle<-65535) dutycycle=-65535;
 	SetSpeed(dutycycle);
