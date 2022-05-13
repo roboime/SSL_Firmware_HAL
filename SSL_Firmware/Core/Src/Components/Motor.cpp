@@ -108,7 +108,7 @@ void Motor::ControlSpeed(float desired_speed){
 
 	derror=error-last_error[1];
 
-	float out=cp*error + ci * ierror + cd * derror + (desired_speed/5.5)*65535; //Soma de duty cycle (linear)
+	float out=cp*error + ci * ierror + cd * derror + (desired_speed/2.75)*65535; //Soma de duty cycle (linear)
 	switch (motorId_attrib){
 	case 0:
 		nRF_Feedback_Packet.encoder1 = real_wheel_speed;
@@ -124,7 +124,7 @@ void Motor::ControlSpeed(float desired_speed){
 		break;
 	}
 #ifdef SEMCONTROLE
-	dutycycle=(desired_speed/5.5)*65535;	//73,3333 de angular coloca duty 100%
+	dutycycle=(desired_speed/2.75)*65535;	//73,3333 de angular coloca duty 100%
 #else
 	dutycycle=out;
 #endif
