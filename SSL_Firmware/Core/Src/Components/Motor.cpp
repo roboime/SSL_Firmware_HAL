@@ -8,8 +8,8 @@
 #include "Motor.hpp"
 
 float Motor::cp=(10000.0f/10000)*65536;           //Valores do código antigo
-float Motor::ci=(1000.0f/10000)*65536;
-float Motor::cd=(1000.0f/10000)*65536;
+float Motor::ci=(1500.0f/10000)*65536;
+float Motor::cd=(10000.0f/10000)*65536;
 extern nRF_Feedback_Packet_t nRF_Feedback_Packet;
 
 Motor::Motor (uint8_t motorId){
@@ -97,7 +97,7 @@ void Motor::ControlSpeed(float desired_speed){
 	GetSpeed();
 	error = desired_speed-real_wheel_speed;
 	ierror = 0;
-	for(int j = 18; j >= 0; j--){
+	for(int j = 20; j >= 0; j--){
 		last_error[j+1]=last_error[j];
 		ierror += last_error[j+1];
 	}
