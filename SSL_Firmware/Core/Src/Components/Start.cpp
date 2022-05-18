@@ -125,9 +125,27 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 	}
 }
 
+void Flash_Write(uint8_t data, uint32_t adress, uint32_t sector_num){
+	//Unlock the flash
+	HAL_FLASH_Unlock();
+	//Erase sector
+	FLASH_Erase_Sector(sector_num, FLASH_VOLTAGE_RANGE_3);
+	//Lock the flash
+	HAL_FLASH_Lock();
+	//Unlock the flash
+	HAL_FLASH_Unlock();
+	//Write to Flash
+	HAL_FLASH_Program(FLASH_TYPEPROGRAM_BYTE, adress , data);
+	//Lock the Flash space
+	HAL_FLASH_Lock();
+
+}
+
 void Start(){
 	Robo robo(1);
-	uint8_t id = 6;
+	uint8_t id = *(uint8_t *)0x080E0000;
+		if(id>15)
+			id = 0;
 	debug.setLevel(SerialDebug::DEBUG_LEVEL_DEBUG);
 	debug.info("SSL firmware start");
 	radio.ce(GPIO_PIN_SET);
@@ -150,6 +168,7 @@ void Start(){
 		}
 		HAL_Delay(1);
 	}
+	Flash_Write(id, 0x080E0000, 11);
 	HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET);
 	HAL_GPIO_WritePin(LD4_GPIO_Port, LD4_Pin, GPIO_PIN_RESET);
 	HAL_GPIO_WritePin(LD5_GPIO_Port, LD5_Pin, GPIO_PIN_RESET);
