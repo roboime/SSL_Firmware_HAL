@@ -44,6 +44,8 @@ public:
     void set_motor_speed();
 
 	void control_pos();
+
+	void set_kick(float kickspeedx, float kickspeedz);
 	/*******************************************************************************/
 
 

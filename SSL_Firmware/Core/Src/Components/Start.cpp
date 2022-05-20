@@ -74,9 +74,11 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 			}
 			if(commCounter < 100){	//Verifica se recebeu pacote no último 1s
 				robo.set_robo_speed(nRF_Send_Packet[0].velnormal, nRF_Send_Packet[0].veltangent, nRF_Send_Packet[0].velangular);
+				robo.set_kick(nRF_Send_Packet[0].kickspeedx,nRF_Send_Packet[0].kickspeedz);
 			}else{
 				//Perdeu a comunicação
 				robo.set_robo_speed(0, 0, 0);
+				robo.set_kick(0, 0);
 				HAL_GPIO_WritePin(LD6_GPIO_Port, LD6_Pin, GPIO_PIN_RESET);
 				commCounter = 100;
 			}
@@ -85,20 +87,24 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 	else if(htim == robo.R_Kick->KICK_C_TIM)
 	{
 		HAL_GPIO_WritePin(robo.R_Kick->KICK_C_GPIO_Port, robo.R_Kick->KICK_C_Pin, GPIO_PIN_RESET);
+
 		robo.R_Kick->kickCharged = GPIO_PIN_SET;
+
+		__HAL_TIM_SET_COUNTER(robo.R_Kick->KICK_RC_TIM,0);
 	}
 	else if(htim == robo.R_Kick->KICK_HL_TIM)
 	{
 		HAL_GPIO_WritePin(robo.R_Kick->KICK_H_GPIO_Port, robo.R_Kick->KICK_H_Pin, GPIO_PIN_RESET);
+
 		HAL_GPIO_WritePin(robo.R_Kick->KICK_L_GPIO_Port, robo.R_Kick->KICK_L_Pin,GPIO_PIN_RESET);
-		if(!robo.R_Kick->kickCharged)
-		{
-			robo.R_Kick->Charge(0);
-		}
+
+		robo.R_Kick->Charge();
 	}
 	else if(htim == robo.R_Kick->KICK_RC_TIM)
 	{
-		robo.R_Kick->Charge(0);
+		robo.R_Kick->kickCharged = GPIO_PIN_RESET;
+
+		robo.R_Kick->Charge();
 	}
 }
 

@@ -12,8 +12,7 @@
 #include "Kick.hpp"
 
 
-Kick::Kick(GPIO_TypeDef* _KICK_H_GPIO_Port, GPIO_TypeDef* _KICK_L_GPIO_Port, GPIO_TypeDef* _KICK_C_GPIO_Port, uint16_t _KICK_H_Pin,uint16_t _KICK_L_Pin,uint16_t _KICK_C_Pin, TIM_HandleTypeDef* _KICK_HL_TIM, TIM_HandleTypeDef* _KICK_RC_TIM, TIM_HandleTypeDef* _KICK_C_TIM)
-{
+Kick::Kick(GPIO_TypeDef* _KICK_H_GPIO_Port, GPIO_TypeDef* _KICK_L_GPIO_Port, GPIO_TypeDef* _KICK_C_GPIO_Port, uint16_t _KICK_H_Pin,uint16_t _KICK_L_Pin,uint16_t _KICK_C_Pin, TIM_HandleTypeDef* _KICK_HL_TIM, TIM_HandleTypeDef* _KICK_RC_TIM, TIM_HandleTypeDef* _KICK_C_TIM, uint32_t _chargeTime){
 	KICK_H_GPIO_Port = _KICK_H_GPIO_Port;
 	KICK_L_GPIO_Port = _KICK_L_GPIO_Port;
 	KICK_C_GPIO_Port = _KICK_C_GPIO_Port;
@@ -23,52 +22,69 @@ Kick::Kick(GPIO_TypeDef* _KICK_H_GPIO_Port, GPIO_TypeDef* _KICK_L_GPIO_Port, GPI
 	KICK_H_Pin = _KICK_H_Pin;
 	KICK_L_Pin = _KICK_L_Pin;
 	KICK_C_Pin = _KICK_C_Pin;
-	kickPower = 0;
 	kickCharged = GPIO_PIN_RESET;
+	chargeTime = _chargeTime;
 }
 
-void Kick::SetPower(uint32_t power){
-	kickPower = power;
+void Kick::SetKick(float kickspeedx, float kickspeedz){
+	uint32_t kickPower = 0;
+	uint32_t kickHigh = 0;
+	uint32_t kickLow = 0;
+
+	//fazer conversões aqui: speed é o que recebe da intel e kick power é o tempo em ms que manda para a placa
+
+	if(kickHigh == 1){
+
+		KickHigh(kickPower);
+
+	} else if(kickLow==1) {
+
+		KickLow(kickPower);
+
+	}
 }
 
-void Kick::KickHigh(uint32_t power){
-	SetPower(power);
-
-	__HAL_TIM_SET_COUNTER(KICK_HL_TIM,0);
-
-	__HAL_TIM_SET_COUNTER(KICK_RC_TIM,0);
-
+void Kick::KickHigh(uint32_t kickPower){
 	if(kickCharged)
 	{
+		HAL_TIM_Base_Start(KICK_HL_TIM);
+
+		KICK_HL_TIM->Instance->ARR=kickPower;
+
+		HAL_TIM_OnePulse_Start_IT(KICK_HL_TIM, TIM_CHANNEL_ALL);
+
+		__HAL_TIM_SET_COUNTER(KICK_RC_TIM,0);
+
 		HAL_GPIO_WritePin(KICK_H_GPIO_Port, KICK_H_Pin, GPIO_PinState(SET));
 
 		kickCharged = GPIO_PIN_RESET;
 	}
 }
 
-void Kick::KickLow(uint32_t power){
-	SetPower(power);
-
-	__HAL_TIM_SET_COUNTER(KICK_HL_TIM,0);
-
-	__HAL_TIM_SET_COUNTER(KICK_RC_TIM,0);
-
+void Kick::KickLow(uint32_t kickPower){
 	if(kickCharged)
 	{
-	HAL_GPIO_WritePin(KICK_L_GPIO_Port, KICK_L_Pin, GPIO_PinState(SET));
+		HAL_TIM_Base_Start(KICK_HL_TIM);
 
-	kickCharged = GPIO_PIN_RESET;
+		KICK_HL_TIM->Instance->ARR=kickPower;
+
+		HAL_TIM_OnePulse_Start_IT(KICK_HL_TIM, TIM_CHANNEL_ALL);
+
+		__HAL_TIM_SET_COUNTER(KICK_RC_TIM,0);
+
+		HAL_GPIO_WritePin(KICK_L_GPIO_Port, KICK_L_Pin, GPIO_PinState(SET));
+
+		kickCharged = GPIO_PIN_RESET;
 	}
 }
 
-void Kick::Charge(uint32_t power){
-	SetPower(power);
+void Kick::Charge(){
+	HAL_TIM_Base_Start(KICK_HL_TIM);
 
-	__HAL_TIM_SET_COUNTER(KICK_C_TIM,0);
+	KICK_HL_TIM->Instance->ARR=chargeTime;
 
-	__HAL_TIM_SET_COUNTER(KICK_RC_TIM,0);
+	HAL_TIM_OnePulse_Start_IT(KICK_HL_TIM, TIM_CHANNEL_ALL);
+
 
 	HAL_GPIO_WritePin(KICK_C_GPIO_Port, KICK_C_Pin, GPIO_PinState(SET));
-
-	kickCharged = GPIO_PIN_SET;
 }
