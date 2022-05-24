@@ -45,10 +45,10 @@ public:
 
 	void control_pos();
 
+	/********************************     CHUTE     ********************************/
 	void set_kick(float kickspeedx, float kickspeedz);
+	bool hasBall(void);
 	/*******************************************************************************/
-
-
 private:
 
 	uint8_t roboId;

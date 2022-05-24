@@ -62,6 +62,11 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 		if(!transmitter && radio.ready){
 			HAL_GPIO_TogglePin(LD3_GPIO_Port, LD3_Pin);
 			nRF_Feedback_Packet.packetId++;
+			if(robo.hasBall()){
+				nRF_Feedback_Packet.status |= 1<<0;		//Set bit 0
+			}else{
+				nRF_Feedback_Packet.status &= ~(1<<0);	//Reset bit 0
+			}
 			radio.UploadAckPayload((uint8_t*)&nRF_Feedback_Packet, sizeof(nRF_Feedback_Packet));
 			if(radio.getReceivedPayload((uint8_t*)nRF_Send_Packet)){
 				/*sprintf(serialBuf, "Vt %lf", nRF_Send_Packet[0].veltangent);
@@ -168,6 +173,7 @@ void Start(){
 	nRF_Send_Packet[0].kickspeedx = 0;
 	nRF_Send_Packet[0].kickspeedz = 0;
 	nRF_Send_Packet[0].spinner = false;
+	nRF_Feedback_Packet.status = 0;
 	for(uint32_t i=0; i<2000; i++){
 		HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, (GPIO_PinState)(id & 1));
 		HAL_GPIO_WritePin(LD4_GPIO_Port, LD4_Pin, (GPIO_PinState)((id>>1) & 1));
@@ -243,7 +249,7 @@ void Start(){
 			}
 			debug.debug("sent");
 		}else{
-			nRF_Feedback_Packet.status +=1;
+			//nRF_Feedback_Packet.status +=1;
 			//debug.debug((char*)received);
 			sendPacket.battery = nRF_Feedback_Packet.battery;
 			sendPacket.encoder1 = nRF_Feedback_Packet.encoder1;
