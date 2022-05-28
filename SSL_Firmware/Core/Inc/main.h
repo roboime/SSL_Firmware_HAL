@@ -80,8 +80,8 @@ void Error_Handler(void);
 #define PH0_OSC_IN_GPIO_Port GPIOH
 #define PH1_OSC_OUT_Pin GPIO_PIN_1
 #define PH1_OSC_OUT_GPIO_Port GPIOH
-#define OTG_FS_PowerSwitchOn_Pin GPIO_PIN_0
-#define OTG_FS_PowerSwitchOn_GPIO_Port GPIOC
+#define BAT_REF_Pin GPIO_PIN_0
+#define BAT_REF_GPIO_Port GPIOC
 #define M0_CUR_Pin GPIO_PIN_1
 #define M0_CUR_GPIO_Port GPIOC
 #define M2_MAL_Pin GPIO_PIN_2

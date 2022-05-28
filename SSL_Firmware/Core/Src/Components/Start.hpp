@@ -7,7 +7,6 @@
 
 #ifndef SRC_COMPONENTS_START_HPP_
 #define SRC_COMPONENTS_START_HPP_
-
 #include "main.h"
 #include "grSim_Commands.pb.h"
 #include "Feedback.pb.h"
