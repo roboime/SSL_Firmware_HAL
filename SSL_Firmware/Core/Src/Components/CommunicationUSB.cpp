@@ -32,10 +32,10 @@ void CommunicationUSB::ReceiveCallback(uint8_t* Buf, uint32_t* Len){
 	USBpacketReceivedCallback();
 }
 
-void CommunicationUSB::TransmitFeedbackPacket(void){
-	pb_ostream_t stream = pb_ostream_from_buffer(sendBuffer, 64);
+void CommunicationUSB::TransmitFeedbackPacket(uint32_t id){
+	pb_ostream_t stream = pb_ostream_from_buffer(sendBuffer[id], 64);
 	pb_encode(&stream, Feedback_fields, &sendPacket);
-	CDC_Transmit_FS(sendBuffer, stream.bytes_written);
+	CDC_Transmit_FS(sendBuffer[id], stream.bytes_written);
 }
 
 void CommunicationUSB::TransmitEncoderReadingRPM(int32_t reading){

@@ -8,6 +8,10 @@
 #ifndef SRC_COMPONENTS_DEFINES_HPP_
 #define SRC_COMPONENTS_DEFINES_HPP_
 
+
+
+
+
 //#define INTEL
 //#define SEMCONTROLE
 
