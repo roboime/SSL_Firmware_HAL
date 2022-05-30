@@ -138,7 +138,7 @@ float Calc_VBAT(){
 	HAL_ADC_Stop(&hadc1);
 	HAL_Delay(100);
 	//Variável de retorno com o fator de conversão
-	VBAT = 171*BATREF/2560;
+	VBAT = 188.1*BATREF/2560;
 	return VBAT;
 }
 
