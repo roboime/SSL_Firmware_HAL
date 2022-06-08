@@ -36,6 +36,8 @@ extern TIM_HandleTypeDef htim14;
 extern UART_HandleTypeDef huart3;
 extern SPI_HandleTypeDef hspi1;
 extern SPI_HandleTypeDef hspi2;
+extern ADC_HandleTypeDef hadc1;
+
 extern void (*usbRecvCallback)(uint8_t*, uint32_t*);
 extern USBD_HandleTypeDef hUsbDeviceFS;
 grSim_Robot_Command receivedPacket = grSim_Robot_Command_init_default;
@@ -148,6 +150,21 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 	if(GPIO_Pin == nRF_IRQ_Pin && HAL_GPIO_ReadPin(nRF_IRQ_GPIO_Port, nRF_IRQ_Pin) == GPIO_PIN_RESET){
 		radio.extiCallback();
 	}
+}
+
+float Calc_VBAT(){
+	uint32_t BATREF;
+	float VBAT;
+	HAL_ADC_Start(&hadc1);
+	if(HAL_ADC_PollForConversion(&hadc1, 5) == HAL_OK){
+		//Leitura analógica na porta PC0
+		BATREF = HAL_ADC_GetValue(&hadc1);
+	}
+	HAL_ADC_Stop(&hadc1);
+	HAL_Delay(100);
+	//Variável de retorno com o fator de conversão
+	VBAT = 188.1*BATREF/2560;
+	return VBAT;
 }
 
 void Flash_Write(uint8_t data, uint32_t adress, uint32_t sector_num){
