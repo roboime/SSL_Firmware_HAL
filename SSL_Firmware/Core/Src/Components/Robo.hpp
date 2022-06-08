@@ -45,6 +45,8 @@ public:
 
 	void control_pos();
 
+	float calc_vbat();
+
 	/********************************     CHUTE     ********************************/
 	void set_kick(float kickspeedx, float kickspeedz);
 	bool hasBall(void);

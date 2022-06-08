@@ -16,6 +16,7 @@
 extern TIM_HandleTypeDef htim7;
 extern TIM_HandleTypeDef htim10;
 extern TIM_HandleTypeDef htim14;
+extern ADC_HandleTypeDef hadc1;
 
 Robo::Robo(uint8_t roboId) {
 	for(int i=0; i<4; ++i){
@@ -38,4 +39,19 @@ void Robo::set_kick(float kickspeedx, float kickspeedz){
 
 bool Robo::hasBall(void){
 	return (bool)HAL_GPIO_ReadPin(S1_GPIO_Port, S1_Pin);
+}
+
+float Robo::calc_vbat(){
+	uint32_t BATREF;
+	float VBAT;
+	HAL_ADC_Start(&hadc1);
+	if(HAL_ADC_PollForConversion(&hadc1, 5) == HAL_OK){
+		//Leitura analógica na porta PC0
+		BATREF = HAL_ADC_GetValue(&hadc1);
+	}
+	HAL_ADC_Stop(&hadc1);
+	HAL_Delay(100);
+	//Variável de retorno com o fator de conversão
+	VBAT = 188.1*BATREF/2560;
+	return VBAT;
 }
