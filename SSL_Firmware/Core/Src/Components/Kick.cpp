@@ -10,6 +10,8 @@
  */
 
 #include "Kick.hpp"
+#include "Defines.hpp"
+#include <math.h>
 
 
 Kick::Kick(GPIO_TypeDef* _KICK_H_GPIO_Port, GPIO_TypeDef* _KICK_L_GPIO_Port, GPIO_TypeDef* _KICK_C_GPIO_Port, uint16_t _KICK_H_Pin,uint16_t _KICK_L_Pin,uint16_t _KICK_C_Pin, TIM_HandleTypeDef* _KICK_HL_TIM, TIM_HandleTypeDef* _KICK_RC_TIM, TIM_HandleTypeDef* _KICK_C_TIM, uint32_t _rechargeTime){
@@ -28,24 +30,26 @@ Kick::Kick(GPIO_TypeDef* _KICK_H_GPIO_Port, GPIO_TypeDef* _KICK_L_GPIO_Port, GPI
 }
 
 void Kick::SetKick(float kickspeedx, float kickspeedz){			//Argumento em decimetros por segundo
-	float kickPower = 0;
-
 	if(kickspeedz > 0){
 #ifdef KICKTIME
 		KickHigh(kickspeedz);				//kickspeed = tempo de chute em seg
 #else
 		//conversao speed->time
-		KickHigh(1);						//argumento em segundos
+		KickHigh(1);						//argumento em milisegundos
 #endif
 
-	}else if(kickspeedx > 0){
+	}else if(kickspeedx > 0.1 && kickspeedx < 33.75){
 #ifdef KICKTIME
-		KickLow(kickspeedx);				//kickspeed = tempo de chute em seg
+		KickLow(kickspeedx);				//kickspeed = tempo de chute em mseg
 #else
 		//conversao speed->time
-		KickLow(1);							//argumento em segundos
+		//kickpower = 6-log2(34-kickspeed))
+		//kickpower em ms e kickspeed em dm/s
+		KickLow(6-(log(34-kickspeedx)/log(2)));							//argumento em milisegundos
+	}else if(kickspeedx >= 33.75){
+		//força máxima
+		KickLow(10);
 #endif
-
 	}
 }
 
@@ -57,7 +61,7 @@ void Kick::KickHigh(float kickPower){
 
 		kickEnable = GPIO_PIN_SET;
 
-		KICK_HL_TIM->Instance->ARR=10000*kickPower;
+		KICK_HL_TIM->Instance->ARR=10*kickPower;
 
 		__HAL_TIM_SET_COUNTER(KICK_HL_TIM,0);
 
@@ -69,7 +73,7 @@ void Kick::KickLow(float kickPower){
 	if(kickCharged && !kickEnable && HAL_GPIO_ReadPin(S1_GPIO_Port, S1_Pin)){
 		HAL_GPIO_WritePin(KICK_C_GPIO_Port, KICK_C_Pin, GPIO_PinState(RESET));
 
-		KICK_HL_TIM->Instance->ARR=10000*kickPower;
+		KICK_HL_TIM->Instance->ARR=10*kickPower;
 
 		__HAL_TIM_SET_COUNTER(KICK_HL_TIM,0);
 

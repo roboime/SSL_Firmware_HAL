@@ -65,7 +65,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 		if(!transmitter && radio.ready){
 			HAL_GPIO_TogglePin(LD3_GPIO_Port, LD3_Pin);
 			nRF_Feedback_Packet.packetId++;
-			//nRF_Feedback_Packet.battery = robo.calc_vbat();
+			nRF_Feedback_Packet.battery = robo.calc_vbat();
 			if(robo.hasBall()){
 				nRF_Feedback_Packet.status |= 1<<0;		//Set bit 0
 			}else{
@@ -248,12 +248,12 @@ void Start(){
 #endif
 				radio.sendPayload((uint8_t*)&nRF_Send_Packet[i], sizeof(nRF_Send_Packet[i]));	//Conversão do tipo do ponteiro
 				HAL_Delay(1);
-				if(sendPacket.battery = radio.getReceivedPayload((uint8_t*)&nRF_FeedbackReceive_Packet[i])){
+				if(radio.getReceivedPayload((uint8_t*)&nRF_FeedbackReceive_Packet[i])){
 					HAL_GPIO_TogglePin(LD4_GPIO_Port, LD4_Pin);
 					//debug.debug((char*)received);
 					USBD_CDC_HandleTypeDef *hcdc = (USBD_CDC_HandleTypeDef*)hUsbDeviceFS.pClassData;
 					if (hcdc->TxState == 0 && hcdc->RxState == 0){
-						//sendPacket.battery = nRF_Feedback_Packet.battery;
+						sendPacket.battery = nRF_FeedbackReceive_Packet[i].battery;
 						sendPacket.encoder1 = nRF_FeedbackReceive_Packet[i].encoder1;
 						sendPacket.encoder2 = nRF_FeedbackReceive_Packet[i].encoder2;
 						sendPacket.encoder3 = nRF_FeedbackReceive_Packet[i].encoder3;
