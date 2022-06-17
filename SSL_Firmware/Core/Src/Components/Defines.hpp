@@ -12,7 +12,8 @@
 
 
 
-#define INTEL
+
+ #define INTEL
 //#define SEMCONTROLE
 //#define KICKTIME
 

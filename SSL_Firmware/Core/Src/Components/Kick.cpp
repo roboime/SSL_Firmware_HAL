@@ -35,7 +35,7 @@ void Kick::SetKick(float kickspeedx, float kickspeedz){			//Argumento em decimet
 		KickHigh(kickspeedz);				//kickspeed = tempo de chute em seg
 #else
 		//conversao speed->time
-		KickHigh(1);						//argumento em milisegundos
+		KickHigh(kickspeedz);						//argumento em milisegundos
 #endif
 
 	}else if(kickspeedx > 0.1 && kickspeedx < 33.75){
