@@ -43,6 +43,7 @@ private:
 	uint32_t Pwm_Max;
 	Encoder* M_Enc;
 	int32_t dutycycle;
+	float last_real_wheel_speed = 0;
 	float lasterror = 0;
 	float error = 0;
 	float derror = 0;

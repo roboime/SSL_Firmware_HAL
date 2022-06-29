@@ -94,19 +94,25 @@ void Motor::GetSpeed(){
 
 void Motor::ControlSpeed(float desired_speed){
 	//real_wheel_speed=0;
+	last_real_wheel_speed = real_wheel_speed;
 	GetSpeed();
 	error = desired_speed-real_wheel_speed;
 	ierror = 0;
 	for(int j = 20; j >= 0; j--){
 		last_error[j+1]=last_error[j];
-		ierror += last_error[j+1];
+		ierror += (j*last_error[j+1])/20;
 	}
-	last_error[0]=error;
-	ierror += last_error[0];
+	if((cp*error +  (desired_speed/2.75)*65535) < 65535 && (cp*error +  (desired_speed/2.75)*65535) > -65535){
+		last_error[0]=error;
+		ierror += last_error[0];
+	}else{
+		last_error[0]=0;
+	}
 	if(ierror > 65535) ierror = 65535;
 	if(ierror < -65535) ierror = -65535;
 
-	derror=error-last_error[1];
+	//derror=error-last_error[1];
+	derror=-(real_wheel_speed - last_real_wheel_speed);
 
 	float out=cp*error + ci * ierror + cd * derror + (desired_speed/2.75)*65535; //Soma de duty cycle (linear)
 	switch (motorId_attrib){
