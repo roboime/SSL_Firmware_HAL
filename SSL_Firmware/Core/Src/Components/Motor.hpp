@@ -15,11 +15,20 @@
 #include "Defines.hpp"
 
 //ROBO NOVO:
-#define R_roda 0.019
 #define PI 3.1415926
 #define TIM6_delay 0.01
+
+#ifdef DEEPWEB
+#define R_roda 0.019
+#define ENC_DIV 64
+#define FT_TRANS 6 //transmissao invertida devido a engrenagem encaixada por baixo
+
+#else
+#define R_roda 0.019
 #define ENC_DIV 400
 #define FT_TRANS -4 //transmissao invertida devido a engrenagem encaixada por baixo
+#endif
+
 #define CONVERSION 2*PI*R_roda/(TIM6_delay*ENC_DIV*FT_TRANS)
 
 

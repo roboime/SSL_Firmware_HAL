@@ -85,7 +85,11 @@ void Motor::SetSpeed(int32_t spd){
 
 
 void Motor::GetSpeed(){
+#ifdef DEEPWEB
+	int32_t distance=M_Enc->ReadEncoder();
+#else
 	int32_t distance=-M_Enc->ReadEncoder();
+#endif
 
 	float speed=(float)distance*CONVERSION; //converte da unidade da roda para m/s (vel do centro da roda)
 	                                     //talvez seja melhor converter de m/s pra unidade da roda
@@ -129,11 +133,20 @@ void Motor::ControlSpeed(float desired_speed){
 		nRF_Feedback_Packet.encoder4 = real_wheel_speed;
 		break;
 	}
+#ifdef DEEPWEB
+#ifdef SEMCONTROLE
+	dutycycle=-(desired_speed/2.75)*65535;	//73,3333 de angular coloca duty 100%
+#else
+	dutycycle=-out;
+#endif
+#else
 #ifdef SEMCONTROLE
 	dutycycle=(desired_speed/2.75)*65535;	//73,3333 de angular coloca duty 100%
 #else
 	dutycycle=out;
 #endif
+#endif
+
 	if(dutycycle>65535) dutycycle=65535;
 	if(dutycycle<-65535) dutycycle=-65535;
 	SetSpeed(dutycycle);
