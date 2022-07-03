@@ -16,7 +16,7 @@
 #include "pb_encode.h"
 
 extern grSim_Robot_Command receivedPacket;
-extern Feedback sendPacket;
+extern Feedback sendPacket[];
 
 /**
  * @param _usbRecvCallback pointer to global variable which is a function pointer to be called inside usbd_cdc_if.h
@@ -32,22 +32,22 @@ void CommunicationUSB::ReceiveCallback(uint8_t* Buf, uint32_t* Len){
 	USBpacketReceivedCallback();
 }
 
-void CommunicationUSB::TransmitFeedbackPacket(uint32_t id){
+void CommunicationUSB::TransmitFeedbackPacket(uint32_t i, uint32_t id){
 	pb_ostream_t stream = pb_ostream_from_buffer(sendBuffer[id], 64);
-	pb_encode(&stream, Feedback_fields, &sendPacket);
+	pb_encode(&stream, Feedback_fields, &sendPacket[i]);
 	CDC_Transmit_FS(sendBuffer[id], stream.bytes_written);
 }
 
 void CommunicationUSB::TransmitEncoderReadingRPM(int32_t reading){
 	float readingRPM = (float)(reading)/(float)1; //Explicar no comentário
 
-	sendPacket.id = receivedPacket.id;
+	/*sendPacket.id = receivedPacket.id;
 	sendPacket.status = 1;
 	sendPacket.battery = 20.0;
 	sendPacket.encoder1 = readingRPM;
 	sendPacket.encoder2 = receivedPacket.velangular;
 	sendPacket.encoder3 = 0;
-	sendPacket.encoder4 = 0;
+	sendPacket.encoder4 = 0;*/
 }
 
 

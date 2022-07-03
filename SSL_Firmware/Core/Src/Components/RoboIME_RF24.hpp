@@ -34,7 +34,7 @@ public:
 	uint8_t REG_EN_AA = 0b00000001;			//Only pipe 0 auto-acknowledge
 	uint8_t REG_EN_RXADDR = 0b00000001;		//Only pipe 0 enabled
 	uint8_t REG_SETUP_AW = 0b00000010;		//4-byte address
-	uint8_t REG_SETUP_RETR = 0b00010001;	//500us, 1 retransmit
+	uint8_t REG_SETUP_RETR = 0b00010000;	//500us, 0 retransmit
 #ifdef INTEL
 	uint8_t REG_RF_CH = 8;					//2400 + 8 = 2408MHz		//Canal 8 em geral e para testes da ELO, canal 80
 #else

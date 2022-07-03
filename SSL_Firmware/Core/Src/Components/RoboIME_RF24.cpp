@@ -28,6 +28,11 @@ RoboIME_RF24::RoboIME_RF24(
 void RoboIME_RF24::extiCallback(){
 	uint8_t mask = 0b01111110;
 	writeRegister(0x07, &mask, 1);
+	if (status & 0b00010000){
+		csn(GPIO_PIN_RESET);
+		spiCommand(0b11100001);	//FLUSH_TX
+		csn(GPIO_PIN_SET);
+	}
 }
 
 int RoboIME_RF24::setup(){
@@ -139,10 +144,18 @@ int RoboIME_RF24::writeRegister(uint8_t regAddr, uint8_t* data, uint8_t length){
 	}else if(length > 5){
 		return 2;
 	}
-	spiBuf[0] = 0x20 | regAddr;
+	/*spiBuf[0] = 0x20 | regAddr;
 	memcpy(&spiBuf[1], data, length);
 	csn(GPIO_PIN_RESET);
 	HAL_SPI_Transmit_IT(hspi, spiBuf, length + 1);
+	while (hspi->State == HAL_SPI_STATE_BUSY_TX);
+	csn(GPIO_PIN_SET);*/
+	spiBuf[0] = 0x20 | regAddr;
+	memcpy(&spiBuf[1], data, length);
+	csn(GPIO_PIN_RESET);
+	HAL_SPI_TransmitReceive_IT(hspi, spiBuf, &status, 1);
+	while (hspi->State == HAL_SPI_STATE_BUSY_TX_RX);
+	HAL_SPI_Transmit_IT(hspi, spiBuf+1, length);
 	while (hspi->State == HAL_SPI_STATE_BUSY_TX);
 	csn(GPIO_PIN_SET);
 	return 0;

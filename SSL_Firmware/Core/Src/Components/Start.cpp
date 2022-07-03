@@ -26,7 +26,7 @@
 #include "pb_encode.h"
 
 //Constant definitions
-#define NUM_ROBOTS 16
+#define NUM_ROBOTS 8
 
 //Global variables
 extern TIM_HandleTypeDef htim6;
@@ -40,7 +40,7 @@ extern SPI_HandleTypeDef hspi2;
 extern void (*usbRecvCallback)(uint8_t*, uint32_t*);
 extern USBD_HandleTypeDef hUsbDeviceFS;
 grSim_Robot_Command receivedPacket = grSim_Robot_Command_init_default;
-Feedback sendPacket = Feedback_init_default;
+Feedback sendPacket[NUM_ROBOTS];
 bool transmitter;
 nRF_Send_Packet_t nRF_Send_Packet[16];
 nRF_Feedback_Packet_t nRF_Feedback_Packet;
@@ -179,6 +179,9 @@ void Start(){
 	debug.setLevel(SerialDebug::DEBUG_LEVEL_DEBUG);
 	debug.info("SSL firmware start");
 	radio.ce(GPIO_PIN_SET);
+	for (uint32_t i=0; i< NUM_ROBOTS; i++){
+		sendPacket[i] = Feedback_init_default;
+	}
 	nRF_Send_Packet[0].velangular = 0;
 	nRF_Send_Packet[0].veltangent = 0;
 	nRF_Send_Packet[0].velnormal = 0;
@@ -252,30 +255,30 @@ void Start(){
 					HAL_GPIO_TogglePin(LD4_GPIO_Port, LD4_Pin);
 					//debug.debug((char*)received);
 					USBD_CDC_HandleTypeDef *hcdc = (USBD_CDC_HandleTypeDef*)hUsbDeviceFS.pClassData;
-					if (hcdc->TxState == 0 && hcdc->RxState == 0){
-						sendPacket.battery = nRF_FeedbackReceive_Packet[i].battery;
-						sendPacket.encoder1 = nRF_FeedbackReceive_Packet[i].encoder1;
-						sendPacket.encoder2 = nRF_FeedbackReceive_Packet[i].encoder2;
-						sendPacket.encoder3 = nRF_FeedbackReceive_Packet[i].encoder3;
-						sendPacket.encoder4 = nRF_FeedbackReceive_Packet[i].encoder4;
-						sendPacket.status = nRF_FeedbackReceive_Packet[i].status;
-						sendPacket.id = nRF_FeedbackReceive_Packet[i].status>>28;
-						usb.TransmitFeedbackPacket(id);
-					}
+					//if (hcdc->TxState == 0 && hcdc->RxState == 0){
+						sendPacket[i].battery = nRF_FeedbackReceive_Packet[i].battery;
+						sendPacket[i].encoder1 = nRF_FeedbackReceive_Packet[i].encoder1;
+						sendPacket[i].encoder2 = nRF_FeedbackReceive_Packet[i].encoder2;
+						sendPacket[i].encoder3 = nRF_FeedbackReceive_Packet[i].encoder3;
+						sendPacket[i].encoder4 = nRF_FeedbackReceive_Packet[i].encoder4;
+						sendPacket[i].status = nRF_FeedbackReceive_Packet[i].status;
+						sendPacket[i].id = nRF_FeedbackReceive_Packet[i].status>>28;
+						usb.TransmitFeedbackPacket(i, id);
+					//}
 				}
 			}
 			//debug.debug("sent");
 		}else{
 			//nRF_Feedback_Packet.status +=1;
 			//debug.debug((char*)received);
-			sendPacket.battery = nRF_Feedback_Packet.battery;
-			sendPacket.encoder1 = nRF_Feedback_Packet.encoder1;
-			sendPacket.encoder2 = nRF_Feedback_Packet.encoder2;
-			sendPacket.encoder3 = nRF_Feedback_Packet.encoder3;
-			sendPacket.encoder4 = nRF_Feedback_Packet.encoder4;
-			sendPacket.status = nRF_Feedback_Packet.status;
-			sendPacket.id = 0;
-			usb.TransmitFeedbackPacket(0);
+			sendPacket[0].battery = nRF_Feedback_Packet.battery;
+			sendPacket[0].encoder1 = nRF_Feedback_Packet.encoder1;
+			sendPacket[0].encoder2 = nRF_Feedback_Packet.encoder2;
+			sendPacket[0].encoder3 = nRF_Feedback_Packet.encoder3;
+			sendPacket[0].encoder4 = nRF_Feedback_Packet.encoder4;
+			sendPacket[0].status = nRF_Feedback_Packet.status;
+			sendPacket[0].id = 0;
+			usb.TransmitFeedbackPacket(0, 0);
 			HAL_Delay(10);
 		}
 	}
