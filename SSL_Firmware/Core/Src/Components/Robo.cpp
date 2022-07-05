@@ -26,11 +26,11 @@ Robo::Robo(uint8_t roboId) {
 	R_Dribble = new Dribble();
 }
 
-void Robo::set_robo_speed(float v_r, float v_t, float w){
-	R_Motors[0]->ControlSpeed(-v_t*cos_phi - v_r*sin_phi - w*R);
-	R_Motors[1]->ControlSpeed(-v_t*cos_theta + v_r*sin_theta - w*R);
-	R_Motors[2]->ControlSpeed(v_t*cos_phi - v_r*sin_phi - w*R);
-	R_Motors[3]->ControlSpeed(v_t*cos_theta + v_r*sin_theta - w*R);
+void Robo::set_robo_speed(float v_r, float v_t, float w, float kp, float kc){
+	R_Motors[0]->ControlSpeed(-v_t*cos_phi - v_r*sin_phi - w*R, kp,kc,v_r);
+	R_Motors[1]->ControlSpeed(-v_t*cos_theta + v_r*sin_theta - w*R, kp,kc,v_r);
+	R_Motors[2]->ControlSpeed(v_t*cos_phi - v_r*sin_phi - w*R, kp,kc,v_r);
+	R_Motors[3]->ControlSpeed(v_t*cos_theta + v_r*sin_theta - w*R, kp,kc,v_r);
 }
 
 void Robo::set_kick(float kickspeedx, float kickspeedz){
@@ -52,7 +52,7 @@ float Robo::calc_vbat(){
 	HAL_ADC_Stop(&hadc2);
 	//HAL_Delay(100);
 	//Variável de retorno com o fator de conversão
-	VBAT = 57*BATREF/16364;
+	VBAT = float(57*BATREF/(2*16364))                                                                                                                                                                                                                                                                                                                                                                                                             ;
 	return VBAT;
 }
 

@@ -13,8 +13,9 @@
 
 
 
-//#define INTEL
+#define INTEL
 //#define SEMCONTROLE
+//#define CONFIGCONTROLE
 //#define KICKTIME
 #define DEEPWEB
 
@@ -24,3 +25,5 @@
 
 
 #endif /* SRC_COMPONENTS_DEFINES_HPP_ */
+
+//

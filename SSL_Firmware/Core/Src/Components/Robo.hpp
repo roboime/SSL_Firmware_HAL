@@ -31,7 +31,7 @@ public:
 
     void get_wheel_speed(); //armazena as velocidades lineares das RODAS em *real_wheel_speed
 
-    void set_robo_speed(float v_r, float v_t, float w); //converte as velocidades v_r, v_t e wR desejadas em speed[4]
+    void set_robo_speed(float v_r, float v_t, float w, float kp, float kc); //converte as velocidades v_r, v_t e wR desejadas em speed[4]
     void set_robo_speed(float *v);
 
     void control_speed(); //deve ser deletado no futuro

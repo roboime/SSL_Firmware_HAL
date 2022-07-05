@@ -7,9 +7,17 @@
 
 #include "Motor.hpp"
 
-float Motor::cp=(10000.0f/10000)*65536;           //Valores do código antigo
-float Motor::ci=(1500.0f/10000)*65536;
-float Motor::cd=(10000.0f/10000)*65536;
+#ifdef DEEPWEB
+	float Motor::cp=(1.14)*65536;
+	float Motor::ci=(0.1)*65536;
+	float Motor::cd=(0.22)*65536;
+#else
+	float Motor::cp=(10000.0f/10000)*65536;           //Valores do código antigo
+	float Motor::ci=(1500.0f/10000)*65536;
+	float Motor::cd=(10000.0f/10000)*65536;
+#endif
+
+
 extern nRF_Feedback_Packet_t nRF_Feedback_Packet;
 
 Motor::Motor (uint8_t motorId){
@@ -96,7 +104,7 @@ void Motor::GetSpeed(){
 	real_wheel_speed=(float)speed;
 };
 
-void Motor::ControlSpeed(float desired_speed){
+void Motor::ControlSpeed(float desired_speed, float kp, float kc, float ki){
 	//real_wheel_speed=0;
 	last_real_wheel_speed = real_wheel_speed;
 	GetSpeed();
@@ -118,7 +126,12 @@ void Motor::ControlSpeed(float desired_speed){
 	//derror=error-last_error[1];
 	derror=-(real_wheel_speed - last_real_wheel_speed);
 
+#ifdef CONFIGCONTROLE
+	float out= (cp*error + kp * ierror*65535 + cd * derror + kc); //Soma de duty cycle (linear)
+#else
 	float out=cp*error + ci * ierror + cd * derror + (desired_speed/2.75)*65535; //Soma de duty cycle (linear)
+#endif
+
 	switch (motorId_attrib){
 	case 0:
 		nRF_Feedback_Packet.encoder1 = real_wheel_speed;

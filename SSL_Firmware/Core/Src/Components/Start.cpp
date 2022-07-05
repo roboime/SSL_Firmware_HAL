@@ -87,11 +87,11 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 				commCounter++;
 			}
 			if(commCounter < 100){	//Verifica se recebeu pacote no último 1s
-				robo.set_robo_speed(nRF_Send_Packet[0].velnormal, nRF_Send_Packet[0].veltangent, nRF_Send_Packet[0].velangular);
+				robo.set_robo_speed(nRF_Send_Packet[0].velnormal, nRF_Send_Packet[0].veltangent, nRF_Send_Packet[0].velangular,nRF_Send_Packet[0].kickspeedz,nRF_Send_Packet[0].kickspeedx);
 				robo.set_kick(nRF_Send_Packet[0].kickspeedx,nRF_Send_Packet[0].kickspeedz);
 			}else{
 				//Perdeu a comunicação
-				robo.set_robo_speed(0, 0, 0);
+				robo.set_robo_speed(0, 0, 0, 0, 0);
 				robo.set_kick(0, 0);
 				HAL_GPIO_WritePin(LD6_GPIO_Port, LD6_Pin, GPIO_PIN_RESET);
 				commCounter = 100;

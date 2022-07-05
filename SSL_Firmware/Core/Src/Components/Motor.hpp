@@ -19,9 +19,9 @@
 #define TIM6_delay 0.01
 
 #ifdef DEEPWEB
-#define R_roda 0.019
+#define R_roda 0.029
 #define ENC_DIV 64
-#define FT_TRANS 6 //transmissao invertida devido a engrenagem encaixada por baixo
+#define FT_TRANS 6 //transmissao nao invertida
 
 #else
 #define R_roda 0.019
@@ -37,7 +37,7 @@ public:
 	Motor(uint8_t motorId);
 	void SetSpeed(int32_t spd);
 	void GetSpeed();
-	void ControlSpeed(float desiredSpd);
+	void ControlSpeed(float desiredSpd, float kp, float kc, float ki);
 
 	float real_wheel_speed = 0;
 
