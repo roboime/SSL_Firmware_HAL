@@ -13,11 +13,12 @@
 class Dribble {
 public:
 	Dribble();
-	void SetSpeed(int32_t spd);
+	void SetSpeed(bool spinner);
 
 private:
 	__IO uint32_t* MD_Pwm;
 	uint32_t Pwm_Max;
+	static float duty;
 };
 
 #endif /* SRC_COMPONENTS_DRIBBLE_HPP_ */

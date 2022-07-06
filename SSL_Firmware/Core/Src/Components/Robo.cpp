@@ -42,6 +42,11 @@ void Robo::set_kick(float kickspeedx, float kickspeedz){
 	R_Kick->SetKick(kickspeedx,kickspeedz);
 }
 
+void Robo::set_dribble(bool spinner){
+	R_Dribble->SetSpeed(spinner);
+}
+
+
 bool Robo::hasBall(void){
 	return (bool)HAL_GPIO_ReadPin(S1_GPIO_Port, S1_Pin);
 }
