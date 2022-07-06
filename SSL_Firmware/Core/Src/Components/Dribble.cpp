@@ -7,12 +7,22 @@
 
 #include "Dribble.hpp"
 
+#ifdef DEEPWEB
+float Dribble::duty=0.54;
+#else
+float Dribble::duty=0.81;
+#endif
+
+
 Dribble::Dribble() {
-	Pwm_Max = TIM8->ARR;
 	MD_Pwm = &(TIM9->CCR1);
 }
 
-void Dribble::SetSpeed(int32_t spd){
-	*MD_Pwm = Pwm_Max - spd; //O drible só tem um pino
-	//TIM9->CCR1 = Pwm_Max - spd;
+void Dribble::SetSpeed(bool spinner){
+	Pwm_Max = TIM9->ARR;
+	if(spinner){
+		*MD_Pwm = (1-duty)*Pwm_Max; //O drible só tem um pino e a spd é cte
+	}else{
+		*MD_Pwm = Pwm_Max;
+	}
 }

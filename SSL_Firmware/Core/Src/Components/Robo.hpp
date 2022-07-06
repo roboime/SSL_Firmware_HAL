@@ -33,6 +33,7 @@ public:
 
     void set_robo_speed(float v_r, float v_t, float w); //converte as velocidades v_r, v_t e wR desejadas em speed[4]
     void set_robo_speed(float *v);
+    void set_dribble(bool spinner);
 
     void control_speed(); //deve ser deletado no futuro
 	void control_robo_speed(float v_r, float v_t, float w); //realiza controle PID das velocidades do robo
