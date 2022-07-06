@@ -22,7 +22,12 @@ Robo::Robo(uint8_t roboId) {
 	for(int i=0; i<4; ++i){
 		R_Motors[i]= new Motor(i);
 	}
+#ifdef KICKER2019
+	//CHARGE_EN trocado com CHIP_KICK
+	R_Kick = new Kick(CHARGE_EN_GPIO_Port, KICK_GPIO_Port, CHIP_KICK_GPIO_Port, CHARGE_EN_Pin, KICK_Pin, CHIP_KICK_Pin, &htim7, &htim10, &htim14, recharge_time);
+#else
 	R_Kick = new Kick(CHIP_KICK_GPIO_Port, KICK_GPIO_Port, CHARGE_EN_GPIO_Port, CHIP_KICK_Pin, KICK_Pin, CHARGE_EN_Pin, &htim7, &htim10, &htim14, recharge_time);
+#endif
 	R_Dribble = new Dribble();
 }
 

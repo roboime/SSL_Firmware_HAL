@@ -905,9 +905,9 @@ static void MX_TIM10_Init(void)
 
   /* USER CODE END TIM10_Init 1 */
   htim10.Instance = TIM10;
-  htim10.Init.Prescaler = 16800-1;
+  htim10.Init.Prescaler = 50400-1;
   htim10.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim10.Init.Period = 10000-1;
+  htim10.Init.Period = 30000-1;
   htim10.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim10.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim10) != HAL_OK)
@@ -1030,10 +1030,10 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(GPIOC, M0_MBL_Pin|M2_MAL_Pin|nRF_CE_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, CHIP_KICK_Pin|M2_MBL_Pin|M3_MBL_Pin|M3_MAL_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, CHARGE_EN_Pin|M2_MBL_Pin|M3_MBL_Pin|M3_MAL_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOD, CHARGE_EN_Pin|KICK_Pin|LD4_Pin|LD3_Pin
+  HAL_GPIO_WritePin(GPIOD, CHIP_KICK_Pin|KICK_Pin|LD4_Pin|LD3_Pin
                           |LD5_Pin|LD6_Pin|USD_CS_Pin|Audio_RST_Pin
                           |M0_MAL_Pin, GPIO_PIN_RESET);
 
@@ -1066,17 +1066,17 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(nRF_IRQ_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : CHIP_KICK_Pin M2_MBL_Pin M3_MBL_Pin M3_MAL_Pin */
-  GPIO_InitStruct.Pin = CHIP_KICK_Pin|M2_MBL_Pin|M3_MBL_Pin|M3_MAL_Pin;
+  /*Configure GPIO pins : CHARGE_EN_Pin M2_MBL_Pin M3_MBL_Pin M3_MAL_Pin */
+  GPIO_InitStruct.Pin = CHARGE_EN_Pin|M2_MBL_Pin|M3_MBL_Pin|M3_MAL_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : CHARGE_EN_Pin KICK_Pin LD4_Pin LD3_Pin
+  /*Configure GPIO pins : CHIP_KICK_Pin KICK_Pin LD4_Pin LD3_Pin
                            LD5_Pin LD6_Pin USD_CS_Pin Audio_RST_Pin
                            M0_MAL_Pin */
-  GPIO_InitStruct.Pin = CHARGE_EN_Pin|KICK_Pin|LD4_Pin|LD3_Pin
+  GPIO_InitStruct.Pin = CHIP_KICK_Pin|KICK_Pin|LD4_Pin|LD3_Pin
                           |LD5_Pin|LD6_Pin|USD_CS_Pin|Audio_RST_Pin
                           |M0_MAL_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
