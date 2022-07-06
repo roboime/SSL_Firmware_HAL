@@ -8,13 +8,15 @@
 #include "Motor.hpp"
 
 #ifdef DEEPWEB
-	float Motor::cp=(1.14)*65536;
-	float Motor::ci=(0.1)*65536;
-	float Motor::cd=(0.22)*65536;
+	float Motor::cp=(0.9)*65536;
+	float Motor::ci=(0.05)*65536;
+	float Motor::cd=(0.3)*65536;
+	float Motor::cl=(0.15)*65536;
 #else
 	float Motor::cp=(10000.0f/10000)*65536;           //Valores do código antigo
 	float Motor::ci=(1500.0f/10000)*65536;
 	float Motor::cd=(10000.0f/10000)*65536;
+	float Motor::cl=(0.36)*65536;
 #endif
 
 
@@ -127,9 +129,9 @@ void Motor::ControlSpeed(float desired_speed, float kp, float kc, float ki){
 	derror=-(real_wheel_speed - last_real_wheel_speed);
 
 #ifdef CONFIGCONTROLE
-	float out= (cp*error + kp * ierror*65535 + cd * derror + kc); //Soma de duty cycle (linear)
+	float out= (cp*error + kp * ierror*65535 + cd * derror + kc*(desired_speed/2.75)*65535); //Soma de duty cycle (linear)
 #else
-	float out=cp*error + ci * ierror + cd * derror + (desired_speed/2.75)*65535; //Soma de duty cycle (linear)
+	float out=cp*error + ci * ierror + cd * derror + cl*desired_speed; //Soma de duty cycle (linear)
 #endif
 
 	switch (motorId_attrib){
