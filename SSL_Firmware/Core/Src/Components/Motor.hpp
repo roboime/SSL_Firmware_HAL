@@ -19,9 +19,9 @@
 #define TIM6_delay 0.01
 
 #ifdef DEEPWEB
-#define R_roda 0.019
+#define R_roda 0.029
 #define ENC_DIV 64
-#define FT_TRANS 6 //transmissao invertida devido a engrenagem encaixada por baixo
+#define FT_TRANS 8 //transmissao nao invertida
 
 #else
 #define R_roda 0.019
