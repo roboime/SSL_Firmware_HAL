@@ -205,6 +205,11 @@ void Start(){
 	}
 	Flash_Write(id, 0x080E0000, 11);
 	nRF_Feedback_Packet.status = id<<28;
+#ifdef DEEPWEB
+	nRF_Feedback_Packet.status |= 1<<2;		//Set bit 2
+#else
+	nRF_Feedback_Packet.status &= ~(1<<2);	//Reset bit 2
+#endif
 	HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET);
 	HAL_GPIO_WritePin(LD4_GPIO_Port, LD4_Pin, GPIO_PIN_RESET);
 	HAL_GPIO_WritePin(LD5_GPIO_Port, LD5_Pin, GPIO_PIN_RESET);
