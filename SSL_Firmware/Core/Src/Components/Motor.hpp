@@ -61,6 +61,8 @@ private:
 	static float cp;
 	static float cd;
 	static float ci;
+	static float cl;
+
 };
 
 
