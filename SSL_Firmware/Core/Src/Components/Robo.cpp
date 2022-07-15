@@ -63,7 +63,7 @@ float Robo::calc_vbat(){
 	//HAL_Delay(100);
 	//Variável de retorno com o fator de conversão
 #ifdef DEEPWEB
-	VBAT = BATREF*0.00346435546875;		//TODO: Testar nas placas
+	VBAT = BATREF*0.00370478593;		//TODO: Testar nas placas
 #else
 	VBAT = BATREF*0.00378662109375;
 #endif

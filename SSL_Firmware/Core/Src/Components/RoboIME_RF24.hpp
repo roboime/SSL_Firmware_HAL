@@ -36,9 +36,9 @@ public:
 	uint8_t REG_SETUP_AW = 0b00000010;		//4-byte address
 	uint8_t REG_SETUP_RETR = 0b00010000;	//500us, 0 retransmit
 #ifdef INTEL
-	uint8_t REG_RF_CH = 8;					//2400 + 8 = 2408MHz		//Canal 8 em geral e para testes da ELO, canal 80
+	uint8_t REG_RF_CH = 53;					//2400 + 8 = 2408MHz		//Canal 8 em geral e para testes da ELO, canal 80
 #else
-	uint8_t REG_RF_CH = 40;					//2400 + 8 = 2408MHz		//Canal 8 em geral e para testes da ELO, canal 80
+	uint8_t REG_RF_CH = 111;					//2400 + 8 = 2408MHz		//Canal 8 em geral e para testes da ELO, canal 80
 #endif
 	uint8_t REG_RF_SETUP = 0b00001110;		//2mbps, 0dBm
 	uint8_t REG_STATUS = 0b01111110;		//Clears all interrupts

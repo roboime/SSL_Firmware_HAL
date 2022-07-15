@@ -9,6 +9,7 @@
 #define SRC_COMPONENTS_DRIBBLE_HPP_
 
 #include "main.h"
+#include "Defines.hpp"
 
 class Dribble {
 public:
