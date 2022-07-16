@@ -59,7 +59,7 @@ void Kick::SetKick(float kickspeedx, float kickspeedz){			//Argumento em decimet
 }
 
 void Kick::KickHigh(float kickPower){
-	if(kickCharged && !kickEnable && HAL_GPIO_ReadPin(S1_GPIO_Port, S1_Pin)){
+	if(!kickEnable && HAL_GPIO_ReadPin(S1_GPIO_Port, S1_Pin)){
 		HAL_GPIO_WritePin(KICK_C_GPIO_Port, KICK_C_Pin, GPIO_PinState(RESET));
 
 		kickCharged = GPIO_PIN_RESET;
@@ -69,13 +69,14 @@ void Kick::KickHigh(float kickPower){
 		KICK_HL_TIM->Instance->ARR=10*kickPower;
 
 		__HAL_TIM_SET_COUNTER(KICK_HL_TIM,0);
+		__HAL_TIM_SET_COUNTER(KICK_RC_TIM,0);
 
 		HAL_GPIO_WritePin(KICK_H_GPIO_Port, KICK_H_Pin, GPIO_PinState(SET));
 	}
 }
 
 void Kick::KickLow(float kickPower){
-	if(kickCharged && !kickEnable && HAL_GPIO_ReadPin(S1_GPIO_Port, S1_Pin)){
+	if(!kickEnable && HAL_GPIO_ReadPin(S1_GPIO_Port, S1_Pin)){
 		HAL_GPIO_WritePin(KICK_C_GPIO_Port, KICK_C_Pin, GPIO_PinState(RESET));
 
 		KICK_HL_TIM->Instance->ARR=10*kickPower;
