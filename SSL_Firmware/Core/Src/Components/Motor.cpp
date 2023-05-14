@@ -7,11 +7,16 @@
 
 #include "Motor.hpp"
 
-#ifdef DEEPWEB
+#if defined DEEPWEB
 	float Motor::cp=(0.9)*65536;
 	float Motor::ci=(0.05)*65536;
 	float Motor::cd=(0.3)*65536;
 	float Motor::cl=(0.15)*65536;
+#elif defined CARENTE
+	float Motor::cp=(15000.0f/10000)*65536;
+	float Motor::ci=(1500.0f/10000)*65536;
+	float Motor::cd=(2000.0f/10000)*65536;
+	float Motor::cl=(0.36)*65536;
 #else
 	float Motor::cp=(10000.0f/10000)*65536;           //Valores do código antigo
 	float Motor::ci=(1500.0f/10000)*65536;
