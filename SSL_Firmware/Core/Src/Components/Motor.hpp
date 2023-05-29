@@ -18,15 +18,11 @@
 #define PI 3.1415926
 #define TIM6_delay 0.01
 
-#if defined DEEPWEB
+#ifdef DEEPWEB
 #define R_roda 0.029
 #define ENC_DIV 64
 #define FT_TRANS 8 //transmissao nao invertida
 
-#elif defined CARENTE
-#define R_roda 0.019
-#define ENC_DIV 52
-#define FT_TRANS -4 //transmissao invertida devido a engrenagem encaixada por baixo
 #else
 #define R_roda 0.019
 #define ENC_DIV 400
@@ -62,6 +58,7 @@ private:
 	float derror = 0;
 	float last_error[2000] = {0};
 	float ierror = 0;
+	float speed_anterior=0;
 	static float cp;
 	static float cd;
 	static float ci;

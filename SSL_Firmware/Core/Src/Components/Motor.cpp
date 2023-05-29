@@ -7,16 +7,11 @@
 
 #include "Motor.hpp"
 
-#if defined DEEPWEB
-	float Motor::cp=(0.9)*65536;
-	float Motor::ci=(0.05)*65536;
-	float Motor::cd=(0.3)*65536;
-	float Motor::cl=(0.15)*65536;
-#elif defined CARENTE
-	float Motor::cp=(15000.0f/10000)*65536;
-	float Motor::ci=(1500.0f/10000)*65536;
-	float Motor::cd=(2000.0f/10000)*65536;
-	float Motor::cl=(0.36)*65536;
+#ifdef DEEPWEB
+	float Motor::cp=(1)*65536;
+	float Motor::ci=(0.2)*65536;
+	float Motor::cd=(0.5)*65536; //0.3
+	float Motor::cl=(0.15)*65536; // 0.15
 #else
 	float Motor::cp=(10000.0f/10000)*65536;           //Valores do código antigo
 	float Motor::ci=(1500.0f/10000)*65536;
@@ -78,22 +73,52 @@ Motor::Motor (uint8_t motorId){
 
 void Motor::SetSpeed(int32_t spd){
 	Pwm_Max = TIM8->ARR;
-	if(spd>0){
-		HAL_GPIO_WritePin(MBL_GPIO_Port, MBL_Pin, GPIO_PinState(SET));
-		*MBH_Pwm = Pwm_Max; //MBH
-		HAL_GPIO_WritePin(MAL_GPIO_Port, MAL_Pin, GPIO_PinState(RESET));
-		*MAH_Pwm = Pwm_Max - spd; //MAH
-	}else if(spd<0){
-		HAL_GPIO_WritePin(MBL_GPIO_Port, MBL_Pin, GPIO_PinState(RESET));
-		*MBH_Pwm = Pwm_Max + spd; //MBH
-		HAL_GPIO_WritePin(MAL_GPIO_Port, MAL_Pin, GPIO_PinState(SET));
-		*MAH_Pwm = Pwm_Max; //MAH
-	}else{
-		HAL_GPIO_WritePin(MBL_GPIO_Port, MBL_Pin, GPIO_PinState(SET));
-		*MBH_Pwm = Pwm_Max; //MBH
-		HAL_GPIO_WritePin(MAL_GPIO_Port, MAL_Pin, GPIO_PinState(SET));
-		*MAH_Pwm = Pwm_Max; //MAH
+	if(speed_anterior*spd<=0){
+//		TIM8-> CNT &= 0x0; // restart the timer
+		speed_anterior = spd;
+		if(spd>0){
+			HAL_GPIO_WritePin(MAL_GPIO_Port, MAL_Pin, GPIO_PinState(RESET));
+				*MBH_Pwm = Pwm_Max; //MBH
+				TIM8-> CNT = Pwm_Max; // restart the timer
+				TIM1-> CNT = Pwm_Max; // restart the timer
+			HAL_GPIO_WritePin(MBL_GPIO_Port, MBL_Pin, GPIO_PinState(SET));
+				*MAH_Pwm = Pwm_Max - spd; //MAH
+		}else if(spd<0){
+				HAL_GPIO_WritePin(MBL_GPIO_Port, MBL_Pin, GPIO_PinState(RESET));
+				*MAH_Pwm = Pwm_Max; //MAH
+				TIM8-> CNT = Pwm_Max; // restart the timer
+				TIM1-> CNT = Pwm_Max; // restart the timer
+				HAL_GPIO_WritePin(MAL_GPIO_Port, MAL_Pin, GPIO_PinState(SET));
+				*MBH_Pwm = Pwm_Max + spd; //MBH
+		}else{
+			*MBH_Pwm = Pwm_Max; //MBH
+			*MAH_Pwm = Pwm_Max; //MAH
+			TIM8-> CNT = Pwm_Max; // restart the timer
+			TIM1-> CNT = Pwm_Max; // restart the timer
+			HAL_GPIO_WritePin(MBL_GPIO_Port, MBL_Pin, GPIO_PinState(SET));
+			HAL_GPIO_WritePin(MAL_GPIO_Port, MAL_Pin, GPIO_PinState(SET));
+			}
 	}
+	else{
+		speed_anterior = spd;
+		if(spd>0){
+					HAL_GPIO_WritePin(MAL_GPIO_Port, MAL_Pin, GPIO_PinState(RESET));
+							*MBH_Pwm = Pwm_Max; //MBH
+					HAL_GPIO_WritePin(MBL_GPIO_Port, MBL_Pin, GPIO_PinState(SET));
+							*MAH_Pwm = Pwm_Max - spd; //MAH
+			}else if(spd<0){
+						HAL_GPIO_WritePin(MBL_GPIO_Port, MBL_Pin, GPIO_PinState(RESET));
+						*MAH_Pwm = Pwm_Max; //MAH
+						HAL_GPIO_WritePin(MAL_GPIO_Port, MAL_Pin, GPIO_PinState(SET));
+						*MBH_Pwm = Pwm_Max + spd; //MBH
+			}else{
+				*MBH_Pwm = Pwm_Max; //MBH
+				*MAH_Pwm = Pwm_Max; //MAH
+				HAL_GPIO_WritePin(MBL_GPIO_Port, MBL_Pin, GPIO_PinState(SET));
+				HAL_GPIO_WritePin(MAL_GPIO_Port, MAL_Pin, GPIO_PinState(SET));
+			}
+	}
+
 }
 
 
@@ -132,7 +157,7 @@ void Motor::ControlSpeed(float desired_speed){
 	derror=-(real_wheel_speed - last_real_wheel_speed);
 
 
-	float out=cp*error + ci * ierror + cd * derror + cl*desired_speed; //Soma de duty cycle (linear)
+	float out = cp*error + ci * ierror + cd * derror + cl*desired_speed; //Soma de duty cycle (linear)
 	switch (motorId_attrib){
 	case 0:
 		nRF_Feedback_Packet.encoder1 = real_wheel_speed;
@@ -149,13 +174,13 @@ void Motor::ControlSpeed(float desired_speed){
 	}
 #ifdef DEEPWEB
 #ifdef SEMCONTROLE
-	dutycycle=-(desired_speed/2.75)*65535;	//73,3333 de angular coloca duty 100%
+	dutycycle=-(desired_speed/2.75)*65535;	//73,3333 de angular coloca duty 100%//2.75
 #else
-	dutycycle=-out;
+	dutycycle=-out; // -out
 #endif
 #else
 #ifdef SEMCONTROLE
-	dutycycle=(desired_speed/2.75)*65535;	//73,3333 de angular coloca duty 100%
+	dutycycle=(desired_speed/2.75)*65535;	//73,3333 de angular coloca duty 100%//2.75
 #else
 	dutycycle=out;
 #endif
