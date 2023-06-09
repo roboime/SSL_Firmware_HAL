@@ -22,15 +22,22 @@
 #define R_roda 0.029
 #define ENC_DIV 64
 #define FT_TRANS 8 //transmissao nao invertida
-#endif
+#else
 #ifdef CARENTE
 #define R_roda 0.019
 #define ENC_DIV 52
 #define FT_TRANS -4 //transmissao invertida devido a engrenagem encaixada por baixo
 #else
+#ifdef ROBO2023
+#define R_roda 0.026
+#define ENC_DIV 64
+#define FT_TRANS -3.6 //transmissao invertida devido a engrenagem encaixada por baixo
+#else
 #define R_roda 0.019
 #define ENC_DIV 400
 #define FT_TRANS -4 //transmissao invertida devido a engrenagem encaixada por baixo
+#endif
+#endif
 #endif
 
 #define CONVERSION 2*PI*R_roda/(TIM6_delay*ENC_DIV*FT_TRANS)

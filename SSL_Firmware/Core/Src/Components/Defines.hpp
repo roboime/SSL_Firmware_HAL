@@ -11,10 +11,9 @@
 
 
 
-
-
-//#define INTEL
-#define CARENTE
+#define INTEL
+//#define CARENTE
+#define ROBO2023
 //#define SEMCONTROLE
 //#define KICKTIME
 //#define DEEPWEB

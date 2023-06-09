@@ -12,16 +12,23 @@
 	float Motor::ci=(0.2)*65536;
 	float Motor::cd=(0.5)*65536; //0.3
 	float Motor::cl=(0.15)*65536; // 0.15
-#endif
+#else
 #ifdef CARENTE
 	float Motor::cp=0.65149*65536;
 	float Motor::ci=6.6822*65536*0.01;
+	float Motor::cd=0*65536/0.01;
+#else
+#ifdef ROBO2023
+	float Motor::cp=0.21829*65536;
+	float Motor::ci=4.094*65536*0.01;
 	float Motor::cd=0*65536/0.01;
 #else
 	float Motor::cp=(10000.0f/10000)*65536;           //Valores do código antigo
 	float Motor::ci=(1500.0f/10000)*65536;
 	float Motor::cd=(10000.0f/10000)*65536;
 	float Motor::cl=(0.36)*65536;
+#endif
+#endif
 #endif
 extern nRF_Feedback_Packet_t nRF_Feedback_Packet;
 
@@ -147,7 +154,7 @@ void Motor::SetSpeed(int32_t spd){
 #endif
 
 void Motor::GetSpeed(){
-#ifdef DEEPWEB
+#if defined DEEPWEB || defined ROBO2023
 	int32_t distance=M_Enc->ReadEncoder();
 #else
 	int32_t distance=-M_Enc->ReadEncoder();
@@ -185,7 +192,7 @@ void Motor::ControlSpeed(float desired_speed){
 		nRF_Feedback_Packet.encoder4 = real_wheel_speed;
 		break;
 	}
-#ifdef DEEPWEB
+#if defined DEEPWEB
 #ifdef SEMCONTROLE
 	dutycycle=-(desired_speed/2.75)*65535;	//73,3333 de angular coloca duty 100%//2.75
 #else
