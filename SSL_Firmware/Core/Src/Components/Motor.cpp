@@ -12,6 +12,11 @@
 	float Motor::ci=(0.2)*65536;
 	float Motor::cd=(0.5)*65536; //0.3
 	float Motor::cl=(0.15)*65536; // 0.15
+#endif
+#ifdef CARENTE
+	float Motor::cp=0.65149*65536;
+	float Motor::ci=6.6822*65536*0.01;
+	float Motor::cd=0*65536/0.01;
 #else
 	float Motor::cp=(10000.0f/10000)*65536;           //Valores do código antigo
 	float Motor::ci=(1500.0f/10000)*65536;
@@ -158,25 +163,14 @@ void Motor::ControlSpeed(float desired_speed){
 	last_real_wheel_speed = real_wheel_speed;
 	GetSpeed();
 	error = desired_speed-real_wheel_speed;
-	ierror = 0;
-	for(int j = 20; j >= 0; j--){
-		last_error[j+1]=last_error[j];
-		ierror += (j*last_error[j+1])/20;
+	ierror += error;
+	if(ci*ierror > 65536){		// Anti-windup (verificar possibilidades)
+		ierror = 65536/ci;
+	}else if(ci*ierror < -65536){
+		ierror = -65536/ci;
 	}
-	if((cp*error +  (desired_speed/2.75)*65535) < 65535 && (cp*error +  (desired_speed/2.75)*65535) > -65535){
-		last_error[0]=error;
-		ierror += last_error[0];
-	}else{
-		last_error[0]=0;
-	}
-	if(ierror > 65535) ierror = 65535;
-	if(ierror < -65535) ierror = -65535;
-
-	//derror=error-last_error[1];
 	derror=-(real_wheel_speed - last_real_wheel_speed);
-
-
-	float out = cp*error + ci * ierror + cd * derror + cl*desired_speed; //Soma de duty cycle (linear)
+	float out = cp*error + ci * ierror + cd * derror;
 	switch (motorId_attrib){
 	case 0:
 		nRF_Feedback_Packet.encoder1 = real_wheel_speed;

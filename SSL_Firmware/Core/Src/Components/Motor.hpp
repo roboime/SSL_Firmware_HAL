@@ -22,7 +22,11 @@
 #define R_roda 0.029
 #define ENC_DIV 64
 #define FT_TRANS 8 //transmissao nao invertida
-
+#endif
+#ifdef CARENTE
+#define R_roda 0.019
+#define ENC_DIV 52
+#define FT_TRANS -4 //transmissao invertida devido a engrenagem encaixada por baixo
 #else
 #define R_roda 0.019
 #define ENC_DIV 400
