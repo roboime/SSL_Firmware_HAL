@@ -70,7 +70,7 @@ Motor::Motor (uint8_t motorId){
 	}
 }
 
-
+#ifndef BTS7960
 void Motor::SetSpeed(int32_t spd){
 	Pwm_Max = TIM8->ARR;
 	if(speed_anterior*spd<=0){
@@ -120,7 +120,26 @@ void Motor::SetSpeed(int32_t spd){
 	}
 
 }
+#endif
 
+#ifdef BTS7960
+void Motor::SetSpeed(int32_t spd){
+	if(spd > 0){
+		HAL_GPIO_WritePin(MAL_GPIO_Port, MAL_Pin, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(MBL_GPIO_Port, MBL_Pin, GPIO_PIN_SET);
+		*MAH_Pwm = spd;
+		*MBH_Pwm = 0;
+	}else if(spd < 0){
+		HAL_GPIO_WritePin(MAL_GPIO_Port, MAL_Pin, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(MBL_GPIO_Port, MBL_Pin, GPIO_PIN_SET);
+		*MAH_Pwm = 0;
+		*MBH_Pwm = -spd;
+	}else{
+		HAL_GPIO_WritePin(MAL_GPIO_Port, MAL_Pin, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(MBL_GPIO_Port, MBL_Pin, GPIO_PIN_RESET);
+	}
+}
+#endif
 
 void Motor::GetSpeed(){
 #ifdef DEEPWEB
