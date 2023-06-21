@@ -86,6 +86,8 @@ void Error_Handler(void);
 #define M0_CUR_GPIO_Port GPIOC
 #define M2_MAL_Pin GPIO_PIN_2
 #define M2_MAL_GPIO_Port GPIOC
+#define SX1280_RST_Pin GPIO_PIN_3
+#define SX1280_RST_GPIO_Port GPIOC
 #define M2_ENCA_Pin GPIO_PIN_0
 #define M2_ENCA_GPIO_Port GPIOA
 #define M2_ENCB_Pin GPIO_PIN_1
@@ -98,9 +100,9 @@ void Error_Handler(void);
 #define D_CUR_GPIO_Port GPIOA
 #define M2_CUR_Pin GPIO_PIN_4
 #define M2_CUR_GPIO_Port GPIOC
-#define nRF_IRQ_Pin GPIO_PIN_5
-#define nRF_IRQ_GPIO_Port GPIOC
-#define nRF_IRQ_EXTI_IRQn EXTI9_5_IRQn
+#define SX1280_IRQ_Pin GPIO_PIN_5
+#define SX1280_IRQ_GPIO_Port GPIOC
+#define SX1280_IRQ_EXTI_IRQn EXTI9_5_IRQn
 #define CHARGE_EN_Pin GPIO_PIN_0
 #define CHARGE_EN_GPIO_Port GPIOB
 #define M2_MBL_Pin GPIO_PIN_1
@@ -153,10 +155,10 @@ void Error_Handler(void);
 #define SWCLK_GPIO_Port GPIOA
 #define M1_ENCA_Pin GPIO_PIN_15
 #define M1_ENCA_GPIO_Port GPIOA
-#define nRF_CE_Pin GPIO_PIN_12
-#define nRF_CE_GPIO_Port GPIOC
-#define nRF_CSn_Pin GPIO_PIN_0
-#define nRF_CSn_GPIO_Port GPIOD
+#define SX1280_BUSY_Pin GPIO_PIN_12
+#define SX1280_BUSY_GPIO_Port GPIOC
+#define SX1280_CSn_Pin GPIO_PIN_0
+#define SX1280_CSn_GPIO_Port GPIOD
 #define S1_Pin GPIO_PIN_1
 #define S1_GPIO_Port GPIOD
 #define USD_CS_Pin GPIO_PIN_3

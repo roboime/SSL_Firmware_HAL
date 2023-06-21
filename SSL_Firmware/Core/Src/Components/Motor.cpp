@@ -178,7 +178,7 @@ void Motor::ControlSpeed(float desired_speed){
 	}
 	derror=-(real_wheel_speed - last_real_wheel_speed);
 	float out = cp*error + ci * ierror + cd * derror;
-	switch (motorId_attrib){
+	/*switch (motorId_attrib){
 	case 0:
 		nRF_Feedback_Packet.encoder1 = real_wheel_speed;
 		break;
@@ -191,7 +191,7 @@ void Motor::ControlSpeed(float desired_speed){
 	case 3:
 		nRF_Feedback_Packet.encoder4 = real_wheel_speed;
 		break;
-	}
+	}*/
 #if defined DEEPWEB
 #ifdef SEMCONTROLE
 	dutycycle=-(desired_speed/2.75)*65535;	//73,3333 de angular coloca duty 100%//2.75
