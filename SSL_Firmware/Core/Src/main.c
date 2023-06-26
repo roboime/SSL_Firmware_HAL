@@ -1074,11 +1074,11 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
   /*Configure GPIO pins : CHIP_KICK_Pin KICK_Pin LD4_Pin LD3_Pin
-                           LD5_Pin LD6_Pin USD_CS_Pin Audio_RST_Pin
-                           M0_MAL_Pin */
+                           LD5_Pin LD6_Pin SX1280_CSn_Pin USD_CS_Pin
+                           Audio_RST_Pin M0_MAL_Pin */
   GPIO_InitStruct.Pin = CHIP_KICK_Pin|KICK_Pin|LD4_Pin|LD3_Pin
-                          |LD5_Pin|LD6_Pin|USD_CS_Pin|Audio_RST_Pin
-                          |M0_MAL_Pin;
+                          |LD5_Pin|LD6_Pin|SX1280_CSn_Pin|USD_CS_Pin
+                          |Audio_RST_Pin|M0_MAL_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -1089,13 +1089,6 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(SX1280_BUSY_GPIO_Port, &GPIO_InitStruct);
-
-  /*Configure GPIO pin : SX1280_CSn_Pin */
-  GPIO_InitStruct.Pin = SX1280_CSn_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
-  HAL_GPIO_Init(SX1280_CSn_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pins : S1_Pin OTG_FS_OverCurrent_Pin */
   GPIO_InitStruct.Pin = S1_Pin|OTG_FS_OverCurrent_Pin;

@@ -18,12 +18,12 @@
 class SX1280_Send_Packet_t{
 public:
 	uint8_t id = 0;
-	float kickspeedx = 4;
-	float kickspeedz = 3;
-	float veltangent = 2;
-	float velnormal = 1;
-	float velangular;
-	bool spinner;
+	float kickspeedx = 0;
+	float kickspeedz = 0;
+	float veltangent = 0;
+	float velnormal = 0;
+	float velangular = 0;
+	bool spinner = false;
 	uint8_t packetId = 0;
 };
 class SX1280_Feedback_Packet_t{

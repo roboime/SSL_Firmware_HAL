@@ -287,46 +287,44 @@ void Start(){
 
 		if(!transmitter ){
 			/*FEEDBACK*/
-			    /*if(!transmitter && radio.ready)
-				HAL_GPIO_TogglePin(LD3_GPIO_Port, LD3_Pin);
-				SX1280_Feedback_Packet.packetId++;
-				SX1280_Feedback_Packet.battery = robo.calc_vbat();
-				if(robo.hasBall()){
-					SX1280_Feedback_Packet.status |= 1<<0;		//Set bit 0
-				}else{
-					SX1280_Feedback_Packet.status &= ~(1<<0);	//Reset bit 0
-				}
-				if(robo.R_Kick->kickCharged){
-					SX1280_Feedback_Packet.status |= 1<<1;
-				}else{
-					SX1280_Feedback_Packet.status &= ~(1<<1);
-				}
-				radio.UploadAckPayload((uint8_t*)&SX1280_Feedback_Packet, sizeof(SX1280_Feedback_Packet));*/
-
-				if(radio_SX1280.receivePayload((&SX1280_Send_Packet[0]))){
-					//sprintf(serialBuf, "Vt %lf", SX1280_Send_Packet[0].veltangent);
-					//debug.debug(serialBuf);
-
-					HAL_GPIO_WritePin(LD6_GPIO_Port, LD6_Pin, GPIO_PIN_SET);
-					commCounter = 0;
-				}else{
-					commCounter++;
-
-				}
-				if(commCounter < 100){	//Verifica se recebeu pacote no último 1s
-					robo.set_robo_speed(SX1280_Send_Packet[0].velnormal, SX1280_Send_Packet[0].veltangent, SX1280_Send_Packet[0].velangular);
-					robo.set_kick(SX1280_Send_Packet[0].kickspeedx,SX1280_Send_Packet[0].kickspeedz);
-					robo.set_dribble(SX1280_Send_Packet[0].spinner);
-				}else{
-					//Perdeu a comunicação
-					robo.set_robo_speed(0, 0, 0);
-					robo.set_kick(0, 0);
-					robo.set_dribble(false);
-					HAL_GPIO_WritePin(LD6_GPIO_Port, LD6_Pin, GPIO_PIN_RESET);
-					commCounter = 100;
-				}
+			/*if(!transmitter && radio.ready)
+			HAL_GPIO_TogglePin(LD3_GPIO_Port, LD3_Pin);
+			SX1280_Feedback_Packet.packetId++;
+			SX1280_Feedback_Packet.battery = robo.calc_vbat();
+			if(robo.hasBall()){
+				SX1280_Feedback_Packet.status |= 1<<0;		//Set bit 0
+			}else{
+				SX1280_Feedback_Packet.status &= ~(1<<0);	//Reset bit 0
 			}
+			if(robo.R_Kick->kickCharged){
+				SX1280_Feedback_Packet.status |= 1<<1;
+			}else{
+				SX1280_Feedback_Packet.status &= ~(1<<1);
+			}
+			radio.UploadAckPayload((uint8_t*)&SX1280_Feedback_Packet, sizeof(SX1280_Feedback_Packet));*/
+
+			if(radio_SX1280.receivePayload((&SX1280_Send_Packet[0]))){
+				//sprintf(serialBuf, "Vt %lf", SX1280_Send_Packet[0].veltangent);
+				//debug.debug(serialBuf);
+
+				HAL_GPIO_WritePin(LD6_GPIO_Port, LD6_Pin, GPIO_PIN_SET);
+				commCounter = 0;
+			}else{
+				commCounter++;
+
+			}
+//			if(commCounter < 100){	//Verifica se recebeu pacote no último 1s
+//				robo.set_robo_speed(SX1280_Send_Packet[0].velnormal, SX1280_Send_Packet[0].veltangent, SX1280_Send_Packet[0].velangular);
+//				robo.set_kick(SX1280_Send_Packet[0].kickspeedx,SX1280_Send_Packet[0].kickspeedz);
+//				robo.set_dribble(SX1280_Send_Packet[0].spinner);
+//			}else{
+//				//Perdeu a comunicação
+//				robo.set_robo_speed(0, 0, 0);
+//				robo.set_kick(0, 0);
+//				robo.set_dribble(false);
+//				HAL_GPIO_WritePin(LD6_GPIO_Port, LD6_Pin, GPIO_PIN_RESET);
+//				commCounter = 100;
+//			}
+		}
 	}
-
-
 }
