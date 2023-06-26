@@ -225,7 +225,9 @@ void Start(){
 		if(transmitter){
 			for(uint8_t i=0; i<NUM_ROBOTS; i++){
 				SX1280_Send_Packet[i].id = i;
-				SX1280_Send_Packet[i].packetId++;
+				for(uint8_t j=0; j<NUM_ROBOTS; j++){
+					SX1280_Send_Packet[j].packetId++;
+				}
 				usbCounter++;
 #ifdef INTEL
 				if(usbCounter > 500){	//Verifica se recebeu pacote do USb nos últimos Xs

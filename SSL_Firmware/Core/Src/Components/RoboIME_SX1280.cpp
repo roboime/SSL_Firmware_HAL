@@ -15,6 +15,8 @@ extern TIM_HandleTypeDef htim6;
 extern SPI_HandleTypeDef hspi2;
 extern SPI_HandleTypeDef hspi1;
 
+extern SerialDebug debug;
+
 typedef enum
 {
     APP_LOWPOWER,
@@ -158,7 +160,7 @@ int RoboIME_SX1280::setupFeedbackRadio(){
    	//radio0.SetCrcPolynomial( 0x0123 ); // NAOP USEI
    	radio0.SetTxParams( 0, RADIO_RAMP_20_US );
    	uint16_t RxIrqMask = IRQ_RX_DONE | IRQ_RX_TX_TIMEOUT;
-   //	radio0.SetDioIrqParams( RxIrqMask, RxIrqMask, IRQ_RADIO_NONE, IRQ_RADIO_NONE );
+   	radio0.SetDioIrqParams( RxIrqMask, RxIrqMask, IRQ_RADIO_NONE, IRQ_RADIO_NONE );
    //	radio0.SetPollingMode( );
 
    	//radio0.ProcessIrqs( );
@@ -191,21 +193,26 @@ uint8_t RoboIME_SX1280::sendPayload(SX1280_Send_Packet_t *payload, uint8_t paylo
 
 }
 
+char dbgMessage[64];
+
 uint8_t RoboIME_SX1280::receivePayload(SX1280_Send_Packet_t *payload){
 	uint8_t actualBufferSize = 0;
 	//if(count == 1)
 	//{
-    radio0.SetDioIrqParams( RxIrqMask, RxIrqMask, IRQ_RADIO_NONE, IRQ_RADIO_NONE );
-    HAL_Delay(1);
-   	count ++;
+    //radio0.SetDioIrqParams( RxIrqMask, RxIrqMask, IRQ_RADIO_NONE, IRQ_RADIO_NONE );
+    //HAL_Delay(1);
+   	//count ++;
 	//}
+	AppState = APP_LOWPOWER;
 	radio0.SetRx( ( TickTime_t ) { RADIO_TICK_SIZE_1000_US, 0x0000 } );
 	oldCount = payloadTemp[25];
-	HAL_Delay(5);
+	//HAL_Delay(5);
 	while(1){
 		if(AppState == APP_RX)
 		{
 			radio0.GetPayload(payloadTemp, &actualBufferSize, sizeof(SX1280_Send_Packet_t));
+			sprintf(dbgMessage, "id = %d", payloadTemp[0]);
+			debug.debug(dbgMessage);
 			if (payloadTemp[25] != oldCount && payloadTemp[0] == roboId)
 			{
 				memcpy(payload, payloadTemp, sizeof(SX1280_Send_Packet_t));
