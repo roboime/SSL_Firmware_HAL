@@ -1,0 +1,7 @@
+Motor.hpp:18:15:virtual void Motor::setPower(float)	1
+Motor.cpp:12:1:Motor::Motor()	1
+Motor.cpp:16:1:Motor::~Motor()	1
+Motor.cpp:16:1:virtual Motor::~Motor()	1
+Motor.cpp:20:6:void Motor::setEncoder(Encoder*)	1
+Motor.cpp:24:7:float Motor::getCurrentRevPerTick()	1
+Motor.cpp:32:6:void Motor::pid(float)	5
