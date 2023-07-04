@@ -7,6 +7,7 @@
 
 
 #include "RoboIME_SX1280.hpp"
+#include "Defines.hpp"
 
 #define RX_TIMEOUT_VALUE 0
 #define TX_TIMEOUT_VALUE  100
@@ -103,7 +104,11 @@ int RoboIME_SX1280::setupDataRadio(){
    	radio0.SetPacketType( ModulationParams.PacketType );
    	radio0.SetModulationParams( &ModulationParams );
    	radio0.SetPacketParams( &PacketParams );
-   	radio0.SetRfFrequency( 2450000000UL );
+#ifdef INTEL
+   	radio0.SetRfFrequency( 2462000000UL );
+#else
+   	radio0.SetRfFrequency( 2458000000UL );
+#endif
    	radio0.SetBufferBaseAddresses( 0x00, 0x00 );
    	// only used in GFSK, FLRC (4 bytes max) and BLE mode
    	//radio0.SetSyncWord( 1, syncWord ); // NAO USEI
