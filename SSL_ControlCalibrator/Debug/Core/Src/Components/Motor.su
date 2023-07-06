@@ -4,4 +4,4 @@
 ../Core/Src/Components/Motor.cpp:16:1:virtual Motor::~Motor()	16	static
 ../Core/Src/Components/Motor.cpp:20:6:void Motor::setEncoder(Encoder*)	16	static
 ../Core/Src/Components/Motor.cpp:24:7:float Motor::getCurrentRevPerTick()	16	static
-../Core/Src/Components/Motor.cpp:32:6:void Motor::pid(float)	32	static
+../Core/Src/Components/Motor.cpp:36:6:void Motor::pid(float)	32	static

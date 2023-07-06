@@ -27,7 +27,7 @@ private:
 #endif
 #ifdef DEEPWEB
 	const float reductionRatio = 8;
-	const float wheelRadius = 0.029;	//m
+	const float wheelRadius = 0.028;	//m
 #endif
 #ifdef ROBO2023
 	const float reductionRatio = -3.6;

@@ -23,10 +23,14 @@ void Motor::setEncoder(Encoder* _encoder){
 
 float Motor::getCurrentRevPerTick(){
 #ifdef CONTROL_DISABLED
-	return (float)encoder->getDelta()/encoder->getCountsPerRevolution();
-#else
-	return currentRevPerTick;
+#if defined DEEPWEB || defined ROBO2023
+	currentRevPerTick = -(float)encoder->getDelta()/encoder->getCountsPerRevolution();
 #endif
+#ifdef CARENTE
+	currentRevPerTick = (float)encoder->getDelta()/encoder->getCountsPerRevolution();
+#endif
+#endif
+	return currentRevPerTick;
 }
 
 void Motor::pid(float inputRevPerTick){

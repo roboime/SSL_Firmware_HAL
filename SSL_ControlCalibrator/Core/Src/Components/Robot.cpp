@@ -52,8 +52,8 @@ void Robot::controlCallback(){
 
 void Robot::init(){
 	motor0.setEncoder(&encoder0);
-	motor0.kp = 0.21829/CONVERSION;
-	motor0.ki = 4.094/(ticksPerSecond*CONVERSION);
+	motor0.kp = 0.44836/CONVERSION;
+	motor0.ki = 16.64/(ticksPerSecond*CONVERSION);
 	motor0.kd = 0*ticksPerSecond/CONVERSION;
 	HAL_TIM_Encoder_Start(&htim3, TIM_CHANNEL_ALL);
 	HAL_TIM_PWM_Start(&htim8, TIM_CHANNEL_2);
