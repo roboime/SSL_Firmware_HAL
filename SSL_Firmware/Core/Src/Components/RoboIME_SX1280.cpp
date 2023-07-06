@@ -75,7 +75,7 @@ SX1280Hal radio0(&hspi1, SX1280_CSn_GPIO_Port, SX1280_CSn_Pin, SX1280_BUSY_GPIO_
 //Public methods
 void RoboIME_SX1280::GPIOCallback(void){
 	radio0.HalInterruptCallback();
-	HAL_GPIO_TogglePin(LD5_GPIO_Port, LD5_Pin);
+
 }
 int RoboIME_SX1280::setupDataRadio(){
 	/* Modulation Params*/

@@ -83,6 +83,12 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
 	if(htim == &htim6){
 		if(!transmitter ){
+			if(HAL_GPIO_ReadPin(S1_GPIO_Port, S1_Pin)){
+					HAL_GPIO_WritePin(LD5_GPIO_Port, LD5_Pin,GPIO_PIN_SET);
+				}
+				else{
+					HAL_GPIO_WritePin(LD5_GPIO_Port, LD5_Pin,GPIO_PIN_RESET);
+				}
 			if(commCounter < 100){	//Verifica se recebeu pacote no último 1s
 				if(checaNotANumber(SX1280_Send_Packet[0])){
 					robo.set_robo_speed(SX1280_Send_Packet[0].velnormal, SX1280_Send_Packet[0].veltangent, SX1280_Send_Packet[0].velangular);

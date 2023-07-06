@@ -11,14 +11,14 @@
 
 
 
-//#define INTEL
-#define CARENTE
+#define INTEL
+//#define CARENTE
 //#define ROBO2023
 //#define SEMCONTROLE
 //#define KICKTIME
-//#define DEEPWEB
+#define DEEPWEB
 //#define KICKER2019
-//z#define BTS7960 //Ponte H do robô UV
+#define BTS7960 //Ponte H do robô UV
 
 
 

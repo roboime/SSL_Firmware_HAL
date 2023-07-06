@@ -8,9 +8,9 @@
 #include "Motor.hpp"
 
 #ifdef DEEPWEB
-	float Motor::cp=(1)*65536;
-	float Motor::ci=(0.2)*65536;
-	float Motor::cd=(0.5)*65536; //0.3
+	float Motor::cp=0.44836*65536;
+	float Motor::ci=16.64*65536*0.01;
+	float Motor::cd=0*65536/0.01; //0.3
 	float Motor::cl=(0.15)*65536; // 0.15
 #else
 #ifdef CARENTE
