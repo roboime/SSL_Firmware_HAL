@@ -48,7 +48,7 @@ public:
 	void setRX(void);
 	int setupDataRadio();
 	int setupFeedbackRadio();
-	uint8_t receiveFeedback(uint8_t* payload);
+	uint8_t receiveFeedback(SX1280_Feedback_Packet_t *payload);
 	uint8_t  sendFeedback(void);
 	void  OnTxDone( void );
 	void  OnRxDone( void );

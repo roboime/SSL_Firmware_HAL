@@ -143,11 +143,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 
 void USBpacketReceivedCallback(void){
 	if(receivedPacket.id > 16){
-		//debug.error("USB protobuf ID > 16");
 	}else{
-		/*char debugmessage[64];
-		sprintf(debugmessage, "ID %lu", receivedPacket.id);
-		debug.debug(debugmessage);*/
 		usbCounter = 0;
 		SX1280_Send_Packet[receivedPacket.id].kickspeedx = receivedPacket.kickspeedx;
 		SX1280_Send_Packet[receivedPacket.id].kickspeedz = receivedPacket.kickspeedz;
@@ -232,6 +228,7 @@ void Start(){
 	HAL_GPIO_WritePin(LD6_GPIO_Port, LD6_Pin, GPIO_PIN_RESET);
 	radio_SX1280.setupDataRadio();
 
+/* ROBOT INITIAL STATE VERIFICATION */
 	if(HAL_GPIO_ReadPin(TX_Detect_GPIO_Port, TX_Detect_Pin) == GPIO_PIN_RESET){
 		//TX (placa de COM)
 		transmitter = true;
@@ -273,21 +270,27 @@ void Start(){
 					HAL_GPIO_WritePin(LD5_GPIO_Port, LD5_Pin, GPIO_PIN_RESET);
 				}
 #endif
+
+/* COMMUNICATION BACK AND FORTH */
+
 				// Envia o pacote
+				CDC_Transmit_FS((uint8_t *)"Sending Package\n",strlen("Sending Package\n"));
 				HAL_GPIO_TogglePin(LD6_GPIO_Port, LD6_Pin);
-				if(radio_SX1280.sendPayload(&SX1280_Send_Packet[i], sizeof(SX1280_Send_Packet[i])))
-				{
-					HAL_GPIO_TogglePin(LD4_GPIO_Port, LD4_Pin);
-				}
+				if(radio_SX1280.sendPayload(&SX1280_Send_Packet[i], sizeof(SX1280_Send_Packet[i]))){HAL_GPIO_TogglePin(LD4_GPIO_Port, LD4_Pin);} //Blink LED
+				//CDC_Transmit_FS(&SX1280_Send_Packet[i].id,8);
+				//Recebe o feedback
+				CDC_Transmit_FS((uint8_t *)"Receiving Feedback Package\n",strlen("Receiving Feedback\n"));
+				if(radio_SX1280.receiveFeedback((&SX1280_FeedbackReceive_Packet[i]))){HAL_GPIO_TogglePin(LD4_GPIO_Port, LD4_Pin);} //Blink LED
+			//	CDC_Transmit_FS((uint8_t *)SX1280_FeedbackReceive_Packet[i].battery,strlen(SX1280_FeedbackReceive_Packet[i].battery));
 			}
 		}
-		if(!transmitter ){
-			if(radio_SX1280.receivePayload((&SX1280_Send_Packet[0]))){
-				HAL_GPIO_WritePin(LD6_GPIO_Port, LD6_Pin, GPIO_PIN_SET);
-				commCounter = 0;
-			}else{
-				commCounter++;
-			}
+	if(!transmitter ){
+		if(radio_SX1280.receivePayload((&SX1280_Send_Packet[0]))){
+			HAL_GPIO_WritePin(LD6_GPIO_Port, LD6_Pin, GPIO_PIN_SET);
+			commCounter = 0;
+		}else{
+			commCounter++;
+		}
 		}
 	}
 }
