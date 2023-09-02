@@ -1,7 +1,7 @@
 /*
  * RoboIME_SX1280.cpp
  *
- *  Created on: April 25, 2023 -> COM: 2 September
+ *  Created on: April 25, 2023 -> COM on 2 September
  *      Author: Frese
  */
 
