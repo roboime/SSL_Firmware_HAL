@@ -1,7 +1,7 @@
 /*
  * RoboIME_SX1280.cpp
  *
- *  Created on: April 25, 2023
+ *  Created on: April 25, 2023 -> COM: 2 September
  *      Author: Frese
  */
 
@@ -57,13 +57,13 @@ void OnRxError( IrqErrorCode_t );
 
 RadioCallbacks_t callbacks =
 {
-    &OnTxDone,        // txDone
-    &OnRxDone,       // rxDone
+    &OnTxDone,          // txDone
+    &OnRxDone,          // rxDone
     NULL,             	// syncWordDone
     NULL,          	   	// headerDone
-	&OnTxTimeout,     // txTimeout
-	&OnRxTimeout,     // rxTimeout
-	&OnRxError,       		// rxError
+	&OnTxTimeout,       // txTimeout
+	&OnRxTimeout,       // rxTimeout
+	&OnRxError,       	// rxError
     NULL,             	// rangingDone
     NULL,             	// cadDone
 };
@@ -160,6 +160,7 @@ int RoboIME_SX1280::setupFeedbackRadio(){
    	return 0;
 }
 int count =1;
+
 uint8_t RoboIME_SX1280::sendPayload(SX1280_Send_Packet_t *payload, uint8_t payloadSize){
 	if(count == 1)
 	{
@@ -184,8 +185,10 @@ uint8_t RoboIME_SX1280::sendPayload(SX1280_Send_Packet_t *payload, uint8_t paylo
 
 }
 
-//char dbgMessage[64];
 
+/*!
+ * \brief Function used to receive payload from a sender
+ */
 uint8_t RoboIME_SX1280::receivePayload(SX1280_Send_Packet_t *payload){
 	uint8_t actualBufferSize = 0;
 	AppState = APP_LOWPOWER;
