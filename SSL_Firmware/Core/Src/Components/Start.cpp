@@ -3,6 +3,9 @@
  *
  *  Created on: 20 de mar de 2021
  *      Author: Moraes
+ *
+ *  Modified on: September 9 2023
+ *  	Author: Frese
  */
 
 #include "Start.hpp"
@@ -45,7 +48,7 @@ Feedback sendPacket[NUM_ROBOTS];
 bool transmitter = false;
 
 SX1280_Send_Packet_t SX1280_Send_Packet[16];
-SX1280_Feedback_Packet_t SX1280_Feedback_Packet;
+SX1280_Feedback_Packet_t SX1280_Feedback_Packet[1];
 SX1280_Feedback_Packet_t SX1280_FeedbackReceive_Packet[16];
 uint8_t commCounter = 0;
 uint32_t usbCounter = 0;
@@ -83,6 +86,9 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
 	if(htim == &htim6){
 		if(!transmitter ){
+			/*FEEDBACK DATA*/
+
+			/*NORMAL DATA*/
 			if(HAL_GPIO_ReadPin(S1_GPIO_Port, S1_Pin)){
 					HAL_GPIO_WritePin(LD5_GPIO_Port, LD5_Pin,GPIO_PIN_SET);
 				}
@@ -192,7 +198,7 @@ void Start(){
 	for (uint32_t i=0; i< NUM_ROBOTS; i++){
 		sendPacket[i] = Feedback_init_default;
 	}
-// Initial payload
+/* INITIAL PAYLOAD */
 	SX1280_Send_Packet[0].velangular = 0;
 	SX1280_Send_Packet[0].veltangent = 0;
 	SX1280_Send_Packet[0].velnormal = 0;
@@ -200,7 +206,7 @@ void Start(){
 	SX1280_Send_Packet[0].kickspeedz = 0;
 	SX1280_Send_Packet[0].spinner = false;
 
-// Define Robot ID
+/*DEFINING ROBOT ID*/
 	for(uint32_t i=0; i<2000; i++){
 		HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, (GPIO_PinState)(id & 1));
 		HAL_GPIO_WritePin(LD4_GPIO_Port, LD4_Pin, (GPIO_PinState)((id>>1) & 1));
@@ -216,19 +222,23 @@ void Start(){
 	}
 	Flash_Write(id, 0x080E0000, 11);
 
-	SX1280_Feedback_Packet.status = id<<28;
+
 #ifdef DEEPWEB
-	SX1280_Feedback_Packet.status |= 1<<2;		//Set bit 2
+
 #else
-	SX1280_Feedback_Packet.status &= ~(1<<2);	//Reset bit 2
+
 #endif
 	HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET);
 	HAL_GPIO_WritePin(LD4_GPIO_Port, LD4_Pin, GPIO_PIN_RESET);
 	HAL_GPIO_WritePin(LD5_GPIO_Port, LD5_Pin, GPIO_PIN_RESET);
 	HAL_GPIO_WritePin(LD6_GPIO_Port, LD6_Pin, GPIO_PIN_RESET);
+
+/* RADIO SETUP */
 	radio_SX1280.setupDataRadio();
 
 /* ROBOT INITIAL STATE VERIFICATION */
+
+	/* COM STATUS SETUP */
 	if(HAL_GPIO_ReadPin(TX_Detect_GPIO_Port, TX_Detect_Pin) == GPIO_PIN_RESET){
 		//TX (placa de COM)
 		transmitter = true;
@@ -238,12 +248,17 @@ void Start(){
 		transmitter = false;
 		debug.info("PE15 set as receiver (robot)");
 	}
+
+	/* ----------------- MASTER ----------------- */
 	if(!transmitter){
 		radio_SX1280.setRobotId(id);
 	}
-	// Carrega o capacitor
+
+	/* CHARGING CAPACITOR */
 	robo.R_Kick->kickCharged = GPIO_PIN_RESET;
 	robo.R_Kick->Charge(5);
+
+	/* COM LOOP */
 	while(1){
 		if(transmitter){
 			for(uint8_t i=0; i<NUM_ROBOTS; i++){
@@ -252,6 +267,7 @@ void Start(){
 					SX1280_Send_Packet[j].packetId++;
 				}
 				usbCounter++;
+	/* COMMANDS FROM INTEL */
 #ifdef INTEL
 				if(usbCounter > 500){	//Verifica se recebeu pacote do USb nos últimos Xs
 					//Perdeu o USB
@@ -264,6 +280,7 @@ void Start(){
 						SX1280_Send_Packet[i].kickspeedz = 0;
 						SX1280_Send_Packet[i].spinner = false;
 					}
+				//Blinking red LED
 					HAL_GPIO_WritePin(LD5_GPIO_Port, LD5_Pin, GPIO_PIN_SET);
 					usbCounter = 500;
 				}else{
@@ -271,23 +288,36 @@ void Start(){
 				}
 #endif
 
+/* --------- DEGUG DATA -----------*/
+SX1280_Feedback_Packet[0].battery = 1;
+SX1280_Feedback_Packet[0].encoder1 = 1;
+SX1280_Feedback_Packet[0].encoder2 = 3;
+SX1280_Feedback_Packet[0].encoder2 = 4;
+SX1280_Feedback_Packet[0].encoder3 = 5;
+SX1280_Feedback_Packet[0].encoder4 = 6;
+SX1280_Feedback_Packet[0].id = 0;
+SX1280_Feedback_Packet[0].packetId = 1;
 /* COMMUNICATION BACK AND FORTH */
 
-				// Envia o pacote
+				/*SENDING PAYLOAD*/
 				CDC_Transmit_FS((uint8_t *)"Sending Package\n",strlen("Sending Package\n"));
 				HAL_GPIO_TogglePin(LD6_GPIO_Port, LD6_Pin);
 				if(radio_SX1280.sendPayload(&SX1280_Send_Packet[i], sizeof(SX1280_Send_Packet[i]))){HAL_GPIO_TogglePin(LD4_GPIO_Port, LD4_Pin);} //Blink LED
-				//CDC_Transmit_FS(&SX1280_Send_Packet[i].id,8);
-				//Recebe o feedback
+				/*RECEIVING FEEDBACK*/
 				CDC_Transmit_FS((uint8_t *)"Receiving Feedback Package\n",strlen("Receiving Feedback\n"));
-				if(radio_SX1280.receiveFeedback((&SX1280_FeedbackReceive_Packet[i]))){HAL_GPIO_TogglePin(LD4_GPIO_Port, LD4_Pin);} //Blink LED
+				if(radio_SX1280.receiveFeedback((&SX1280_FeedbackReceive_Packet[i]))){HAL_GPIO_TogglePin(LD4_GPIO_Port, LD5_Pin);} //Blink LED
 			//	CDC_Transmit_FS((uint8_t *)SX1280_FeedbackReceive_Packet[i].battery,strlen(SX1280_FeedbackReceive_Packet[i].battery));
 			}
 		}
+
+	/* ----------------- ROBOT ----------------- */
 	if(!transmitter ){
+		/*RECEIVING PAYLOAD*/
 		if(radio_SX1280.receivePayload((&SX1280_Send_Packet[0]))){
 			HAL_GPIO_WritePin(LD6_GPIO_Port, LD6_Pin, GPIO_PIN_SET);
 			commCounter = 0;
+			/*SENDING FEEDBACK*/
+			if(radio_SX1280.sendFeedback(&SX1280_Feedback_Packet[0], sizeof(SX1280_Feedback_Packet[0]))){HAL_GPIO_TogglePin(LD4_GPIO_Port, LD5_Pin);} //Blink LED GREEN
 		}else{
 			commCounter++;
 		}

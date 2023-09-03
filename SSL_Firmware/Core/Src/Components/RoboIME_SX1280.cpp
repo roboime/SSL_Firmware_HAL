@@ -9,7 +9,7 @@
 #include "RoboIME_SX1280.hpp"
 #include "Defines.hpp"
 
-#define RX_TIMEOUT_VALUE 0
+#define RX_TIMEOUT_VALUE 1
 #define TX_TIMEOUT_VALUE  100
 extern UART_HandleTypeDef huart2;
 extern TIM_HandleTypeDef htim6;
@@ -79,26 +79,24 @@ void RoboIME_SX1280::GPIOCallback(void){
 }
 int RoboIME_SX1280::setupDataRadio(){
 	/* Modulation Params*/
-
+	   ModulationParams.PacketType = PACKET_TYPE_FLRC;
 	   ModulationParams.Params.Flrc.BitrateBandwidth  = ( RadioFlrcBitrates_t )       FLRC_BR_1_300_BW_1_2;
 	   ModulationParams.Params.Flrc.CodingRate        = ( RadioFlrcCodingRates_t )   FLRC_CR_1_0;
 	   ModulationParams.Params.Flrc.ModulationShaping = ( RadioModShapings_t )        RADIO_MOD_SHAPING_BT_1_0;
 
+	   PacketParams.PacketType     = PACKET_TYPE_FLRC;
 	   PacketParams.Params.Flrc.PreambleLength        = ( RadioPreambleLengths_t )     PREAMBLE_LENGTH_32_BITS;
 	   PacketParams.Params.Flrc.SyncWordLength        = ( RadioFlrcSyncWordLengths_t )FLRC_SYNCWORD_LENGTH_4_BYTE;
 	   PacketParams.Params.Flrc.SyncWordMatch         = ( RadioSyncWordRxMatchs_t )   RADIO_RX_MATCH_SYNCWORD_1;
 	   PacketParams.Params.Flrc.HeaderType            = ( RadioPacketLengthModes_t )  RADIO_PACKET_VARIABLE_LENGTH;
-	   PacketParams.Params.Flrc.PayloadLength         =                               sizeof(SX1280_Send_Packet_t);
+	   PacketParams.Params.Flrc.PayloadLength         =  sizeof(SX1280_Send_Packet_t);
 	   PacketParams.Params.Flrc.CrcLength             = ( RadioCrcTypes_t )           RADIO_CRC_3_BYTES;
 	   PacketParams.Params.Flrc.Whitening             = ( RadioWhiteningModes_t )	  RADIO_WHITENING_OFF;
-
-	   ModulationParams.PacketType = PACKET_TYPE_FLRC;
-	   PacketParams.PacketType     = PACKET_TYPE_FLRC;
 
 
    	HAL_Delay(500);
    	radio0.Init();
-   	radio0.SetRegulatorMode(USE_DCDC);
+   	radio0.SetRegulatorMode(USE_LDO);
    	radio0.SetStandby( STDBY_XOSC);
    	radio0.SetLNAGainSetting(LNA_HIGH_SENSITIVITY_MODE);
    	radio0.SetPacketType( ModulationParams.PacketType );
@@ -173,6 +171,7 @@ uint8_t RoboIME_SX1280::sendPayload(SX1280_Send_Packet_t *payload, uint8_t paylo
 		{
 			if(AppState == APP_TX)  // Tx operation compleated
 			{
+
 				return 1;
 			}
 			else if (AppState == APP_TX_TIMEOUT)// Tx bad operation
@@ -190,13 +189,13 @@ uint8_t RoboIME_SX1280::sendPayload(SX1280_Send_Packet_t *payload, uint8_t paylo
  */
 uint8_t RoboIME_SX1280::receivePayload(SX1280_Send_Packet_t *payload){
 	uint8_t actualBufferSize = 0;
-	AppState = APP_LOWPOWER;
-	radio0.SetRx( ( TickTime_t ) { RADIO_TICK_SIZE_1000_US, 0x0000 } );
+	radio0.SetDioIrqParams( RxIrqMask, RxIrqMask, IRQ_RADIO_NONE, IRQ_RADIO_NONE );
+	radio0.SetRx(( TickTime_t ){ RADIO_TICK_SIZE_1000_US,RX_TIMEOUT_VALUE } );
 	oldCount = payloadTemp[25];
 	while(1){
+		radio0.GetPayload(payloadTemp, &actualBufferSize, sizeof(SX1280_Send_Packet_t));
 		if(AppState == APP_RX)
 		{
-			radio0.GetPayload(payloadTemp, &actualBufferSize, sizeof(SX1280_Send_Packet_t));
 			if (payloadTemp[25] != oldCount && payloadTemp[0] == roboId)
 			{
 				memcpy(payload, payloadTemp, sizeof(SX1280_Send_Packet_t));
@@ -232,10 +231,12 @@ uint8_t RoboIME_SX1280::receiveFeedback(SX1280_Feedback_Packet_t *payload)
 {
 	uint8_t actualBufferSize;
 	radio0.SetDioIrqParams( RxIrqMask, RxIrqMask, IRQ_RADIO_NONE, IRQ_RADIO_NONE );
-	radio0.SetRx( ( TickTime_t ) { RADIO_TICK_SIZE_1000_US, RX_TIMEOUT_VALUE} );
+	radio0.SetRx( ( TickTime_t ){ RADIO_TICK_SIZE_1000_US,RX_TIMEOUT_VALUE }  );
+
+	HAL_Delay(1);
 	oldCount = payloadTemp[25];
 	 	while(1){
-	 		if(AppState == APP_TX)
+	 		if(AppState == APP_RX)
 	 		{
 	 			radio0.GetPayload(payloadTemp, &actualBufferSize, sizeof(SX1280_Feedback_Packet_t));
 	 			if (payloadTemp[25] != oldCount && payloadTemp[0] == roboId)
@@ -250,31 +251,32 @@ uint8_t RoboIME_SX1280::receiveFeedback(SX1280_Feedback_Packet_t *payload)
 	 				 return 0;
 	 			}
 	 		}
-	 		else if (AppState == APP_TX_TIMEOUT)
+	 		else if (AppState == APP_RX_TIMEOUT)
 	 		{
 	 			return 0;
 	 		}
 	 	}
 
 }
-uint8_t RoboIME_SX1280::sendFeedback(void)
+uint8_t RoboIME_SX1280::sendFeedback(SX1280_Feedback_Packet_t *payload, uint8_t payloadSize)
 {
-	uint8_t buffFeedback[128];
-	buffFeedback[0] = 7;
-	radio0.SetDioIrqParams( TxIrqMask, TxIrqMask, IRQ_RADIO_NONE, IRQ_RADIO_NONE );
-	radio0.SendPayload( buffFeedback, 128,( TickTime_t ){ RADIO_TICK_SIZE_1000_US, TX_TIMEOUT_VALUE} );
-	while(1)
-	{
-		if(AppState == APP_TX)
-		{
-			HAL_GPIO_TogglePin(LD6_GPIO_Port, LD6_Pin);
-			return 1;
-		}
-		else if (AppState == APP_TX_TIMEOUT)
-		{
-			return 0;
-		}
-	}
+		radio0.SetDioIrqParams( TxIrqMask, TxIrqMask, IRQ_RADIO_NONE, IRQ_RADIO_NONE );
+		HAL_Delay(1);
+
+		radio0.SendPayload((uint8_t*)payload, payloadSize,( TickTime_t ){ RADIO_TICK_SIZE_1000_US,TX_TIMEOUT_VALUE } );
+		HAL_Delay(5);
+		while(1)
+			{
+				if(AppState == APP_TX)  // Tx operation compleated
+				{
+					return 1;
+				}
+				else if (AppState == APP_TX_TIMEOUT)// Tx bad operation
+				{
+					return 0;
+				}
+			}
+		return 1;
 }
 void OnTxDone( void )
 {

@@ -29,7 +29,6 @@ public:
 class SX1280_Feedback_Packet_t{
 public:
 	uint8_t id = 0;
-	uint32_t status = 0;
 	float battery;
 	float encoder1;
 	float encoder2;
@@ -49,7 +48,7 @@ public:
 	int setupDataRadio();
 	int setupFeedbackRadio();
 	uint8_t receiveFeedback(SX1280_Feedback_Packet_t *payload);
-	uint8_t  sendFeedback(void);
+	uint8_t sendFeedback(SX1280_Feedback_Packet_t *payload, uint8_t payloadSize);
 	void  OnTxDone( void );
 	void  OnRxDone( void );
 	void  OnTxTimeout( void );
