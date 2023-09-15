@@ -107,6 +107,12 @@ void Error_Handler(void);
 #define CHARGE_EN_GPIO_Port GPIOB
 #define M2_MBL_Pin GPIO_PIN_1
 #define M2_MBL_GPIO_Port GPIOB
+#define RADIO_2_BUSY_Pin GPIO_PIN_7
+#define RADIO_2_BUSY_GPIO_Port GPIOE
+#define RADIO_2_RST_Pin GPIO_PIN_8
+#define RADIO_2_RST_GPIO_Port GPIOE
+#define RADIO_2_CSn_Pin GPIO_PIN_9
+#define RADIO_2_CSn_GPIO_Port GPIOE
 #define M2_MBH_Pin GPIO_PIN_11
 #define M2_MBH_GPIO_Port GPIOE
 #define M3_MBH_Pin GPIO_PIN_13
@@ -181,6 +187,7 @@ void Error_Handler(void);
 #define M3_ENCB_GPIO_Port GPIOB
 #define MEMS_INT2_Pin GPIO_PIN_1
 #define MEMS_INT2_GPIO_Port GPIOE
+
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */

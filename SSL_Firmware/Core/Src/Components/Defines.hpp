@@ -19,6 +19,7 @@
 #define DEEPWEB
 //#define KICKER2019
 #define BTS7960 //Ponte H do robô UV
+#define ANTENNA 1
 
 
 
