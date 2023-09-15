@@ -48,7 +48,7 @@ Feedback sendPacket[NUM_ROBOTS];
 bool transmitter = false;
 
 SX1280_Send_Packet_t SX1280_Send_Packet[16];
-SX1280_Feedback_Packet_t SX1280_Feedback_Packet[1];
+SX1280_Feedback_Packet_t SX1280_Feedback_Packet;
 SX1280_Feedback_Packet_t SX1280_FeedbackReceive_Packet[16];
 uint8_t commCounter = 0;
 uint32_t usbCounter = 0;
@@ -206,6 +206,15 @@ void Start(){
 	SX1280_Send_Packet[0].kickspeedz = 0;
 	SX1280_Send_Packet[0].spinner = false;
 
+	SX1280_Feedback_Packet.battery = 1;
+	SX1280_Feedback_Packet.encoder1 = 1;
+	SX1280_Feedback_Packet.encoder2 = 3;
+	SX1280_Feedback_Packet.encoder2 = 4;
+	SX1280_Feedback_Packet.encoder3 = 5;
+	SX1280_Feedback_Packet.encoder4 = 6;
+	SX1280_Feedback_Packet.id = 2;
+	SX1280_Feedback_Packet.packetId = 1;
+
 /*DEFINING ROBOT ID*/
 	for(uint32_t i=0; i<2000; i++){
 		HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, (GPIO_PinState)(id & 1));
@@ -253,7 +262,8 @@ void Start(){
 	if(!transmitter){
 		radio_SX1280.setRobotId(id);
 	}
-
+	//GAmbiarra
+	radio_SX1280.setRobotId(1);
 	/* CHARGING CAPACITOR */
 	robo.R_Kick->kickCharged = GPIO_PIN_RESET;
 	robo.R_Kick->Charge(5);
@@ -289,14 +299,7 @@ void Start(){
 #endif
 
 /* --------- DEGUG DATA -----------*/
-SX1280_Feedback_Packet[0].battery = 1;
-SX1280_Feedback_Packet[0].encoder1 = 1;
-SX1280_Feedback_Packet[0].encoder2 = 3;
-SX1280_Feedback_Packet[0].encoder2 = 4;
-SX1280_Feedback_Packet[0].encoder3 = 5;
-SX1280_Feedback_Packet[0].encoder4 = 6;
-SX1280_Feedback_Packet[0].id = 0;
-SX1280_Feedback_Packet[0].packetId = 1;
+
 /* COMMUNICATION BACK AND FORTH */
 
 				/*SENDING PAYLOAD*/
@@ -317,7 +320,7 @@ SX1280_Feedback_Packet[0].packetId = 1;
 			HAL_GPIO_WritePin(LD6_GPIO_Port, LD6_Pin, GPIO_PIN_SET);
 			commCounter = 0;
 			/*SENDING FEEDBACK*/
-			if(radio_SX1280.sendFeedback(&SX1280_Feedback_Packet[0], sizeof(SX1280_Feedback_Packet[0]))){HAL_GPIO_TogglePin(LD4_GPIO_Port, LD5_Pin);} //Blink LED GREEN
+			if(radio_SX1280.sendFeedback(&SX1280_Feedback_Packet, sizeof(SX1280_Feedback_Packet))){HAL_GPIO_TogglePin(LD3_GPIO_Port, LD3_Pin);} //Blink LED GREEN
 		}else{
 			commCounter++;
 		}

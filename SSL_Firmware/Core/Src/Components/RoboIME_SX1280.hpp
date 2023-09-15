@@ -28,12 +28,13 @@ public:
 };
 class SX1280_Feedback_Packet_t{
 public:
-	uint8_t id = 0;
-	float battery;
-	float encoder1;
-	float encoder2;
-	float encoder3;
-	float encoder4;
+	uint8_t id = 2;
+	float battery = 3;
+	float encoder1 = 4;
+	float encoder2 = 0;
+	float encoder3 = 0;
+	float encoder4 = 0;
+	bool spinner = false;
 	uint8_t packetId = 0;
 };
 
@@ -43,7 +44,7 @@ public:
 	void GPIOCallback(void);
 	void setPayload( uint8_t *buffer, uint8_t size, uint8_t offset );
 	uint8_t  sendPayload (SX1280_Send_Packet_t *payload, uint8_t payloadSize);
-	uint8_t receivePayload(SX1280_Send_Packet_t *payload);
+	uint8_t  receivePayload(SX1280_Send_Packet_t *payload);
 	void setRX(void);
 	int setupDataRadio();
 	int setupFeedbackRadio();
