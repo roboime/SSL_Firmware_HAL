@@ -52,9 +52,9 @@ SX1280Hal::SX1280Hal( SPI_HandleTypeDef* hspi,
             BUSYPort( busyPort ), BUSYPin( busyPin )
 {
     RadioSpi = hspi;
-
-    //HAL_GPIO_WritePin(RadioNssPort, RadioNssPin, GPIO_PIN_SET);
-    //HAL_GPIO_WritePin(RadioResetPort, RadioResetPin, GPIO_PIN_SET);
+// tava comentado
+    HAL_GPIO_WritePin(RadioNssPort, RadioNssPin, GPIO_PIN_SET);
+    HAL_GPIO_WritePin(RadioResetPort, RadioResetPin, GPIO_PIN_SET);
 }
 
 SX1280Hal::~SX1280Hal( void )
@@ -80,7 +80,7 @@ void SX1280Hal::Reset( void )
     HAL_Delay( 50 );
     HAL_GPIO_WritePin(RadioResetPort, RadioResetPin, GPIO_PIN_SET);
     HAL_Delay( 20 );
-   // __enable_irq( );
+    //__enable_irq( );
 }
 
 void SX1280Hal::Wakeup( void )

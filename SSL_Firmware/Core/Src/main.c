@@ -406,7 +406,7 @@ static void MX_SPI2_Init(void)
   hspi2.Init.CLKPolarity = SPI_POLARITY_LOW;
   hspi2.Init.CLKPhase = SPI_PHASE_1EDGE;
   hspi2.Init.NSS = SPI_NSS_SOFT;
-  hspi2.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_32;
+  hspi2.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_16;
   hspi2.Init.FirstBit = SPI_FIRSTBIT_MSB;
   hspi2.Init.TIMode = SPI_TIMODE_DISABLE;
   hspi2.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
@@ -1023,10 +1023,10 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOD_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOE, CS_I2C_SPI_Pin|RADIO_2_CSn_Pin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(GPIOE, CS_I2C_SPI_Pin|SX1280_1_CSn_Pin, GPIO_PIN_SET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOE, M1_MBL_Pin|M1_MAL_Pin|RADIO_2_RST_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOE, M1_MBL_Pin|M1_MAL_Pin|SX1280_1_RST_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOC, M0_MBL_Pin|M2_MAL_Pin|SX1280_RST_Pin, GPIO_PIN_RESET);
@@ -1048,10 +1048,10 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : CS_I2C_SPI_Pin M1_MBL_Pin M1_MAL_Pin RADIO_2_RST_Pin
-                           RADIO_2_CSn_Pin */
-  GPIO_InitStruct.Pin = CS_I2C_SPI_Pin|M1_MBL_Pin|M1_MAL_Pin|RADIO_2_RST_Pin
-                          |RADIO_2_CSn_Pin;
+  /*Configure GPIO pins : CS_I2C_SPI_Pin M1_MBL_Pin M1_MAL_Pin SX1280_1_RST_Pin
+                           SX1280_1_CSn_Pin */
+  GPIO_InitStruct.Pin = CS_I2C_SPI_Pin|M1_MBL_Pin|M1_MAL_Pin|SX1280_1_RST_Pin
+                          |SX1280_1_CSn_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -1077,11 +1077,23 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : RADIO_2_BUSY_Pin */
-  GPIO_InitStruct.Pin = RADIO_2_BUSY_Pin;
+  /*Configure GPIO pin : busy_Pin */
+  GPIO_InitStruct.Pin = busy_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(RADIO_2_BUSY_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(busy_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : SX1280_1_BUSY_Pin */
+  GPIO_InitStruct.Pin = SX1280_1_BUSY_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(SX1280_1_BUSY_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : SX1280_1_IRQ_Pin SX1280_2_IRQ_Pin */
+  GPIO_InitStruct.Pin = SX1280_1_IRQ_Pin|SX1280_2_IRQ_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
 
   /*Configure GPIO pins : CHIP_KICK_Pin KICK_Pin LD4_Pin LD3_Pin
                            LD5_Pin LD6_Pin SX1280_CSn_Pin USD_CS_Pin
@@ -1115,6 +1127,9 @@ static void MX_GPIO_Init(void)
   /* EXTI interrupt init*/
   HAL_NVIC_SetPriority(EXTI9_5_IRQn, 2, 0);
   HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
+
+  HAL_NVIC_SetPriority(EXTI15_10_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
 
 /* USER CODE BEGIN MX_GPIO_Init_2 */
 /* USER CODE END MX_GPIO_Init_2 */

@@ -163,8 +163,11 @@ void USBpacketReceivedCallback(void){
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
 	switch (GPIO_Pin){
 	case GPIO_PIN_5:
-		radio_SX1280.GPIOCallback();
+		radio_SX1280.GPIOCallback(GPIO_Pin);
 		break;
+	case GPIO_PIN_12:
+			radio_SX1280.GPIOCallback(GPIO_Pin);
+			break;
 	default:
 		break;
 	}
@@ -262,8 +265,7 @@ void Start(){
 	if(!transmitter){
 		radio_SX1280.setRobotId(id);
 	}
-	//GAmbiarra
-	radio_SX1280.setRobotId(1);
+
 	/* CHARGING CAPACITOR */
 	robo.R_Kick->kickCharged = GPIO_PIN_RESET;
 	robo.R_Kick->Charge(5);
@@ -307,8 +309,8 @@ void Start(){
 				HAL_GPIO_TogglePin(LD6_GPIO_Port, LD6_Pin);
 				if(radio_SX1280.sendPayload(&SX1280_Send_Packet[i], sizeof(SX1280_Send_Packet[i]))){HAL_GPIO_TogglePin(LD4_GPIO_Port, LD4_Pin);} //Blink LED
 				/*RECEIVING FEEDBACK*/
-				CDC_Transmit_FS((uint8_t *)"Receiving Feedback Package\n",strlen("Receiving Feedback\n"));
-				if(radio_SX1280.receiveFeedback((&SX1280_FeedbackReceive_Packet[i]))){HAL_GPIO_TogglePin(LD4_GPIO_Port, LD5_Pin);} //Blink LED
+				//CDC_Transmit_FS((uint8_t *)"Receiving Feedback Package\n",strlen("Receiving Feedback\n"));
+				//if(radio_SX1280.receiveFeedback((&SX1280_FeedbackReceive_Packet[i]))){HAL_GPIO_TogglePin(LD4_GPIO_Port, LD5_Pin);} //Blink LED
 			//	CDC_Transmit_FS((uint8_t *)SX1280_FeedbackReceive_Packet[i].battery,strlen(SX1280_FeedbackReceive_Packet[i].battery));
 			}
 		}

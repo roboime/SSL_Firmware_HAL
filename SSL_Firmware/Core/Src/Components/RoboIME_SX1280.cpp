@@ -9,7 +9,7 @@
 #include "RoboIME_SX1280.hpp"
 #include "Defines.hpp"
 
-#define RX_TIMEOUT_VALUE 100
+#define RX_TIMEOUT_VALUE 1
 #define TX_TIMEOUT_VALUE  100
 extern UART_HandleTypeDef huart2;
 extern TIM_HandleTypeDef htim6;
@@ -70,14 +70,14 @@ RadioCallbacks_t callbacks =
     NULL,             	// cadDone
 };
 
-
+//SX1280Hal radio0(&hspi2, SX1280_1_CSn_GPIO_Port, SX1280_1_CSn_Pin, SX1280_1_BUSY_GPIO_Port, SX1280_1_BUSY_Pin, SX1280_1_RST_GPIO_Port, SX1280_1_RST_Pin, &callbacks);
 SX1280Hal radio0(&hspi1, SX1280_CSn_GPIO_Port, SX1280_CSn_Pin, SX1280_BUSY_GPIO_Port, SX1280_BUSY_Pin, SX1280_RST_GPIO_Port, SX1280_RST_Pin, &callbacks);
 // Se for robo -> recebe e envia
 // Se for antena -> envia
 
 #ifdef ANTENNA
-
-SX1280Hal radio1(&hspi2, RADIO_2_CSn_GPIO_Port, RADIO_2_CSn_Pin, RADIO_2_BUSY_GPIO_Port, RADIO_2_BUSY_Pin, RADIO_2_RST_GPIO_Port, RADIO_2_RST_Pin, &callbacks);
+//SX1280Hal radio1(&hspi1, SX1280_CSn_GPIO_Port, SX1280_CSn_Pin, SX1280_BUSY_GPIO_Port, SX1280_BUSY_Pin, SX1280_RST_GPIO_Port, SX1280_RST_Pin, &callbacks);
+SX1280Hal radio1(&hspi2, SX1280_1_CSn_GPIO_Port, SX1280_1_CSn_Pin, SX1280_1_BUSY_GPIO_Port, SX1280_1_BUSY_Pin, SX1280_1_RST_GPIO_Port, SX1280_1_RST_Pin, &callbacks);
 // Se for antena -> recebe
 
 #endif
@@ -86,8 +86,14 @@ SX1280Hal radio1(&hspi2, RADIO_2_CSn_GPIO_Port, RADIO_2_CSn_Pin, RADIO_2_BUSY_GP
 //SX1280Hal radio1(&hspi2, SX_FB_NSS_GPIO_Port, SX_FB_NSS_Pin, SX_FB_BUSY_GPIO_Port, SX_FB_BUS0_Pin, SX_FB_RST_GPIO_Port, SX_FB_RST_Pin, &callbacks);
 
 //Public methods
-void RoboIME_SX1280::GPIOCallback(void){
-	radio0.HalInterruptCallback();
+void RoboIME_SX1280::GPIOCallback(uint32_t GPIO){
+	if(GPIO >> 5  == 1)
+	{
+		radio0.HalInterruptCallback();
+	}
+	else if (GPIO >> 12 == 1){
+		radio1.HalInterruptCallback();
+	}
 
 }
 int RoboIME_SX1280::setupDataRadio(){
@@ -109,7 +115,7 @@ int RoboIME_SX1280::setupDataRadio(){
 
    	HAL_Delay(500);
    	radio0.Init();
-   	radio0.SetRegulatorMode(USE_LDO);
+   	radio0.SetRegulatorMode(USE_DCDC);
    	radio0.SetStandby( STDBY_XOSC);
    	radio0.SetLNAGainSetting(LNA_HIGH_SENSITIVITY_MODE);
    	radio0.SetPacketType( ModulationParams.PacketType );
@@ -174,16 +180,18 @@ int count =1;
 
 uint8_t RoboIME_SX1280::sendPayload(SX1280_Send_Packet_t *payload, uint8_t payloadSize){
 
-
+	if (count == 1)
+	{
 	radio0.SetDioIrqParams( TxIrqMask, TxIrqMask, IRQ_RADIO_NONE, IRQ_RADIO_NONE );
-	HAL_Delay(1);
-	radio0.SendPayload((uint8_t*)payload, payloadSize,( TickTime_t ){ RADIO_TICK_SIZE_1000_US,TX_TIMEOUT_VALUE } );
 	HAL_Delay(5);
+	count ++;
+	}
+	radio0.SendPayload((uint8_t*)payload, payloadSize,( TickTime_t ){ RADIO_TICK_SIZE_1000_US,TX_TIMEOUT_VALUE });
+	HAL_Delay(1);
 	while(1)
 		{
 			if(AppState == APP_TX)  // Tx operation compleated
 			{
-
 				return 1;
 			}
 			else if (AppState == APP_TX_TIMEOUT)// Tx bad operation
@@ -202,8 +210,8 @@ uint8_t RoboIME_SX1280::sendPayload(SX1280_Send_Packet_t *payload, uint8_t paylo
 uint8_t RoboIME_SX1280::receivePayload(SX1280_Send_Packet_t *payload){
 	uint8_t actualBufferSize = 0;
 	radio0.SetDioIrqParams( RxIrqMask, RxIrqMask, IRQ_RADIO_NONE, IRQ_RADIO_NONE );
-	HAL_Delay(10);
-	radio0.SetRx(( TickTime_t ){ RADIO_TICK_SIZE_1000_US,RX_TIMEOUT_VALUE } );
+	HAL_Delay(4);
+	radio0.SetRx(( TickTime_t ){ RADIO_TICK_SIZE_1000_US, RX_TIMEOUT_VALUE } );
 	oldCount = payloadTemp[25];
 	while(1){
 
@@ -213,17 +221,18 @@ uint8_t RoboIME_SX1280::receivePayload(SX1280_Send_Packet_t *payload){
 			if (payloadTemp[25] != oldCount && payloadTemp[0] == roboId)
 			{
 				memcpy(payload, payloadTemp, sizeof(SX1280_Send_Packet_t));
-				HAL_GPIO_TogglePin(LD4_GPIO_Port, LD4_Pin);
+				HAL_GPIO_TogglePin(LD3_GPIO_Port, LD3_Pin);
 				return actualBufferSize;
 			}
 			else
 			{
-				// HAL_GPIO_TogglePin(LD3_GPIO_Port, LD3_Pin);
+				 HAL_GPIO_TogglePin(LD3_GPIO_Port, LD3_Pin);
 				 return 0;
 			}
 		}
 		else if (AppState == APP_RX_TIMEOUT)
 		{
+			HAL_GPIO_TogglePin(LD5_GPIO_Port, LD5_Pin);
 			return 0;
 		}
 	}
@@ -243,45 +252,34 @@ void RoboIME_SX1280::setRX(void)
 
 uint8_t RoboIME_SX1280::receiveFeedback(SX1280_Feedback_Packet_t *payload) // MASTER
 {
-	uint8_t actualBufferSize;
-
-#ifndef ANTENNA
-	radio0.SetDioIrqParams( RxIrqMask, RxIrqMask, IRQ_RADIO_NONE, IRQ_RADIO_NONE );
-	HAL_Delay(2);
-	radio0.SetRx( ( TickTime_t ){ RADIO_TICK_SIZE_1000_US,RX_TIMEOUT_VALUE });
-#else
-	radio1.SetDioIrqParams( RxIrqMask, RxIrqMask, IRQ_RADIO_NONE, IRQ_RADIO_NONE );
-	HAL_Delay(2);
-	radio1.SetRx( ( TickTime_t ){ RADIO_TICK_SIZE_1000_US,RX_TIMEOUT_VALUE });
-#endif
-
+	uint8_t actualBufferSize = 0;
+	//radio1.SetDioIrqParams( RxIrqMask, RxIrqMask, IRQ_RADIO_NONE, IRQ_RADIO_NONE );
+	HAL_Delay(4);
+	//radio1.SetRx(( TickTime_t ){ RADIO_TICK_SIZE_1000_US, RX_TIMEOUT_VALUE } );
 	oldCount = payloadTemp[25];
-	 	while(1){
-	 		if((!transmitter && AppState == APP_RX) || (transmitter && AppState2 == APP_RX))
-	 		{
-	 			/* Se for antena ele vai executar get payload em radio1. Se não, o fará em rádio 0 */
-	 			if (transmitter)
-	 				radio1.GetPayload(payloadTemp, &actualBufferSize, sizeof(SX1280_Feedback_Packet_t));
-	 			else
-	 				radio0.GetPayload(payloadTemp, &actualBufferSize, sizeof(SX1280_Feedback_Packet_t));
+	while(1){
 
-	 			if (payloadTemp[25] != oldCount && payloadTemp[0] == roboId)
-	 			{
-	 				memcpy(payload, payloadTemp, sizeof(SX1280_Feedback_Packet_t));
-	 				HAL_GPIO_TogglePin(LD3_GPIO_Port, LD3_Pin);
-	 				return actualBufferSize;
-	 			}
-	 			else
-	 			{
-	 				 HAL_GPIO_TogglePin(LD3_GPIO_Port, LD3_Pin);
-	 				 return 0;
-	 			}
-	 		}
-	 		else if (AppState == APP_RX_TIMEOUT || AppState2 == APP_RX_TIMEOUT)
-	 		{
-	 			return 0;
-	 		}
-	 	}
+		if(AppState == APP_RX)
+		{
+			//radio1.GetPayload(payloadTemp, &actualBufferSize, sizeof(SX1280_Send_Packet_t));
+			if (payloadTemp[25] != 0)
+			{
+				memcpy(payload, payloadTemp, sizeof(SX1280_Send_Packet_t));
+				HAL_GPIO_TogglePin(LD3_GPIO_Port, LD4_Pin);
+				return actualBufferSize;
+			}
+			else
+			{
+				 HAL_GPIO_TogglePin(LD3_GPIO_Port, LD3_Pin);
+				 return 0;
+			}
+		}
+		else if (AppState == APP_RX_TIMEOUT)
+		{
+			HAL_GPIO_TogglePin(LD5_GPIO_Port, LD5_Pin);
+			return 0;
+		}
+	}
 
 }
 uint8_t RoboIME_SX1280::sendFeedback(SX1280_Feedback_Packet_t *payload, uint8_t payloadSize) // SLAVE
@@ -311,8 +309,14 @@ void OnTxDone( void )
 void  OnRxDone( void )
 {
 	if (!transmitter)
+	{
 		AppState = APP_RX;
-	else AppState2 = APP_RX;
+	}
+
+	else
+		{
+		AppState2 = APP_RX;
+		}
 }
 
 void OnTxTimeout( void )

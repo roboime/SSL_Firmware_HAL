@@ -41,7 +41,7 @@ public:
 class RoboIME_SX1280 {
 public:
 	int  setRobotId(uint8_t id);
-	void GPIOCallback(void);
+	void GPIOCallback(uint32_t GPIO);
 	void setPayload( uint8_t *buffer, uint8_t size, uint8_t offset );
 	uint8_t  sendPayload (SX1280_Send_Packet_t *payload, uint8_t payloadSize);
 	uint8_t  receivePayload(SX1280_Send_Packet_t *payload);
