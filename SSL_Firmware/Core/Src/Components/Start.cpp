@@ -247,6 +247,9 @@ void Start(){
 
 /* RADIO SETUP */
 	radio_SX1280.setupDataRadio();
+#ifdef ANTENNA
+	//radio_SX1280.setupFeedbackRadio();
+#endif
 
 /* ROBOT INITIAL STATE VERIFICATION */
 
@@ -261,7 +264,7 @@ void Start(){
 		debug.info("PE15 set as receiver (robot)");
 	}
 
-	/* ----------------- MASTER ----------------- */
+
 	if(!transmitter){
 		radio_SX1280.setRobotId(id);
 	}
@@ -272,6 +275,7 @@ void Start(){
 
 	/* COM LOOP */
 	while(1){
+		/* ----------------- MASTER ----------------- */
 		if(transmitter){
 			for(uint8_t i=0; i<NUM_ROBOTS; i++){
 				SX1280_Send_Packet[i].id = i;
@@ -307,11 +311,18 @@ void Start(){
 				/*SENDING PAYLOAD*/
 				CDC_Transmit_FS((uint8_t *)"Sending Package\n",strlen("Sending Package\n"));
 				HAL_GPIO_TogglePin(LD6_GPIO_Port, LD6_Pin);
-				if(radio_SX1280.sendPayload(&SX1280_Send_Packet[i], sizeof(SX1280_Send_Packet[i]))){HAL_GPIO_TogglePin(LD4_GPIO_Port, LD4_Pin);} //Blink LED
+				if(radio_SX1280.sendPayload(&SX1280_Send_Packet[i], sizeof(SX1280_Send_Packet[i]))){HAL_GPIO_TogglePin(LD4_GPIO_Port, LD4_Pin);} //Green LED Blinking
+
+#ifdef ANTENNA
 				/*RECEIVING FEEDBACK*/
-				//CDC_Transmit_FS((uint8_t *)"Receiving Feedback Package\n",strlen("Receiving Feedback\n"));
-				//if(radio_SX1280.receiveFeedback((&SX1280_FeedbackReceive_Packet[i]))){HAL_GPIO_TogglePin(LD4_GPIO_Port, LD5_Pin);} //Blink LED
-			//	CDC_Transmit_FS((uint8_t *)SX1280_FeedbackReceive_Packet[i].battery,strlen(SX1280_FeedbackReceive_Packet[i].battery));
+				CDC_Transmit_FS((uint8_t *)"Receiving Feedback Package\n",strlen("Receiving Feedback\n"));
+				//if(radio_SX1280.receiveFeedback((SX1280_FeedbackReceive_Packet))){HAL_GPIO_TogglePin(LD3_GPIO_Port, LD3_Pin);} //Orange LED Blinking
+
+				/* DEBUG */
+				char buffer[10];
+				sprintf(buffer, "%d", SX1280_FeedbackReceive_Packet[i].id);
+				CDC_Transmit_FS((uint8_t *)buffer,strlen(buffer));
+#endif
 			}
 		}
 
@@ -326,6 +337,7 @@ void Start(){
 		}else{
 			commCounter++;
 		}
+		c
 		}
 	}
 }

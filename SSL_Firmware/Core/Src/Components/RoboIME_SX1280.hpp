@@ -59,6 +59,7 @@ public:
 	static const uint8_t bufferSize = sizeof(SX1280_Send_Packet_t);
 private:
 	uint8_t payloadTemp[bufferSize];
+	uint8_t payloadTempFeedback[bufferSize];
 		uint8_t roboId;
 		uint8_t oldCount;
 		PacketParams_t PacketParams;

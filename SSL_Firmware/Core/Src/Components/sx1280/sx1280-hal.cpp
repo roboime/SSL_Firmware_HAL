@@ -53,8 +53,8 @@ SX1280Hal::SX1280Hal( SPI_HandleTypeDef* hspi,
 {
     RadioSpi = hspi;
 // tava comentado
-    HAL_GPIO_WritePin(RadioNssPort, RadioNssPin, GPIO_PIN_SET);
-    HAL_GPIO_WritePin(RadioResetPort, RadioResetPin, GPIO_PIN_SET);
+   HAL_GPIO_WritePin(RadioNssPort, RadioNssPin, GPIO_PIN_SET);
+   HAL_GPIO_WritePin(RadioResetPort, RadioResetPin, GPIO_PIN_SET);
 }
 
 SX1280Hal::~SX1280Hal( void )
