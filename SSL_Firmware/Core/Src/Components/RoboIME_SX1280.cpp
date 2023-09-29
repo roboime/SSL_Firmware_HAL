@@ -21,6 +21,9 @@ extern SPI_HandleTypeDef hspi1;
 extern SerialDebug debug;
 extern bool transmitter;
 
+uint32_t ComFrequency = 2462000000UL;
+uint32_t FeedbackFrequency = 2458000000UL;
+
 typedef enum
 {
     APP_LOWPOWER,
@@ -131,18 +134,14 @@ int RoboIME_SX1280::setupDataRadio(){
    	radio0.Init();
    	radio0.SetRegulatorMode(USE_DCDC);
    	radio0.SetStandby( STDBY_RC);
-   //	radio0.SetStandby( STDBY_XOSC); // teste
-
  	radio0.SetLNAGainSetting(LNA_HIGH_SENSITIVITY_MODE);
    	radio0.SetPacketType( ModulationParams.PacketType );
    	radio0.SetModulationParams( &ModulationParams );
    	radio0.SetPacketParams( &PacketParams );
 
-#ifdef INTEL
+
    	radio0.SetRfFrequency( 2462000000UL );
-#else
-   	radio0.SetRfFrequency( 2458000000UL );
-#endif
+
    	radio0.SetBufferBaseAddresses( 0x00, 0x00 );
 	radio0.SetTxParams( 0, RADIO_RAMP_20_US );
 
@@ -176,11 +175,9 @@ int RoboIME_SX1280::setupFeedbackRadio(){
    	radio1.SetModulationParams( &ModulationParams1 );
    	radio1.SetPacketParams( &PacketParams1 );
 
-#ifdef INTEL
-   	radio1.SetRfFrequency( 2462000000UL );
-#else
+
    	radio1.SetRfFrequency( 2458000000UL );
-#endif
+
 
 	radio1.SetBufferBaseAddresses( 0x00, 0x00 );
 	radio1.SetTxParams( 0, RADIO_RAMP_20_US );
@@ -264,9 +261,11 @@ while(1){
 
 /* ----------  ROBOT FUNCTIONS ------------ */
 uint8_t RoboIME_SX1280::receivePayload(SX1280_Send_Packet_t *payload){
+	radio0.SetRfFrequency( 2462000000UL );
+	HAL_Delay(1);
 	uint8_t actualBufferSize = 0;
 	radio0.SetDioIrqParams( RxIrqMask, RxIrqMask, IRQ_RADIO_NONE, IRQ_RADIO_NONE );
-	HAL_Delay(1);
+	HAL_Delay(3);
 	radio0.SetRx(( TickTime_t ){ RADIO_TICK_SIZE_1000_US, RX_TIMEOUT_VALUE} );
 	oldCount = payloadTemp[25];
 	while(1){
@@ -295,8 +294,10 @@ uint8_t RoboIME_SX1280::receivePayload(SX1280_Send_Packet_t *payload){
 
 uint8_t RoboIME_SX1280::sendFeedback(SX1280_Feedback_Packet_t *payload, uint8_t payloadSize) // SLAVE
 {
+		radio0.SetRfFrequency( 2458000000UL );
+		HAL_Delay(1);
 		radio0.SetDioIrqParams( TxIrqMask, TxIrqMask, IRQ_RADIO_NONE, IRQ_RADIO_NONE );
-		//HAL_Delay(1);
+		HAL_Delay(1);
 		radio0.SendPayload((uint8_t*)payload, payloadSize,( TickTime_t ){ RADIO_TICK_SIZE_1000_US,TX_TIMEOUT_VALUE } );
 		//HAL_Delay(5);
 		while(1)
