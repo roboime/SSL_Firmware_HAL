@@ -212,7 +212,6 @@ void Start(){
 	SX1280_Feedback_Packet.battery = 1;
 	SX1280_Feedback_Packet.encoder1 = 1;
 	SX1280_Feedback_Packet.encoder2 = 3;
-	SX1280_Feedback_Packet.encoder2 = 4;
 	SX1280_Feedback_Packet.encoder3 = 5;
 	SX1280_Feedback_Packet.encoder4 = 6;
 	SX1280_Feedback_Packet.id = 2;
@@ -248,7 +247,7 @@ void Start(){
 /* RADIO SETUP */
 	radio_SX1280.setupDataRadio();
 #ifdef ANTENNA
-	//radio_SX1280.setupFeedbackRadio();
+	radio_SX1280.setupFeedbackRadio();
 #endif
 
 /* ROBOT INITIAL STATE VERIFICATION */
@@ -316,7 +315,7 @@ void Start(){
 #ifdef ANTENNA
 				/*RECEIVING FEEDBACK*/
 				CDC_Transmit_FS((uint8_t *)"Receiving Feedback Package\n",strlen("Receiving Feedback\n"));
-				//if(radio_SX1280.receiveFeedback((SX1280_FeedbackReceive_Packet))){HAL_GPIO_TogglePin(LD3_GPIO_Port, LD3_Pin);} //Orange LED Blinking
+                            				if(radio_SX1280.receiveFeedback((SX1280_FeedbackReceive_Packet))){HAL_GPIO_TogglePin(LD3_GPIO_Port, LD3_Pin);} //Orange LED Blinking
 
 				/* DEBUG */
 				char buffer[10];
@@ -337,7 +336,7 @@ void Start(){
 		}else{
 			commCounter++;
 		}
-		c
+
 		}
 	}
 }

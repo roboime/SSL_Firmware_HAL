@@ -53,8 +53,8 @@ SX1280Hal::SX1280Hal( SPI_HandleTypeDef* hspi,
 {
     RadioSpi = hspi;
 // tava comentado
-   HAL_GPIO_WritePin(RadioNssPort, RadioNssPin, GPIO_PIN_SET);
-   HAL_GPIO_WritePin(RadioResetPort, RadioResetPin, GPIO_PIN_SET);
+  // HAL_GPIO_WritePin(RadioNssPort, RadioNssPin, GPIO_PIN_SET);
+   //HAL_GPIO_WritePin(RadioResetPort, RadioResetPin, GPIO_PIN_SET);
 }
 
 SX1280Hal::~SX1280Hal( void )
@@ -64,7 +64,7 @@ SX1280Hal::~SX1280Hal( void )
 void SX1280Hal::IoIrqInit( DioIrqHandler irqHandler )
 {
     assert_param( RadioSpi != NULL);
-    // BUSY.mode( PullNone );
+    //BUSY.mode( PullNone );
     //Conexão entre interrupt do HAL e da biblioteca
     //irqHandler é o ponteiro para a função que deve ser chamada em caso de interrupt
     RadioIrqHandler = irqHandler;
@@ -74,13 +74,15 @@ void SX1280Hal::Reset( void )
 {
 	//Por que desliga o IRQ?
 	/* Habilitar o delay de outra forma*/
-    //__disable_irq( );
+	//HAL_GPIO_WritePin(RadioNssPort, RadioNssPin, GPIO_PIN_SET);
+	//HAL_GPIO_WritePin(RadioResetPort, RadioResetPin, GPIO_PIN_SET);
+    //disable_irq( ); // tava comentado
     HAL_Delay( 20 );
     HAL_GPIO_WritePin(RadioResetPort, RadioResetPin, GPIO_PIN_RESET);
     HAL_Delay( 50 );
     HAL_GPIO_WritePin(RadioResetPort, RadioResetPin, GPIO_PIN_SET);
     HAL_Delay( 20 );
-    //__enable_irq( );
+    //__enable_irq( ); // tava comentado
 }
 
 void SX1280Hal::Wakeup( void )
@@ -176,6 +178,7 @@ void SX1280Hal::WriteRegister( uint16_t address, uint8_t value )
 {
     WriteRegister( address, &value, 1 );
 }
+
 
 void SX1280Hal::ReadRegister( uint16_t address, uint8_t *buffer, uint16_t size )
 {

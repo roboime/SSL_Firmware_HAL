@@ -55,20 +55,22 @@ public:
 	void  OnTxTimeout( void );
 	void OnRxTimeout( void );
 	void  OnRxError( IrqErrorCode_t errorCode );
-
 	static const uint8_t bufferSize = sizeof(SX1280_Send_Packet_t);
 private:
 	uint8_t payloadTemp[bufferSize];
 	uint8_t payloadTempFeedback[bufferSize];
-		uint8_t roboId;
-		uint8_t oldCount;
-		PacketParams_t PacketParams;
-		PacketStatus_t PacketStatus;
-		ModulationParams_t ModulationParams;
+	uint8_t roboId;
+	uint8_t oldCount;
+	PacketParams_t PacketParams;
+	PacketParams_t PacketParams1;
+	PacketStatus_t PacketStatus;
+	PacketStatus_t PacketStatus1;
+	ModulationParams_t ModulationParams;
+	ModulationParams_t ModulationParams1;
 		//uint8_t syncWord[5] = { 0xDD, 0xA0, 0x96, 0x69, 0xDD };
 
-		uint16_t TxIrqMask = IRQ_TX_DONE | IRQ_RX_TX_TIMEOUT;
-		uint16_t RxIrqMask = IRQ_RX_DONE | IRQ_RX_TX_TIMEOUT;
+	uint16_t TxIrqMask = IRQ_TX_DONE | IRQ_RX_TX_TIMEOUT;
+	uint16_t RxIrqMask = IRQ_RX_DONE | IRQ_RX_TX_TIMEOUT;
 
 
 	//Private variables
