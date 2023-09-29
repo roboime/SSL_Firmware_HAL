@@ -196,7 +196,7 @@ uint8_t RoboIME_SX1280::sendPayload(SX1280_Send_Packet_t *payload, uint8_t paylo
 	if (count == 1)
 	{
 	radio0.SetDioIrqParams( TxIrqMask, TxIrqMask, IRQ_RADIO_NONE, IRQ_RADIO_NONE );
-	//HAL_Delay(5);
+	HAL_Delay(5);
 	count ++;
 	}
 	radio0.SendPayload((uint8_t*)payload, payloadSize,( TickTime_t ){ RADIO_TICK_SIZE_1000_US,TX_TIMEOUT_VALUE });
@@ -216,13 +216,20 @@ uint8_t RoboIME_SX1280::sendPayload(SX1280_Send_Packet_t *payload, uint8_t paylo
 
 }
 #ifdef ANTENNA
+uint8_t count_2 = 1;
 uint8_t RoboIME_SX1280::receiveFeedback(SX1280_Feedback_Packet_t *payload)
 {
-	radio1.SetRx(( TickTime_t ){ RADIO_TICK_SIZE_1000_US, RX_TIMEOUT_VALUE } );
+	if (count_2 == 1)
+		{
+		radio1.SetDioIrqParams( RxIrqMask, RxIrqMask, IRQ_RADIO_NONE, IRQ_RADIO_NONE );
+		//HAL_Delay(5);
+		count_2 ++;
+		}
+	radio1.SetRx(( TickTime_t ){ RADIO_TICK_SIZE_1000_US, 2 } );
 	uint8_t actualBufferSize = 0;
 	uint8_t feedId = 0 ;
 	oldCount = payloadTempFeedback[25];
-
+while(1){
 		if(AppState2 == APP_RX)
 		{
 			AppState2 = APP_LOWPOWER;
@@ -247,12 +254,8 @@ uint8_t RoboIME_SX1280::receiveFeedback(SX1280_Feedback_Packet_t *payload)
 			AppState2 = APP_LOWPOWER;
 			return 0;
 		}
-		else
-		{
-			AppState2 = APP_LOWPOWER;
-			return 0;
-		}
 
+}
 	}
 
 
