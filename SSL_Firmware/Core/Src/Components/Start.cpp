@@ -315,7 +315,7 @@ void Start(){
 #ifdef ANTENNA
 				/*RECEIVING FEEDBACK*/
 				CDC_Transmit_FS((uint8_t *)"Receiving Feedback Package\n",strlen("Receiving Feedback\n"));
-                            				if(radio_SX1280.receiveFeedback((SX1280_FeedbackReceive_Packet))){HAL_GPIO_TogglePin(LD3_GPIO_Port, LD3_Pin);} //Orange LED Blinking
+                if(radio_SX1280.receiveFeedback((SX1280_FeedbackReceive_Packet))){HAL_GPIO_TogglePin(LD3_GPIO_Port, LD3_Pin);} //Orange LED Blinking
 
 				/* DEBUG */
 				char buffer[10];
