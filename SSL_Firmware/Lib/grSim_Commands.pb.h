@@ -23,7 +23,7 @@ typedef struct _grSim_Robot_Command {
     float veltangent; 
     float velnormal; 
     float velangular; 
-    bool spinner; 
+    uint8_t spinner;
     bool wheelsspeed; 
     bool has_wheel1;
     float wheel1; 

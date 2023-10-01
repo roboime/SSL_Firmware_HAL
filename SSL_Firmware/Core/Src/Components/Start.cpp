@@ -88,6 +88,29 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 		if(!transmitter ){
 			/*FEEDBACK DATA*/
 
+			HAL_GPIO_TogglePin(LD3_GPIO_Port,LD3_Pin);
+			SX1280_Feedback_Packet.packetId++;
+			SX1280_Feedback_Packet.battery = robo.calc_vbat();
+			if(robo.hasBall()){
+				SX1280_Feedback_Packet.status |= 1<<1;
+			}else{
+				SX1280_Feedback_Packet.status &= ~(1<<1);
+			}
+			if(robo.R_Kick->kickCharged){
+				SX1280_Feedback_Packet.status |= 1<<2;
+			}else{
+				SX1280_Feedback_Packet.status &= ~(1<<2);
+			}
+			radio_SX1280.sendFeedback(&SX1280_Feedback_Packet, sizeof(SX1280_Feedback_Packet));
+			if(radio_SX1280.receivePayload((&SX1280_Send_Packet[0]))){
+				HAL_GPIO_TogglePin(LD4_GPIO_Port, LD4_Pin);
+				HAL_GPIO_WritePin(LD6_GPIO_Port, LD6_Pin, GPIO_PIN_SET);
+				commCounter = 0;
+			}else{
+				commCounter++;
+			}
+
+
 			/*NORMAL DATA*/
 			if(HAL_GPIO_ReadPin(S1_GPIO_Port, S1_Pin)){
 					HAL_GPIO_WritePin(LD5_GPIO_Port, LD5_Pin,GPIO_PIN_SET);
@@ -99,7 +122,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 				if(checaNotANumber(SX1280_Send_Packet[0])){
 					robo.set_robo_speed(SX1280_Send_Packet[0].velnormal, SX1280_Send_Packet[0].veltangent, SX1280_Send_Packet[0].velangular);
 					robo.set_kick(SX1280_Send_Packet[0].kickspeedx,SX1280_Send_Packet[0].kickspeedz);
-					robo.set_dribble(SX1280_Send_Packet[0].spinner);
+					robo.set_dribble(SX1280_Send_Packet[0].status & 0b00000001);
 				}else{
 					//Perdeu a comunicação
 					robo.set_robo_speed(0, 0, 0);
@@ -156,7 +179,7 @@ void USBpacketReceivedCallback(void){
 		SX1280_Send_Packet[receivedPacket.id].veltangent = receivedPacket.veltangent;
 		SX1280_Send_Packet[receivedPacket.id].velnormal = receivedPacket.velnormal;
 		SX1280_Send_Packet[receivedPacket.id].velangular = receivedPacket.velangular;
-		SX1280_Send_Packet[receivedPacket.id].spinner = receivedPacket.spinner;
+		SX1280_Send_Packet[receivedPacket.id].status = receivedPacket.spinner;
 	}
 }
 
@@ -207,8 +230,9 @@ void Start(){
 	SX1280_Send_Packet[0].velnormal = 0;
 	SX1280_Send_Packet[0].kickspeedx = 0;
 	SX1280_Send_Packet[0].kickspeedz = 0;
-	SX1280_Send_Packet[0].spinner = false;
+	SX1280_Send_Packet[0].status = 0;
 
+/*
 	SX1280_Feedback_Packet.battery = 1;
 	SX1280_Feedback_Packet.encoder1 = 1;
 	SX1280_Feedback_Packet.encoder2 = 3;
@@ -216,6 +240,7 @@ void Start(){
 	SX1280_Feedback_Packet.encoder4 = 6;
 	SX1280_Feedback_Packet.id = 2;
 	SX1280_Feedback_Packet.packetId = 1;
+*/
 
 /*DEFINING ROBOT ID*/
 	for(uint32_t i=0; i<2000; i++){
@@ -293,7 +318,7 @@ void Start(){
 						SX1280_Send_Packet[i].velnormal = 0;
 						SX1280_Send_Packet[i].kickspeedx = 0;
 						SX1280_Send_Packet[i].kickspeedz = 0;
-						SX1280_Send_Packet[i].spinner = false;
+						SX1280_Send_Packet[i].status = 0;
 					}
 				//Blinking red LED
 					HAL_GPIO_WritePin(LD5_GPIO_Port, LD5_Pin, GPIO_PIN_SET);

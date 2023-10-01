@@ -23,7 +23,7 @@ public:
 	float veltangent = 0;
 	float velnormal = 0;
 	float velangular = 0;
-	bool spinner = false;
+	uint8_t status = 0;
 	uint8_t packetId = 0;
 };
 class SX1280_Feedback_Packet_t{
@@ -34,7 +34,7 @@ public:
 	float encoder2 = 0;
 	float encoder3 = 0;
 	float encoder4 = 0;
-	bool spinner = false;
+	uint8_t status = 0;
 	uint8_t packetId = 0;
 };
 

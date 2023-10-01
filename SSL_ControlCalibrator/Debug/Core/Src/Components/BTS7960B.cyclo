@@ -1,5 +1,5 @@
-BTS7960B.cpp:10:1:BTS7960B::BTS7960B(volatile uint32_t*, volatile uint32_t*, volatile uint32_t*, volatile uint32_t*, GPIO_TypeDef*, uint16_t, GPIO_TypeDef*, uint16_t)	1
-BTS7960B.cpp:15:6:virtual void BTS7960B::setPower(float)	5
-BTS7960B.cpp:25:6:void BTS7960B::setEnabled(bool)	2
-BTS7960B.hpp:14:7:BTS7960B::~BTS7960B()	1
-BTS7960B.hpp:14:7:virtual BTS7960B::~BTS7960B()	1
+../Core/Src/Components/BTS7960B.cpp:10:1:BTS7960B::BTS7960B(volatile uint32_t*, volatile uint32_t*, volatile uint32_t*, volatile uint32_t*, GPIO_TypeDef*, uint16_t, GPIO_TypeDef*, uint16_t)	1
+../Core/Src/Components/BTS7960B.cpp:15:6:virtual void BTS7960B::setPower(float)	5
+../Core/Src/Components/BTS7960B.cpp:25:6:void BTS7960B::setEnabled(bool)	2
+../Core/Src/Components/BTS7960B.hpp:14:7:BTS7960B::~BTS7960B()	1
+../Core/Src/Components/BTS7960B.hpp:14:7:virtual BTS7960B::~BTS7960B()	1
