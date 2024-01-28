@@ -107,6 +107,8 @@ void Error_Handler(void);
 #define SCL_NFC_GPIO_Port GPIOF
 #define SDA_NFC_Pin GPIO_PIN_15
 #define SDA_NFC_GPIO_Port GPIOF
+#define LED_R_Pin GPIO_PIN_0
+#define LED_R_GPIO_Port GPIOG
 #define LED_G_Pin GPIO_PIN_1
 #define LED_G_GPIO_Port GPIOG
 #define NSS_RADIO_0_Pin GPIO_PIN_12
