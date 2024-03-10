@@ -99,6 +99,8 @@ void Error_Handler(void);
 #define ENCA_M4_GPIO_Port GPIOA
 #define ENCB_M4_Pin GPIO_PIN_7
 #define ENCB_M4_GPIO_Port GPIOA
+#define BAT_REF_Pin GPIO_PIN_4
+#define BAT_REF_GPIO_Port GPIOC
 #define LED_GREEN_Pin GPIO_PIN_0
 #define LED_GREEN_GPIO_Port GPIOB
 #define INT_RADIO_1_Pin GPIO_PIN_1
@@ -145,6 +147,10 @@ void Error_Handler(void);
 #define ESC_TX_M2_GPIO_Port GPIOD
 #define LED_B_Pin GPIO_PIN_2
 #define LED_B_GPIO_Port GPIOG
+#define RX_EN_RADIO_0_Pin GPIO_PIN_4
+#define RX_EN_RADIO_0_GPIO_Port GPIOG
+#define TX_EN_RADIO_0_Pin GPIO_PIN_5
+#define TX_EN_RADIO_0_GPIO_Port GPIOG
 #define USB_FS_OVCR_Pin GPIO_PIN_7
 #define USB_FS_OVCR_GPIO_Port GPIOG
 #define ESC_TX_M5_Pin GPIO_PIN_6
