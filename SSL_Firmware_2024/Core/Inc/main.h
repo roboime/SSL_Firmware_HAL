@@ -67,8 +67,10 @@ void Error_Handler(void);
 #define SDA_OLED_GPIO_Port GPIOF
 #define SCL_OLED_Pin GPIO_PIN_1
 #define SCL_OLED_GPIO_Port GPIOF
-#define KICK_HIGH_Pin GPIO_PIN_3
-#define KICK_HIGH_GPIO_Port GPIOF
+#define KICK_CHIP_Pin GPIO_PIN_3
+#define KICK_CHIP_GPIO_Port GPIOF
+#define KICK_LOW_Pin GPIO_PIN_5
+#define KICK_LOW_GPIO_Port GPIOF
 #define ESC_TX_M1_Pin GPIO_PIN_7
 #define ESC_TX_M1_GPIO_Port GPIOF
 #define BALL_SENSOR_Pin GPIO_PIN_8
